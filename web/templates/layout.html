@@ -4,13 +4,16 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>{{.Title}} — SoftStore</title>
+	<title>{{.Title}} — lauden.dev</title>
+	<link rel="icon" type="image/svg+xml" href="/static/img/favicon.svg">
 	<link rel="stylesheet" href="/static/css/style.css">
 	<script src="https://unpkg.com/htmx.org@2.0.4"></script>
 </head>
 <body>
 	<header>
-		<h1><a href="/">SoftStore</a></h1>
+		<a href="/">
+			<img src="/static/img/logo.svg" alt="lauden.dev" class="logo">
+		</a>
 	</header>
 	<main id="content">
 		{{template "content" .}}

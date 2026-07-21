@@ -1,0 +1,11 @@
+<svg width="400" height="140" viewBox="0 0 400 140" xmlns="http://www.w3.org/2000/svg">
+    <rect x="10" y="10" width="120" height="120" rx="24" fill="#3B82F6"/>
+    <text x="70" y="88" font-family="'Space Grotesk', 'Inter', sans-serif" font-weight="700"
+          font-size="52" fill="#FFFFFF" text-anchor="middle" letter-spacing="-2">TLL</text>
+
+    <text x="150" y="65" font-family="'JetBrains Mono', 'Fira Code', monospace" font-weight="500"
+          font-size="34" fill="#111827">lauden<tspan fill="#3B82F6">.dev</tspan></text>
+
+    <text x="150" y="98" font-family="'JetBrains Mono', 'Fira Code', monospace" font-weight="400"
+          font-size="19" fill="#6B7280" letter-spacing="0.5">software &amp; systems</text>
+    </svg>
