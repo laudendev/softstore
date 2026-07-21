@@ -9,5 +9,5 @@ type Product struct {
     Description string
     PriceCents  int64
     FilePath    string
-    CreatedAt   time.time
+    CreatedAt   time.Time
 }
