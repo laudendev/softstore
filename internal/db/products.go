@@ -23,6 +23,19 @@ func CreateProduct(conn *sql.DB, p *models.Product) error {
 	return nil
 }
 
+func GetProductBySlug(conn *sql.DB, slug string) (*models.Product, error) {
+	var p models.Product
+	err := conn.QueryRow(
+		`SELECT id, name, slug, description, price_cents, stripe_price_id, product_code, stub_url, tax_code, created_at
+		 FROM products WHERE slug = ?`,
+		slug,
+	).Scan(&p.ID, &p.Name, &p.Slug, &p.Description, &p.PriceCents, &p.StripePriceID, &p.ProductCode, &p.StubURL, &p.TaxCode, &p.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
+	return &p, nil
+}
+
 func ListProducts(conn *sql.DB) ([]models.Product, error) {
 	rows, err := conn.Query(
 		`SELECT id, name, slug, description, price_cents, stripe_price_id, product_code, stub_url, tax_code, created_at

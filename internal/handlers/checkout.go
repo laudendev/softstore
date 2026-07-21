@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"database/sql"
+	"errors"
 	"log"
 	"net/http"
 
@@ -15,25 +16,14 @@ func Checkout(conn *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		slug := r.PathValue("slug")
 
-		products, err := db.ListProducts(conn)
+		product, err := db.GetProductBySlug(conn, slug)
 		if err != nil {
-			log.Println("list products:", err)
-			http.Error(w, "internal error", http.StatusInternalServerError)
-			return
-		}
-
-		var priceID, productCode string
-		found := false
-		for _, p := range products {
-			if p.Slug == slug {
-				priceID = p.StripePriceID
-				productCode = p.ProductCode
-				found = true
-				break
+			if errors.Is(err, sql.ErrNoRows) {
+				http.NotFound(w, r)
+				return
 			}
-		}
-		if !found {
-			http.NotFound(w, r)
+			log.Println("get product by slug:", err)
+			http.Error(w, "internal error", http.StatusInternalServerError)
 			return
 		}
 
@@ -41,12 +31,12 @@ func Checkout(conn *sql.DB) http.HandlerFunc {
 			Mode: stripe.String(string(stripe.CheckoutSessionModePayment)),
 			LineItems: []*stripe.CheckoutSessionLineItemParams{
 				{
-					Price:    stripe.String(priceID),
+					Price:    stripe.String(product.StripePriceID),
 					Quantity: stripe.Int64(1),
 				},
 			},
 			Metadata: map[string]string{
-				"product": productCode,
+				"product": product.ProductCode,
 				"seats":   "1",
 			},
 			SuccessURL: stripe.String("http://localhost:8080/thank-you"),
