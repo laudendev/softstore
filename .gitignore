@@ -1,0 +1,5 @@
+softstore
+*.exe
+*.db
+.env
+*.local
