@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+   "time"
+   "fmt"
+)
 
 type Product struct {
     ID          int64
@@ -10,4 +13,9 @@ type Product struct {
     PriceCents  int64
     FilePath    string
     CreatedAt   time.Time
+}
+
+
+func (p Product) PriceDollars() string {
+	return fmt.Sprintf("%.2f", float64(p.PriceCents)/100)
 }

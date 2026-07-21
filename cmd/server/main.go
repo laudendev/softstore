@@ -1,12 +1,12 @@
 package main
 
 import (
-	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 
 	"softstore/internal/db"
-	"softstore/internal/models"
+	"softstore/internal/handlers"
 )
 
 func main() {
@@ -16,31 +16,17 @@ func main() {
 	}
 	defer database.Close()
 
-	// Temporary: seed one product to prove the DB layer works.
-	seed := &models.Product{
-		Name:        "Test Widget CLI",
-		Slug:        "test-widget-cli",
-		Description: "A sample product for testing.",
-		PriceCents:  1999,
-		FilePath:    "files/test-widget-cli.zip",
-	}
-	if err := db.CreateProduct(database, seed); err != nil {
-		log.Println("seed insert (may already exist):", err)
-	}
-
-	products, err := db.ListProducts(database)
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("products in db: %d", len(products))
-	for _, p := range products {
-		log.Printf("  - %s (%s) $%.2f", p.Name, p.Slug, float64(p.PriceCents)/100)
-	}
+	tmpl := template.Must(template.ParseFiles(
+		"web/templates/layout.html",
+		"web/templates/home.html",
+	))
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "ok")
+		w.Write([]byte("ok"))
 	})
+	mux.HandleFunc("/", handlers.Home(database, tmpl))
+	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("web/static"))))
 
 	log.Println("listening on :8080")
 	if err := http.ListenAndServe(":8080", mux); err != nil {

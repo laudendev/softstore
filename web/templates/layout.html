@@ -1,0 +1,20 @@
+{{define "layout"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>{{.Title}} — SoftStore</title>
+	<link rel="stylesheet" href="/static/css/style.css">
+	<script src="https://unpkg.com/htmx.org@2.0.4"></script>
+</head>
+<body>
+	<header>
+		<h1><a href="/">SoftStore</a></h1>
+	</header>
+	<main id="content">
+		{{template "content" .}}
+	</main>
+</body>
+</html>
+{{end}}
