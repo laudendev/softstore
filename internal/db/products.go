@@ -39,7 +39,7 @@ func GetProductBySlug(conn *sql.DB, slug string) (*models.Product, error) {
 func ListProducts(conn *sql.DB) ([]models.Product, error) {
 	rows, err := conn.Query(
 		`SELECT id, name, slug, description, price_cents, stripe_price_id, product_code, stub_url, tax_code, created_at
-		 FROM products ORDER BY created_at DESC`,
+		 FROM products ORDER BY created_at DESC, id DESC`,
 	)
 	if err != nil {
 		return nil, err
