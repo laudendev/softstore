@@ -5,11 +5,16 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/stripe/stripe-go/v82"
+
+	"softstore/internal/config"
 	"softstore/internal/db"
 	"softstore/internal/handlers"
 )
 
 func main() {
+	stripe.Key = config.StripeSecretKey()
+
 	database, err := db.Open("softstore.db")
 	if err != nil {
 		log.Fatal(err)
