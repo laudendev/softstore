@@ -10,13 +10,11 @@ import (
 	"strconv"
 	"crypto/subtle"
 
-	"github.com/stripe/stripe-go/v82"
-	stripeprice "github.com/stripe/stripe-go/v82/price"
-	stripeproduct "github.com/stripe/stripe-go/v82/product"
 
 	"softstore/internal/db"
 	"softstore/internal/models"
 	"softstore/internal/auth"
+	"softstore/internal/payments"
 )
 
 func AdminNew(tmpl *template.Template) http.HandlerFunc {
@@ -74,7 +72,7 @@ func AdminLogout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/admin/login", http.StatusSeeOther)
 }
 
-func AdminCreateProduct(conn *sql.DB) http.HandlerFunc {
+func AdminCreateProduct(conn *sql.DB, provider payments.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := r.ParseForm(); err != nil {
 			http.Error(w, "bad form", http.StatusBadRequest)
@@ -98,27 +96,16 @@ func AdminCreateProduct(conn *sql.DB) http.HandlerFunc {
 		description := r.FormValue("description")
 		taxCode := r.FormValue("tax_code")
 
-		// Create the Stripe Product.
-		stripeProd, err := stripeproduct.New(&stripe.ProductParams{
-			Name:        stripe.String(name),
-			Description: stripe.String(description),
-			TaxCode:     stripe.String(taxCode),
+		registered, err := provider.RegisterItem(payments.SellableItem{
+			Name:        name,
+			Description: description,
+			PriceCents:  priceCents,
+			Currency:    "usd",
+			TaxCategory: taxCode,
 		})
 		if err != nil {
-			log.Println("stripe product create:", err)
-			fmt.Fprintf(w, `<p class="error">Failed to create Stripe product: %s</p>`, err)
-			return
-		}
-
-		// Create the Stripe Price, attached to that Product.
-		stripePrice, err := stripeprice.New(&stripe.PriceParams{
-			Product:    stripe.String(stripeProd.ID),
-			UnitAmount: stripe.Int64(priceCents),
-			Currency:   stripe.String(string(stripe.CurrencyUSD)),
-		})
-		if err != nil {
-			log.Println("stripe price create:", err)
-			fmt.Fprintf(w, `<p class="error">Failed to create Stripe price: %s</p>`, err)
+			log.Println("provider register item:", err)
+			fmt.Fprintf(w, `<p class="error">Failed to register product with payment provider: %s</p>`, err)
 			return
 		}
 
@@ -127,7 +114,7 @@ func AdminCreateProduct(conn *sql.DB) http.HandlerFunc {
 			Slug:          r.FormValue("slug"),
 			Description:   description,
 			PriceCents:    priceCents,
-			StripePriceID: stripePrice.ID,
+			StripePriceID: registered.ProviderItemID,
 			ProductCode:   code,
 			StubURL:       r.FormValue("stub_url"),
 			TaxCode:       taxCode,
@@ -139,6 +126,6 @@ func AdminCreateProduct(conn *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		fmt.Fprintf(w, `<p class="success">Created "%s" successfully. (Stripe Price: %s)</p>`, p.Name, stripePrice.ID)
+		fmt.Fprintf(w, `<p class="success">Created "%s" successfully. (Provider item: %s)</p>`, p.Name, registered.ProviderItemID)
 	}
 }

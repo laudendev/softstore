@@ -11,6 +11,7 @@ import (
 	"softstore/internal/config"
 	"softstore/internal/db"
 	"softstore/internal/handlers"
+	"softstore/internal/payments/stripeprovider"
 	"softstore/web"
 )
 
@@ -21,6 +22,8 @@ func main() {
 	passwordHash := config.AdminPasswordHash()
 	auth.SecureCookies = config.SecureCookies()
 	baseURL := config.BaseURL()
+
+        provider := stripeprovider.New()
 
 	database, err := db.Open("softstore.db")
 	if err != nil {
@@ -49,7 +52,7 @@ func main() {
 		w.Write([]byte("ok"))
 	})
 	mux.HandleFunc("/", handlers.Home(database, homeTmpl))
-	mux.HandleFunc("POST /checkout/{slug}", handlers.Checkout(database, baseURL))
+	mux.HandleFunc("POST /checkout/{slug}", handlers.Checkout(database, provider, baseURL))
 	mux.HandleFunc("GET /thank-you", func(w http.ResponseWriter, r *http.Request) {
 		thankYouTmpl.ExecuteTemplate(w, "layout", handlers.HomeData{Title: "Thank You"})
 	})
@@ -59,7 +62,7 @@ func main() {
 	mux.HandleFunc("POST /admin/logout", handlers.AdminLogout)
 
 	mux.HandleFunc("GET /admin/products/new", handlers.RequireAdmin(sessionSecret, handlers.AdminNew(adminTmpl)))
-	mux.HandleFunc("POST /admin/products", handlers.RequireAdmin(sessionSecret, handlers.AdminCreateProduct(database)))
+	mux.HandleFunc("POST /admin/products", handlers.RequireAdmin(sessionSecret, handlers.AdminCreateProduct(database, provider)))
 
 	mux.Handle("/static/", http.FileServer(http.FS(web.Static)))
 

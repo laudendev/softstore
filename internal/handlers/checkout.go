@@ -6,13 +6,11 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/stripe/stripe-go/v82"
-	"github.com/stripe/stripe-go/v82/checkout/session"
-
 	"softstore/internal/db"
+	"softstore/internal/payments"
 )
 
-func Checkout(conn *sql.DB, baseURL string) http.HandlerFunc {
+func Checkout(conn *sql.DB, provider payments.Provider, baseURL string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		slug := r.PathValue("slug")
 
@@ -27,29 +25,22 @@ func Checkout(conn *sql.DB, baseURL string) http.HandlerFunc {
 			return
 		}
 
-		params := &stripe.CheckoutSessionParams{
-			Mode: stripe.String(string(stripe.CheckoutSessionModePayment)),
-			LineItems: []*stripe.CheckoutSessionLineItemParams{
-				{
-					Price:    stripe.String(product.StripePriceID),
-					Quantity: stripe.Int64(1),
-				},
-			},
+		purchase, err := provider.StartPurchase(payments.PurchaseRequest{
+			ProviderItemID: product.StripePriceID,
+			Quantity:       1,
 			Metadata: map[string]string{
 				"product": product.ProductCode,
 				"seats":   "1",
 			},
-			SuccessURL: stripe.String(baseURL + "/thank-you"),
-			CancelURL:  stripe.String(baseURL + "/"),
-		}
-
-		s, err := session.New(params)
+			SuccessURL: baseURL + "/thank-you",
+			CancelURL:  baseURL + "/",
+		})
 		if err != nil {
-			log.Println("stripe session create:", err)
+			log.Println("start purchase:", err)
 			http.Error(w, "checkout error", http.StatusInternalServerError)
 			return
 		}
 
-		http.Redirect(w, r, s.URL, http.StatusSeeOther)
+		http.Redirect(w, r, purchase.RedirectURL, http.StatusSeeOther)
 	}
 }
