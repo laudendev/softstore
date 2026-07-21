@@ -16,16 +16,22 @@ func main() {
 	}
 	defer database.Close()
 
-	tmpl := template.Must(template.ParseFiles(
+	homeTmpl := template.Must(template.ParseFiles(
 		"web/templates/layout.html",
 		"web/templates/home.html",
+	))
+	adminTmpl := template.Must(template.ParseFiles(
+		"web/templates/layout.html",
+		"web/templates/admin_new.html",
 	))
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("ok"))
 	})
-	mux.HandleFunc("/", handlers.Home(database, tmpl))
+	mux.HandleFunc("/", handlers.Home(database, homeTmpl))
+	mux.HandleFunc("GET /admin/products/new", handlers.AdminNew(adminTmpl))
+	mux.HandleFunc("POST /admin/products", handlers.AdminCreateProduct(database))
 	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("web/static"))))
 
 	log.Println("listening on :8080")

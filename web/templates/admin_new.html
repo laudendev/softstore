@@ -1,0 +1,37 @@
+{{define "content"}}
+<section>
+	<h2>Add Product</h2>
+	<form hx-post="/admin/products" hx-target="#form-result" hx-swap="innerHTML">
+		<label>Name<br>
+			<input type="text" name="name" required>
+		</label><br><br>
+
+		<label>Slug<br>
+			<input type="text" name="slug" required>
+		</label><br><br>
+
+		<label>Description<br>
+			<textarea name="description"></textarea>
+		</label><br><br>
+
+		<label>Price (USD)<br>
+			<input type="number" name="price" step="0.01" min="0" required>
+		</label><br><br>
+
+		<label>Stripe Price ID<br>
+			<input type="text" name="stripe_price_id" placeholder="price_..." required>
+		</label><br><br>
+
+		<label>Product Code (4 characters)<br>
+			<input type="text" name="product_code" maxlength="4" minlength="4" required>
+		</label><br><br>
+
+		<label>Stub/Installer URL<br>
+			<input type="url" name="stub_url" required>
+		</label><br><br>
+
+		<button type="submit">Create Product</button>
+	</form>
+	<div id="form-result"></div>
+</section>
+{{end}}
