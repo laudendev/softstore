@@ -5,3 +5,4 @@ softstore
 *.local
 localhost-key.pem
 localhost-cert.pem
+softstore-linux
