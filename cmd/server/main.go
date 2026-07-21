@@ -7,10 +7,11 @@ import (
 
 	"github.com/stripe/stripe-go/v82"
 
+	"softstore/internal/auth"
 	"softstore/internal/config"
 	"softstore/internal/db"
 	"softstore/internal/handlers"
-	"softstore/internal/auth"
+	"softstore/web"
 )
 
 func main() {
@@ -26,22 +27,21 @@ func main() {
 		log.Fatal(err)
 	}
 	defer database.Close()
-
-	homeTmpl := template.Must(template.ParseFiles(
-		"web/templates/layout.html",
-		"web/templates/home.html",
+	homeTmpl := template.Must(template.ParseFS(web.Templates,
+		"templates/layout.html",
+		"templates/home.html",
 	))
-	adminTmpl := template.Must(template.ParseFiles(
-		"web/templates/layout.html",
-		"web/templates/admin_new.html",
+	adminTmpl := template.Must(template.ParseFS(web.Templates,
+		"templates/layout.html",
+		"templates/admin_new.html",
 	))
-	loginTmpl := template.Must(template.ParseFiles(
-		"web/templates/layout.html",
-		"web/templates/admin_login.html",
+	loginTmpl := template.Must(template.ParseFS(web.Templates,
+		"templates/layout.html",
+		"templates/admin_login.html",
 	))
-	thankYouTmpl := template.Must(template.ParseFiles(
-		"web/templates/layout.html",
-		"web/templates/thank_you.html",
+	thankYouTmpl := template.Must(template.ParseFS(web.Templates,
+		"templates/layout.html",
+		"templates/thank_you.html",
 	))
 
 	mux := http.NewServeMux()
@@ -61,7 +61,7 @@ func main() {
 	mux.HandleFunc("GET /admin/products/new", handlers.RequireAdmin(sessionSecret, handlers.AdminNew(adminTmpl)))
 	mux.HandleFunc("POST /admin/products", handlers.RequireAdmin(sessionSecret, handlers.AdminCreateProduct(database)))
 
-	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("web/static"))))
+	mux.Handle("/static/", http.FileServer(http.FS(web.Static)))
 
 	log.Println("listening on :38217 (http, behind caddy)")
 	if err := http.ListenAndServe(":38217", mux); err != nil {
