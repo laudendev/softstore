@@ -8,6 +8,9 @@
 				<h3>{{.Name}}</h3>
 				<p>{{.Description}}</p>
 				<p class="price">${{.PriceDollars}}</p>
+				<form method="POST" action="/checkout/{{.Slug}}">
+					<button type="submit">Buy</button>
+				</form>
 			</article>
 			{{end}}
 		{{else}}

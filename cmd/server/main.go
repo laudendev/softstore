@@ -29,6 +29,10 @@ func main() {
 		"web/templates/layout.html",
 		"web/templates/admin_new.html",
 	))
+	thankYouTmpl := template.Must(template.ParseFiles(
+		"web/templates/layout.html",
+		"web/templates/thank_you.html",
+	))
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
@@ -37,6 +41,10 @@ func main() {
 	mux.HandleFunc("/", handlers.Home(database, homeTmpl))
 	mux.HandleFunc("GET /admin/products/new", handlers.AdminNew(adminTmpl))
 	mux.HandleFunc("POST /admin/products", handlers.AdminCreateProduct(database))
+	mux.HandleFunc("POST /checkout/{slug}", handlers.Checkout(database))
+	mux.HandleFunc("GET /thank-you", func(w http.ResponseWriter, r *http.Request) {
+		thankYouTmpl.ExecuteTemplate(w, "layout", handlers.HomeData{Title: "Thank You"})
+	})
 	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("web/static"))))
 
 	log.Println("listening on :8080")
@@ -44,3 +52,4 @@ func main() {
 		log.Fatal(err)
 	}
 }
+
