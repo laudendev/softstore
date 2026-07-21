@@ -18,16 +18,19 @@
 			<input type="number" name="price" step="0.01" min="0" required>
 		</label><br><br>
 
-		<label>Stripe Price ID<br>
-			<input type="text" name="stripe_price_id" placeholder="price_..." required>
-		</label><br><br>
-
 		<label>Product Code (4 characters)<br>
 			<input type="text" name="product_code" maxlength="4" minlength="4" required>
 		</label><br><br>
 
 		<label>Stub/Installer URL<br>
 			<input type="url" name="stub_url" required>
+		</label><br><br>
+
+		<label>Product Type<br>
+			<select name="tax_code" required>
+				<option value="txcd_10202000">Software (Downloadable, Personal Use)</option>
+				<option value="txcd_10302000">Digital Book (Downloaded, Permanent)</option>
+			</select>
 		</label><br><br>
 
 		<button type="submit">Create Product</button>

@@ -14,6 +14,7 @@ type Product struct {
 	StripePriceID string
 	ProductCode   string
 	StubURL       string
+	TaxCode       string
 	CreatedAt     time.Time
 }
 

@@ -31,6 +31,7 @@ func migrate(conn *sql.DB) error {
 		stripe_price_id TEXT NOT NULL,
 		product_code TEXT NOT NULL,
 		stub_url TEXT NOT NULL DEFAULT '',
+		tax_code TEXT NOT NULL,
 		created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 	);`
 	_, err := conn.Exec(schema)
