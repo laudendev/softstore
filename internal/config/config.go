@@ -28,3 +28,11 @@ func AdminUsername() string {
 func SessionSecret() []byte {
 	return []byte(requireEnv("SESSION_SECRET"))
 }
+
+func SecureCookies() bool {
+	return os.Getenv("SECURE_COOKIES") == "true"
+}
+
+func BaseURL() string {
+	return requireEnv("BASE_URL")
+}

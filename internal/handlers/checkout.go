@@ -12,7 +12,7 @@ import (
 	"softstore/internal/db"
 )
 
-func Checkout(conn *sql.DB) http.HandlerFunc {
+func Checkout(conn *sql.DB, baseURL string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		slug := r.PathValue("slug")
 
@@ -39,8 +39,8 @@ func Checkout(conn *sql.DB) http.HandlerFunc {
 				"product": product.ProductCode,
 				"seats":   "1",
 			},
-			SuccessURL: stripe.String("http://localhost:8080/thank-you"),
-			CancelURL:  stripe.String("http://localhost:8080/"),
+			SuccessURL: stripe.String(baseURL + "/thank-you"),
+			CancelURL:  stripe.String(baseURL + "/"),
 		}
 
 		s, err := session.New(params)

@@ -14,6 +14,10 @@ import (
 const sessionCookieName = "softstore_admin_session"
 const sessionDuration = 24 * time.Hour
 
+// SecureCookies controls whether session cookies require HTTPS.
+// Set to true in production; false for local HTTP-only development.
+var SecureCookies = true
+
 // CheckPassword compares a plaintext password against a stored bcrypt hash.
 func CheckPassword(hash, password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
@@ -82,7 +86,7 @@ func SetSessionCookie(w http.ResponseWriter, secret []byte) {
 		Value:    token,
 		Path:     "/",
 		HttpOnly: true,
-		Secure:   true,
+		Secure:   SecureCookies,
 		SameSite: http.SameSiteStrictMode,
 		Expires:  time.Now().Add(sessionDuration),
 	})
@@ -95,7 +99,7 @@ func ClearSessionCookie(w http.ResponseWriter) {
 		Value:    "",
 		Path:     "/",
 		HttpOnly: true,
-		Secure:   true,
+		Secure:   SecureCookies,
 		SameSite: http.SameSiteStrictMode,
 		MaxAge:   -1,
 	})

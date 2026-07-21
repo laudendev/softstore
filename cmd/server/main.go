@@ -10,6 +10,7 @@ import (
 	"softstore/internal/config"
 	"softstore/internal/db"
 	"softstore/internal/handlers"
+	"softstore/internal/auth"
 )
 
 func main() {
@@ -17,6 +18,8 @@ func main() {
 	sessionSecret := config.SessionSecret()
 	adminUsername := config.AdminUsername()
 	passwordHash := config.AdminPasswordHash()
+	auth.SecureCookies = config.SecureCookies()
+	baseURL := config.BaseURL()
 
 	database, err := db.Open("softstore.db")
 	if err != nil {
@@ -46,7 +49,7 @@ func main() {
 		w.Write([]byte("ok"))
 	})
 	mux.HandleFunc("/", handlers.Home(database, homeTmpl))
-	mux.HandleFunc("POST /checkout/{slug}", handlers.Checkout(database))
+	mux.HandleFunc("POST /checkout/{slug}", handlers.Checkout(database, baseURL))
 	mux.HandleFunc("GET /thank-you", func(w http.ResponseWriter, r *http.Request) {
 		thankYouTmpl.ExecuteTemplate(w, "layout", handlers.HomeData{Title: "Thank You"})
 	})
@@ -60,8 +63,8 @@ func main() {
 
 	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("web/static"))))
 
-	log.Println("listening on :8443 (https)")
-	if err := http.ListenAndServeTLS(":8443", "localhost-cert.pem", "localhost-key.pem", mux); err != nil {
+	log.Println("listening on :38217 (http, behind caddy)")
+	if err := http.ListenAndServe(":38217", mux); err != nil {
 		log.Fatal(err)
 	}
 }
