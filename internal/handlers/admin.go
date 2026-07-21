@@ -8,6 +8,7 @@ import (
 	"math"
 	"net/http"
 	"strconv"
+	"crypto/subtle"
 
 	"github.com/stripe/stripe-go/v82"
 	stripeprice "github.com/stripe/stripe-go/v82/price"
@@ -15,6 +16,7 @@ import (
 
 	"softstore/internal/db"
 	"softstore/internal/models"
+	"softstore/internal/auth"
 )
 
 func AdminNew(tmpl *template.Template) http.HandlerFunc {
@@ -25,6 +27,51 @@ func AdminNew(tmpl *template.Template) http.HandlerFunc {
 			http.Error(w, "internal error", http.StatusInternalServerError)
 		}
 	}
+}
+
+func AdminLoginForm(tmpl *template.Template) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		data := struct {
+			Title string
+			Error string
+		}{Title: "Admin Login"}
+		if err := tmpl.ExecuteTemplate(w, "layout", data); err != nil {
+			log.Println("render admin_login:", err)
+			http.Error(w, "internal error", http.StatusInternalServerError)
+		}
+	}
+}
+
+func AdminLoginSubmit(tmpl *template.Template, username, passwordHash string, sessionSecret []byte) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if err := r.ParseForm(); err != nil {
+			http.Error(w, "bad form", http.StatusBadRequest)
+			return
+		}
+		submittedUsername := r.FormValue("username")
+		password := r.FormValue("password")
+
+		validUsername := subtle.ConstantTimeCompare([]byte(submittedUsername), []byte(username)) == 1
+		validPassword := auth.CheckPassword(passwordHash, password)
+
+		if !validUsername || !validPassword {
+			data := struct {
+				Title string
+				Error string
+			}{Title: "Admin Login", Error: "Incorrect username or password."}
+			tmpl.ExecuteTemplate(w, "layout", data)
+			return
+		}
+
+		auth.SetSessionCookie(w, sessionSecret)
+		http.Redirect(w, r, "/admin/products/new", http.StatusSeeOther)
+	}
+}
+
+
+func AdminLogout(w http.ResponseWriter, r *http.Request) {
+	auth.ClearSessionCookie(w)
+	http.Redirect(w, r, "/admin/login", http.StatusSeeOther)
 }
 
 func AdminCreateProduct(conn *sql.DB) http.HandlerFunc {

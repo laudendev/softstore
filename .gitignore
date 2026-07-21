@@ -3,3 +3,5 @@ softstore
 *.db
 .env
 *.local
+localhost-key.pem
+localhost-cert.pem
