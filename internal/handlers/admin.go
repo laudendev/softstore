@@ -19,7 +19,7 @@ import (
 
 func AdminNew(tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		data := ShopData{Title: "Add Product"}
+		data := ShopData{Title: "add product"}
 		if err := tmpl.ExecuteTemplate(w, "layout", data); err != nil {
 			log.Println("render admin_new:", err)
 			http.Error(w, "internal error", http.StatusInternalServerError)

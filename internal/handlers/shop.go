@@ -24,7 +24,7 @@ func Shop(conn *sql.DB, tmpl *template.Template) http.HandlerFunc {
 		}
 
 		data := ShopData{
-			Title:    "Shop",
+			Title:    "shop",
 			Products: products,
 		}
 
