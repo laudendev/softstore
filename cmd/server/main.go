@@ -30,9 +30,9 @@ func main() {
 		log.Fatal(err)
 	}
 	defer database.Close()
-	homeTmpl := template.Must(template.ParseFS(web.Templates,
+	shopTmpl := template.Must(template.ParseFS(web.Templates,
 		"templates/layout.html",
-		"templates/home.html",
+		"templates/shop.html",
 	))
 	adminTmpl := template.Must(template.ParseFS(web.Templates,
 		"templates/layout.html",
@@ -51,10 +51,10 @@ func main() {
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("ok"))
 	})
-	mux.HandleFunc("/", handlers.Home(database, homeTmpl))
+	mux.HandleFunc("/", handlers.Shop(database, shopTmpl))
 	mux.HandleFunc("POST /checkout/{slug}", handlers.Checkout(database, provider, baseURL))
 	mux.HandleFunc("GET /thank-you", func(w http.ResponseWriter, r *http.Request) {
-		thankYouTmpl.ExecuteTemplate(w, "layout", handlers.HomeData{Title: "Thank You"})
+		thankYouTmpl.ExecuteTemplate(w, "layout", handlers.ShopData{Title: "Thank You"})
 	})
 
 	mux.HandleFunc("GET /admin/login", handlers.AdminLoginForm(loginTmpl))

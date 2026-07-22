@@ -9,12 +9,12 @@ import (
 	"softstore/internal/db"
 )
 
-type HomeData struct {
+type ShopData struct {
 	Title    string
 	Products interface{}
 }
 
-func Home(conn *sql.DB, tmpl *template.Template) http.HandlerFunc {
+func Shop(conn *sql.DB, tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		products, err := db.ListProducts(conn)
 		if err != nil {
@@ -23,13 +23,13 @@ func Home(conn *sql.DB, tmpl *template.Template) http.HandlerFunc {
 			return
 		}
 
-		data := HomeData{
-			Title:    "Home",
+		data := ShopData{
+			Title:    "Shop",
 			Products: products,
 		}
 
 		if err := tmpl.ExecuteTemplate(w, "layout", data); err != nil {
-			log.Println("render home:", err)
+			log.Println("render shop:", err)
 			http.Error(w, "internal error", http.StatusInternalServerError)
 		}
 	}

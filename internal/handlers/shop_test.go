@@ -42,14 +42,14 @@ func testTemplate(t *testing.T) *template.Template {
 	return tmpl
 }
 
-func TestHomeEmptyCatalog(t *testing.T) {
+func TestShopEmptyCatalog(t *testing.T) {
 	conn := newTestDBWithSchema(t)
 	tmpl := testTemplate(t)
 
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	w := httptest.NewRecorder()
 
-	Home(conn, tmpl)(w, req)
+	Shop(conn, tmpl)(w, req)
 
 	if w.Code != http.StatusOK {
 		t.Errorf("expected status 200, got %d", w.Code)
@@ -59,7 +59,7 @@ func TestHomeEmptyCatalog(t *testing.T) {
 	}
 }
 
-func TestHomeWithProducts(t *testing.T) {
+func TestShopWithProducts(t *testing.T) {
 	conn := newTestDBWithSchema(t)
 	tmpl := testTemplate(t)
 
@@ -74,7 +74,7 @@ func TestHomeWithProducts(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	w := httptest.NewRecorder()
 
-	Home(conn, tmpl)(w, req)
+	Shop(conn, tmpl)(w, req)
 
 	if w.Code != http.StatusOK {
 		t.Errorf("expected status 200, got %d", w.Code)

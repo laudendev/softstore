@@ -255,7 +255,7 @@ input:focus, textarea:focus, select:focus {
 			linear-gradient(180deg, #E600C2 0%, #8A0072 100%);
 		background-repeat: repeat-x, no-repeat;
 		background-size: var(--wave-tile) 130%, 100% 130%;
-		background-position: 0 70%, 0 100%;
+		background-position: 0 60%, 0 100%;
 		-webkit-background-clip: text;
 		background-clip: text;
 		filter: drop-shadow(0 0 18px rgba(230, 0, 194, 0.6));
@@ -264,10 +264,10 @@ input:focus, textarea:focus, select:focus {
 
 	@keyframes wave-scroll {
 		from {
-			background-position: 0 70%, 0 100%;
+			background-position: 0 60%, 0 100%;
 		}
 		to {
-			background-position: var(--wave-tile) 70%, 0 100%;
+			background-position: var(--wave-tile) 60%, 0 100%;
 		}
 	}
 
