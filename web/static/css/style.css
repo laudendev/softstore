@@ -19,12 +19,18 @@
 	box-sizing: border-box;
 }
 
+html {
+    background: var(--paper);
+    min-height: 100%;
+}
+
 body {
 	margin: 0;
 	background: var(--paper);
 	color: var(--ink);
 	font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 	line-height: 1.5;
+    min-height: 100vh;
 }
 
 header {
