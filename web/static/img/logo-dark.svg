@@ -1,11 +1,58 @@
 <svg width="400" height="140" viewBox="0 0 400 140" xmlns="http://www.w3.org/2000/svg">
-    <rect x="10" y="10" width="120" height="120" rx="24" fill="#39FF14"/>
-    <text x="70" y="88" font-family="'Space Grotesk', 'Inter', sans-serif" font-weight="700"
-          font-size="52" fill="#0A0A0F" text-anchor="middle" letter-spacing="-2">TLL</text>
+    <svg x="10" y="10" width="120" height="120" viewBox="0 0 135.46667 135.46667">
+        <defs>
+            <filter id="goo-dark">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="b"/>
+                <feColorMatrix in="b" mode="matrix"
+                    values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -9"/>
+            </filter>
+            <radialGradient id="blob-dark" cx="42%" cy="32%" r="80%">
+                <stop offset="0%" stop-color="#E600C2"/>
+                <stop offset="100%" stop-color="#8A0072"/>
+            </radialGradient>
+            <clipPath id="glass-dark">
+                <path d="M 59 28 L 76 28 L 85 86 L 50 86 Z"/>
+            </clipPath>
+        </defs>
+
+        <rect x="0" y="0" width="135.46667" height="135.46667" rx="20" fill="#39FF14"/>
+
+        <g clip-path="url(#glass-dark)">
+            <rect x="50" y="28" width="35" height="58" fill="#0A0A0F" opacity="0.35"/>
+            <g filter="url(#goo-dark)" fill="url(#blob-dark)">
+                <ellipse cx="67.5" cy="86" rx="17" ry="8"/>
+                <circle cx="64" cy="72" r="8">
+                    <animate attributeName="cy" dur="7s" values="78;44;78" repeatCount="indefinite"/>
+                    <animate attributeName="r" dur="7s" values="8;6;8" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="70" cy="50" r="6">
+                    <animate attributeName="cy" dur="9s" values="44;76;44" repeatCount="indefinite"/>
+                    <animate attributeName="r" dur="9s" values="6;8;6" repeatCount="indefinite"/>
+                </circle>
+            </g>
+        </g>
+
+        <path d="M 60 20
+                 Q 59 20 59 22
+                 L 50 86
+                 L 58 98
+                 L 49 114
+                 Q 48 116 51 116
+                 L 84 116
+                 Q 87 116 86 114
+                 L 77 98
+                 L 85 86
+                 L 76 22
+                 Q 76 20 75 20
+                 Z"
+              fill="none" stroke="#0A0A0F" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>
+
+        <path d="M 58 31 L 77 31" stroke="#0A0A0F" stroke-width="3" stroke-linecap="round"/>
+    </svg>
 
     <text x="150" y="65" font-family="'JetBrains Mono', 'Fira Code', monospace" font-weight="500"
           font-size="34" fill="#E4E4E7">lauden<tspan fill="#39FF14">.dev</tspan></text>
 
     <text x="150" y="98" font-family="'JetBrains Mono', 'Fira Code', monospace" font-weight="400"
           font-size="19" fill="#9CA3AF" letter-spacing="0.5">software &amp; systems</text>
-    </svg>
+</svg>
