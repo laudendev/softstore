@@ -200,10 +200,16 @@ h2 {
 
 .cart-link {
 	position: relative;
-    display: inline-flex;
-    align-items: center;
-    align-self: flex-start;
-	color: var(--ink);
+	display: inline-flex;
+	align-items: center;
+	align-self: flex-start;
+    color: var(--ink);
+	background: var(--card-bg);
+	border: none;
+	cursor: pointer;
+	padding: 0.75rem 1.25rem;
+	border-radius: var(--radius);
+	box-shadow: 0 2px 10px rgba(17, 24, 39, 0.05);
 }
 
 .cart-count-badge {
@@ -507,4 +513,116 @@ footer p {
 .cart-drawer-overlay:has(~ .cart-drawer.open) {
 	opacity: 1;
 	pointer-events: auto;
+}
+
+.cart-drawer-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 1.5rem;
+}
+
+.cart-drawer-header h3 {
+	margin: 0;
+	color: var(--ink);
+}
+
+.cart-close-button {
+	background: none;
+	border: none;
+	font-size: 1.5rem;
+	line-height: 1;
+	color: var(--ink-soft);
+	cursor: pointer;
+	padding: 0.25rem;
+}
+
+.cart-item-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.cart-item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0.75rem 0;
+	border-bottom: 1px solid var(--border);
+}
+
+.cart-item-info {
+	display: flex;
+	flex-direction: column;
+	gap: 0.15rem;
+}
+
+.cart-item-name {
+	color: var(--ink);
+	font-weight: 600;
+}
+
+.cart-item-qty {
+	color: var(--ink-soft);
+	font-size: 0.85rem;
+}
+
+.cart-item-actions {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.cart-item-price {
+	color: var(--ink);
+	font-weight: 600;
+}
+
+.cart-remove-button {
+	background: none;
+	border: none;
+	font-size: 1.25rem;
+	line-height: 1;
+	color: var(--ink-soft);
+	cursor: pointer;
+	padding: 0.25rem;
+}
+
+.cart-remove-button:hover {
+	color: #EF4444;
+}
+
+.cart-total {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-top: 1rem;
+	padding-top: 1rem;
+	border-top: 2px solid var(--border);
+	font-weight: 700;
+	color: var(--ink);
+}
+
+.checkout-button {
+	display: block;
+	width: 100%;
+	margin-top: 1.25rem;
+	padding: 0.85rem;
+	background: var(--go-green);
+	color: var(--paper);
+	border: none;
+	border-radius: var(--radius-sm);
+	font-weight: 700;
+	font-size: 1rem;
+	cursor: pointer;
+}
+
+.checkout-button:hover {
+	filter: brightness(1.1);
+}
+
+.cart-empty {
+	color: var(--ink-soft);
+	text-align: center;
+	margin-top: 2rem;
 }
