@@ -48,6 +48,7 @@ func main() {
 		"templates/layout.html",
 		"templates/thank_you.html",
 	))
+	cartTmpl := template.Must(template.ParseFS(web.Templates, "templates/cart_drawer.html",))
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
@@ -55,7 +56,9 @@ func main() {
 	})
 	mux.HandleFunc("/", handlers.Shop(database, shopTmpl))
 	mux.HandleFunc("POST /checkout/{slug}", handlers.Checkout(database, provider, baseURL))
-	mux.HandleFunc("POST /cart/add/{slug}", handlers.AddToCart(database))
+	mux.HandleFunc("POST /cart/add/{slug}", handlers.AddToCart(database, cartTmpl))
+	mux.HandleFunc("GET /cart", handlers.GetCart(database, cartTmpl))
+	mux.HandleFunc("POST /cart/remove/{slug}", handlers.RemoveFromCart(database, cartTmpl))
 	mux.HandleFunc("GET /thank-you", func(w http.ResponseWriter, r *http.Request) {
 		thankYouTmpl.ExecuteTemplate(w, "layout", handlers.ShopData{Title: "Thank You"})
 	})

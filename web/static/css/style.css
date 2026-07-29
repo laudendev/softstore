@@ -473,3 +473,38 @@ footer p {
 	text-align: center;
 	z-index: 10;
 }
+
+.cart-drawer-overlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.4);
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.2s ease;
+	z-index: 998;
+}
+
+.cart-drawer {
+	position: fixed;
+	top: 0;
+	right: 0;
+	height: 100vh;
+	width: 380px;
+	max-width: 90vw;
+	background: var(--card-bg);
+	box-shadow: -4px 0 20px rgba(17, 24, 39, 0.15);
+	transform: translateX(100%);
+	transition: transform 0.25s ease;
+	z-index: 999;
+	overflow-y: auto;
+	padding: 1.5rem;
+}
+
+.cart-drawer.open {
+	transform: translateX(0);
+}
+
+.cart-drawer-overlay:has(~ .cart-drawer.open) {
+	opacity: 1;
+	pointer-events: auto;
+}

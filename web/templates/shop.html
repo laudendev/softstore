@@ -28,14 +28,15 @@
 						<form method="POST" action="/checkout/{{.Slug}}">
 							<button type="submit" class="buy-button">Buy Now</button>
 						</form>
-						<button
+										</div>
+                                        <button
 							type="button"
 							class="add-to-cart-button"
 							hx-post="/cart/add/{{.Slug}}"
-							hx-swap="none"
-							hx-on::after-request="document.getElementById('cart-count').outerHTML = event.detail.xhr.response"
+							hx-target="#cart-drawer-content"
+							hx-swap="innerHTML"
+							hx-on::after-request="document.getElementById('cart-drawer').classList.add('open')"
 						>+</button>
-					</div>
 				</div>
 			</article>
 			{{end}}

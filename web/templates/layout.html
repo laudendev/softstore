@@ -20,15 +20,27 @@
 				<img src="/static/img/logo.svg" alt="lauden.dev" class="logo">
 			</picture>
 		</a>
-        <a href="/cart" class="cart-link" aria-label="Cart">
+        <button
+			type="button"
+			class="cart-link"
+			aria-label="Cart"
+			hx-get="/cart"
+			hx-target="#cart-drawer-content"
+			hx-swap="innerHTML"
+			hx-on::after-request="document.getElementById('cart-drawer').classList.add('open')"
+		>
 			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 				<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
 				<path d="M3 6h18"/>
 				<path d="M16 10a4 4 0 0 1-8 0"/>
 			</svg>
 			<span id="cart-count" class="cart-count-badge">0</span>
-		</a>
-			</header>
+		</button>
+    </header>
+    <div id="cart-drawer-overlay" class="cart-drawer-overlay" onclick="document.getElementById('cart-drawer').classList.remove('open')"></div>
+	<div id="cart-drawer" class="cart-drawer">
+		<div id="cart-drawer-content"></div>
+	</div>
 	<main id="content">
 		{{template "content" .}}
 	</main>

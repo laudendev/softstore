@@ -1,0 +1,38 @@
+{{define "cart-drawer-content"}}
+<div class="cart-drawer-header">
+	<h3>Your Cart</h3>
+	<button type="button" class="cart-close-button" onclick="document.getElementById('cart-drawer').classList.remove('open')" aria-label="Close cart">&times;</button>
+</div>
+{{if .Items}}
+	<ul class="cart-item-list">
+		{{range .Items}}
+		<li class="cart-item">
+			<div class="cart-item-info">
+				<span class="cart-item-name">{{.Product.Name}}</span>
+				<span class="cart-item-qty">Qty: {{.Quantity}}</span>
+			</div>
+			<div class="cart-item-actions">
+				<span class="cart-item-price">${{.Product.PriceDollars}}</span>
+				<button
+					type="button"
+					class="cart-remove-button"
+					hx-post="/cart/remove/{{.Product.Slug}}"
+					hx-target="#cart-drawer-content"
+					hx-swap="innerHTML"
+					aria-label="Remove {{.Product.Name}}"
+				>&times;</button>
+			</div>
+		</li>
+		{{end}}
+	</ul>
+	<div class="cart-total">
+		<span>Total</span>
+		<span>${{.TotalDollars}}</span>
+	</div>
+	<form method="POST" action="/checkout">
+		<button type="submit" class="checkout-button">Checkout</button>
+	</form>
+{{else}}
+	<p class="cart-empty">Your cart is empty.</p>
+{{end}}
+{{end}}

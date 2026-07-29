@@ -1,13 +1,25 @@
 package handlers
 
 import (
+	"html/template"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"softstore/internal/db"
 	"softstore/internal/models"
+	"softstore/web"
 )
+
+func newTestCartTmpl(t *testing.T) *template.Template {
+	t.Helper()
+	tmpl, err := template.ParseFS(web.Templates, "templates/cart_drawer.html")
+	if err != nil {
+		t.Fatalf("failed to parse cart_drawer.html: %v", err)
+	}
+	return tmpl
+}
 
 func TestAddToCartCreatesCartAndCookie(t *testing.T) {
 	conn := newTestDBWithSchema(t)
@@ -24,7 +36,7 @@ func TestAddToCartCreatesCartAndCookie(t *testing.T) {
 	req.SetPathValue("slug", "test-widget")
 	w := httptest.NewRecorder()
 
-	AddToCart(conn)(w, req)
+	AddToCart(conn, newTestCartTmpl(t))(w, req)
 
 	if w.Code != http.StatusOK {
 		t.Fatalf("expected status 200, got %d", w.Code)
@@ -36,9 +48,13 @@ func TestAddToCartCreatesCartAndCookie(t *testing.T) {
 	}
 
 	body := w.Body.String()
-	if body != `<span id="cart-count">1</span>` {
-		t.Errorf("expected cart-count fragment showing 1, got %q", body)
+	if !strings.Contains(body, `id="cart-count" hx-swap-oob="true">1<`) {
+		t.Errorf("expected cart-count oob swap showing 1, got %q", body)
 	}
+	if !strings.Contains(body, "Test Widget") {
+		t.Errorf("expected drawer content to include product name, got %q", body)
+	}
+
 }
 
 func TestAddToCartIncrementsExistingCart(t *testing.T) {
@@ -56,7 +72,7 @@ func TestAddToCartIncrementsExistingCart(t *testing.T) {
 	req1 := httptest.NewRequest(http.MethodPost, "/cart/add/test-widget", nil)
 	req1.SetPathValue("slug", "test-widget")
 	w1 := httptest.NewRecorder()
-	AddToCart(conn)(w1, req1)
+	AddToCart(conn, newTestCartTmpl(t))(w1, req1)
 	cartCookie := w1.Result().Cookies()[0]
 
 	// Second add — reuse the cookie, expect count to increment to 2.
@@ -64,11 +80,11 @@ func TestAddToCartIncrementsExistingCart(t *testing.T) {
 	req2.SetPathValue("slug", "test-widget")
 	req2.AddCookie(cartCookie)
 	w2 := httptest.NewRecorder()
-	AddToCart(conn)(w2, req2)
+	AddToCart(conn, newTestCartTmpl(t))(w2, req2)
 
 	body := w2.Body.String()
-	if body != `<span id="cart-count">2</span>` {
-		t.Errorf("expected cart-count fragment showing 2, got %q", body)
+	if !strings.Contains(body, `id="cart-count" hx-swap-oob="true">2<`) {
+		t.Errorf("expected cart-count oob swap showing 2, got %q", body)
 	}
 }
 
@@ -79,7 +95,7 @@ func TestAddToCartProductNotFound(t *testing.T) {
 	req.SetPathValue("slug", "does-not-exist")
 	w := httptest.NewRecorder()
 
-	AddToCart(conn)(w, req)
+	AddToCart(conn, newTestCartTmpl(t))(w, req)
 
 	if w.Code != http.StatusNotFound {
 		t.Errorf("expected 404, got %d", w.Code)
