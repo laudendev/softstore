@@ -8,6 +8,7 @@ import (
 	"github.com/stripe/stripe-go/v82"
 
 	"softstore/internal/auth"
+	"softstore/internal/cartsession"
 	"softstore/internal/config"
 	"softstore/internal/db"
 	"softstore/internal/handlers"
@@ -21,6 +22,7 @@ func main() {
 	adminUsername := config.AdminUsername()
 	passwordHash := config.AdminPasswordHash()
 	auth.SecureCookies = config.SecureCookies()
+	cartsession.SecureCookies = config.SecureCookies()
 	baseURL := config.BaseURL()
 
         provider := stripeprovider.New()
@@ -53,6 +55,7 @@ func main() {
 	})
 	mux.HandleFunc("/", handlers.Shop(database, shopTmpl))
 	mux.HandleFunc("POST /checkout/{slug}", handlers.Checkout(database, provider, baseURL))
+	mux.HandleFunc("POST /cart/add/{slug}", handlers.AddToCart(database))
 	mux.HandleFunc("GET /thank-you", func(w http.ResponseWriter, r *http.Request) {
 		thankYouTmpl.ExecuteTemplate(w, "layout", handlers.ShopData{Title: "Thank You"})
 	})
