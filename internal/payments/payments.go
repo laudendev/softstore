@@ -18,14 +18,20 @@ type RegisteredItem struct {
 	ProviderItemID string
 }
 
-// PurchaseRequest describes a checkout the customer should complete.
-type PurchaseRequest struct {
+// LineItem is one entry in a checkout — a single sellable item and quantity.
+type LineItem struct {
 	ProviderItemID string
 	Quantity       int64
-	Metadata       map[string]string
-	SuccessURL     string
-	CancelURL      string
 }
+
+// PurchaseRequest describes a checkout the customer should complete.
+type PurchaseRequest struct {
+	LineItems  []LineItem
+	Metadata   map[string]string
+	SuccessURL string
+	CancelURL  string
+}
+
 
 // Purchase is what a provider returns after successfully starting a checkout.
 type Purchase struct {

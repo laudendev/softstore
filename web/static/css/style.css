@@ -50,6 +50,7 @@ header a {
 	border-radius: var(--radius);
 	box-shadow: 0 2px 10px rgba(17, 24, 39, 0.05);
 }
+
 header img.logo {
 	height: 76px;
 	width: auto;
@@ -164,6 +165,152 @@ h2 {
 	margin: 0;
 }
 
+/* Launcher CTA */
+.launcher-cta {
+	text-align: center;
+	padding: 2rem;
+	margin-bottom: 3rem;
+	background: var(--card-bg);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+}
+
+.launcher-cta h2 {
+	margin-bottom: 0.5rem;
+}
+
+.launcher-cta p {
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.9rem;
+	color: var(--ink-soft);
+	max-width: 34em;
+	margin: 0 auto 1.5rem;
+}
+
+.launcher-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	text-decoration: none;
+	font-family: 'Inter', sans-serif;
+	font-weight: 600;
+	font-size: 0.95rem;
+	border-radius: var(--radius-sm);
+	padding: 0.7rem 1.5rem;
+	background: var(--brand-blue);
+	color: #FFFFFF;
+	transition: filter 0.15s ease, transform 0.1s ease;
+}
+
+.launcher-button:hover {
+	filter: brightness(1.05);
+	transform: translateY(-1px);
+}
+
+.launcher-platform-note {
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.75rem;
+	color: var(--ink-soft);
+	margin: 0.75rem 0 0;
+	opacity: 0.8;
+    padding: 1rem;
+}
+
+/* Beta ribbon — standard "corner ribbon" pattern (150x150 container,
+   span at a 45deg diagonal, small border triangles filling the gap
+   at the two ends so it reads as a proper folded ribbon rather than a
+   bare rotated bar). This is the well-established approach used
+   across most sites that do this — positioning purely by trial-and-
+   error offsets doesn't hold up well, so following the standard
+   shape/measurements here instead of inventing new ones. */
+.beta-ribbon {
+	width: 150px;
+	height: 150px;
+	position: fixed;
+	top: -10px;
+	right: -10px;
+	z-index: 1000;
+	pointer-events: none;
+}
+
+.beta-ribbon::before,
+.beta-ribbon::after {
+	position: absolute;
+	z-index: -1;
+	content: '';
+	display: block;
+	border: 5px solid color-mix(in srgb, var(--brand-blue) 70%, black);
+	border-top-color: transparent;
+	border-right-color: transparent;
+}
+
+.beta-ribbon::before {
+	top: 0;
+	left: 0;
+}
+
+.beta-ribbon::after {
+	bottom: 0;
+	right: 0;
+}
+
+.beta-ribbon span {
+	position: absolute;
+	display: block;
+	width: 225px;
+	/* Centered on the 150x150 box (solved: left = box/2 - span_w/2,
+	   top = box/2 - span_h/2) rather than the original snippet's
+	   left:-25px/top:30px, which put the band noticeably off-center
+	   and made one corner triangle look like it covered more than
+	   the other. */
+	left: -37.5px;
+	top: 57.5px;
+	padding: 0.5rem 0;
+	background: var(--brand-blue);
+	box-shadow: 0 3px 8px rgba(17, 24, 39, 0.15);
+	color: #FFFFFF;
+	font-family: 'Inter', sans-serif;
+	font-weight: 600;
+	font-size: 0.8rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	text-align: center;
+	transform: rotate(45deg);
+	pointer-events: auto;
+}
+
+@media (max-width: 480px) {
+	.beta-ribbon {
+		width: 110px;
+		height: 110px;
+	}
+	.beta-ribbon span {
+		width: 160px;
+		left: -25px;
+		top: 41px;
+		font-size: 0.65rem;
+		padding: 0.4rem 0;
+	}
+}
+
+@media (prefers-color-scheme: dark) {
+	.beta-ribbon span {
+		color: #0A0A0F;
+		box-shadow: 0 0 8px rgba(0, 240, 255, 0.35);
+	}
+}
+
+@media (prefers-color-scheme: dark) {
+	.launcher-cta {
+		box-shadow: 0 0 0 1px var(--border);
+	}
+
+	.launcher-button {
+		color: #0A0A0F;
+		box-shadow: 0 0 6px rgba(0, 240, 255, 0.25);
+	}
+}
+
 /* Buttons */
 button, .btn {
 	font-family: 'Inter', sans-serif;
@@ -237,9 +384,6 @@ footer p {
     margin: 0;
 }
 
-
-
-
 @media (prefers-color-scheme: dark) {
 	:root {
 		--paper: #0A0A0F;
@@ -292,7 +436,6 @@ footer p {
 		}
 	}
 
-
 	@media (prefers-reduced-motion: reduce) {
 		.hero h1 .accent {
 			animation: none;
@@ -304,7 +447,6 @@ footer p {
 			--wave-tile: 210px;
 		}
 	}
-	
 
 	.product {
 		box-shadow: 0 0 0 1px var(--border);
@@ -327,3 +469,4 @@ footer p {
 	button:hover, .btn:hover {
 		box-shadow: 0 0 6px rgba(57, 255, 20, 0.25);
 	}
+}

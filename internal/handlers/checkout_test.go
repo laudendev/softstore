@@ -41,8 +41,14 @@ func TestCheckoutSuccess(t *testing.T) {
 		t.Fatalf("expected 1 StartPurchase call, got %d", len(mock.StartPurchaseCalls))
 	}
 	call := mock.StartPurchaseCalls[0]
-	if call.ProviderItemID != "price_abc123" {
-		t.Errorf("expected provider item id 'price_abc123', got %q", call.ProviderItemID)
+	if len(call.LineItems) != 1 {
+		t.Fatalf("expected 1 line item, got %d", len(call.LineItems))
+	}
+	if call.LineItems[0].ProviderItemID != "price_abc123" {
+		t.Errorf("expected provider item id 'price_abc123', got %q", call.LineItems[0].ProviderItemID)
+	}
+	if call.LineItems[0].Quantity != 1 {
+		t.Errorf("expected quantity 1, got %d", call.LineItems[0].Quantity)
 	}
 	if call.Metadata["product"] != "TWDG" {
 		t.Errorf("expected metadata product 'TWDG', got %q", call.Metadata["product"])

@@ -44,14 +44,17 @@ func (p *StripeProvider) RegisterItem(item payments.SellableItem) (payments.Regi
 }
 
 func (p *StripeProvider) StartPurchase(req payments.PurchaseRequest) (payments.Purchase, error) {
+	lineItems := make([]*stripe.CheckoutSessionLineItemParams, 0, len(req.LineItems))
+	for _, li := range req.LineItems {
+		lineItems = append(lineItems, &stripe.CheckoutSessionLineItemParams{
+			Price:    stripe.String(li.ProviderItemID),
+			Quantity: stripe.Int64(li.Quantity),
+		})
+	}
+
 	params := &stripe.CheckoutSessionParams{
-		Mode: stripe.String(string(stripe.CheckoutSessionModePayment)),
-		LineItems: []*stripe.CheckoutSessionLineItemParams{
-			{
-				Price:    stripe.String(req.ProviderItemID),
-				Quantity: stripe.Int64(req.Quantity),
-			},
-		},
+		Mode:       stripe.String(string(stripe.CheckoutSessionModePayment)),
+		LineItems:  lineItems,
 		Metadata:   req.Metadata,
 		SuccessURL: stripe.String(req.SuccessURL),
 		CancelURL:  stripe.String(req.CancelURL),

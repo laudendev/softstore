@@ -26,8 +26,9 @@ func Checkout(conn *sql.DB, provider payments.Provider, baseURL string) http.Han
 		}
 
 		purchase, err := provider.StartPurchase(payments.PurchaseRequest{
-			ProviderItemID: product.StripePriceID,
-			Quantity:       1,
+			LineItems: []payments.LineItem{
+				{ProviderItemID: product.StripePriceID, Quantity: 1},
+			},
 			Metadata: map[string]string{
 				"product": product.ProductCode,
 				"seats":   "1",
@@ -35,6 +36,7 @@ func Checkout(conn *sql.DB, provider payments.Provider, baseURL string) http.Han
 			SuccessURL: baseURL + "/thank-you",
 			CancelURL:  baseURL + "/",
 		})
+
 		if err != nil {
 			log.Println("start purchase:", err)
 			http.Error(w, "checkout error", http.StatusInternalServerError)
