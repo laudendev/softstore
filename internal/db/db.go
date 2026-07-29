@@ -30,9 +30,24 @@ func migrate(conn *sql.DB) error {
 		price_cents INTEGER NOT NULL,
 		stripe_price_id TEXT NOT NULL,
 		product_code TEXT NOT NULL,
-		stub_url TEXT NOT NULL DEFAULT '',
+        stub_url TEXT NOT NULL DEFAULT '',
 		tax_code TEXT NOT NULL,
 		created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+	);
+
+	CREATE TABLE IF NOT EXISTS carts (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		token TEXT NOT NULL UNIQUE,
+		created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+	);
+
+	CREATE TABLE IF NOT EXISTS cart_items (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		cart_id INTEGER NOT NULL REFERENCES carts(id) ON DELETE CASCADE,
+		product_id INTEGER NOT NULL REFERENCES products(id),
+		quantity INTEGER NOT NULL DEFAULT 1,
+		created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+		UNIQUE(cart_id, product_id)
 	);`
 	_, err := conn.Exec(schema)
 	return err

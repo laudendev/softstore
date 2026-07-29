@@ -19,7 +19,10 @@ type Product struct {
 	CreatedAt       time.Time
 }
 
-
 func (p Product) PriceDollars() string {
-	return fmt.Sprintf("%.2f", float64(p.PriceCents)/100)
+	return formatCents(p.PriceCents)
+}
+
+func formatCents(cents int64) string {
+	return fmt.Sprintf("%.2f", float64(cents)/100)
 }
