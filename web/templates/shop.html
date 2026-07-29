@@ -23,10 +23,19 @@
 				<div class="product-body">
 					<h3>{{.Name}}</h3>
 					<p class="description">{{.Description}}</p>
-					<p class="price">${{.PriceDollars}}</p>
-					<form method="POST" action="/checkout/{{.Slug}}">
-						<button type="submit">Buy</button>
-					</form>
+                    <p class="price">${{.PriceDollars}}</p>
+					<div class="product-actions">
+						<form method="POST" action="/checkout/{{.Slug}}">
+							<button type="submit" class="buy-button">Buy Now</button>
+						</form>
+						<button
+							type="button"
+							class="add-to-cart-button"
+							hx-post="/cart/add/{{.Slug}}"
+							hx-swap="none"
+							hx-on::after-request="document.getElementById('cart-count').outerHTML = event.detail.xhr.response"
+						>+</button>
+					</div>
 				</div>
 			</article>
 			{{end}}

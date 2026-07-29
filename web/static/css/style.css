@@ -165,6 +165,64 @@ h2 {
 	margin: 0;
 }
 
+.product-actions {
+	display: flex;
+	align-items: stretch;
+	gap: 0;
+}
+
+.buy-button {
+	background: var(--go-green);
+	color: var(--paper);
+	border: none;
+	border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+	padding: 0.75rem 1.5rem;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.add-to-cart-button {
+	background: var(--brand-blue);
+	color: var(--paper);
+	border: none;
+	border-left: 1px solid var(--paper);
+	border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+	padding: 0.75rem 1rem;
+	font-weight: 700;
+	font-size: 1.1rem;
+	cursor: pointer;
+}
+
+.buy-button:hover,
+.add-to-cart-button:hover {
+	filter: brightness(1.1);
+}
+
+.cart-link {
+	position: relative;
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+	color: var(--ink);
+}
+
+.cart-count-badge {
+	position: absolute;
+	top: -6px;
+	right: -6px;
+	background: var(--brand-blue);
+	color: var(--paper);
+	font-size: 0.7rem;
+	font-weight: 700;
+	min-width: 18px;
+	height: 18px;
+	border-radius: 999px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0 4px;
+}
+
 /* Launcher CTA */
 .launcher-cta {
 	text-align: center;
@@ -223,82 +281,7 @@ h2 {
    across most sites that do this — positioning purely by trial-and-
    error offsets doesn't hold up well, so following the standard
    shape/measurements here instead of inventing new ones. */
-.beta-ribbon {
-	width: 150px;
-	height: 150px;
-	position: fixed;
-	top: -10px;
-	right: -10px;
-	z-index: 1000;
-	pointer-events: none;
-}
 
-.beta-ribbon::before,
-.beta-ribbon::after {
-	position: absolute;
-	z-index: -1;
-	content: '';
-	display: block;
-	border: 5px solid color-mix(in srgb, var(--brand-blue) 70%, black);
-	border-top-color: transparent;
-	border-right-color: transparent;
-}
-
-.beta-ribbon::before {
-	top: 0;
-	left: 0;
-}
-
-.beta-ribbon::after {
-	bottom: 0;
-	right: 0;
-}
-
-.beta-ribbon span {
-	position: absolute;
-	display: block;
-	width: 225px;
-	/* Centered on the 150x150 box (solved: left = box/2 - span_w/2,
-	   top = box/2 - span_h/2) rather than the original snippet's
-	   left:-25px/top:30px, which put the band noticeably off-center
-	   and made one corner triangle look like it covered more than
-	   the other. */
-	left: -37.5px;
-	top: 57.5px;
-	padding: 0.5rem 0;
-	background: var(--brand-blue);
-	box-shadow: 0 3px 8px rgba(17, 24, 39, 0.15);
-	color: #FFFFFF;
-	font-family: 'Inter', sans-serif;
-	font-weight: 600;
-	font-size: 0.8rem;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
-	text-align: center;
-	transform: rotate(45deg);
-	pointer-events: auto;
-}
-
-@media (max-width: 480px) {
-	.beta-ribbon {
-		width: 110px;
-		height: 110px;
-	}
-	.beta-ribbon span {
-		width: 160px;
-		left: -25px;
-		top: 41px;
-		font-size: 0.65rem;
-		padding: 0.4rem 0;
-	}
-}
-
-@media (prefers-color-scheme: dark) {
-	.beta-ribbon span {
-		color: #0A0A0F;
-		box-shadow: 0 0 8px rgba(0, 240, 255, 0.35);
-	}
-}
 
 @media (prefers-color-scheme: dark) {
 	.launcher-cta {
@@ -469,4 +452,24 @@ footer p {
 	button:hover, .btn:hover {
 		box-shadow: 0 0 6px rgba(57, 255, 20, 0.25);
 	}
+}
+
+.beta-badge {
+	position: absolute;
+	top: 0.5rem;
+	left: 50%;
+	transform: translateX(-50%);
+	max-width: 90%;
+	width: fit-content;
+	padding: 0.5rem 1.25rem;
+	background: var(--brand-blue-soft);
+	color: var(--brand-blue);
+	border-radius: 999px;
+	font-family: 'Inter', sans-serif;
+	font-weight: 600;
+	font-size: 0.7rem;
+	letter-spacing: 0.04em;
+	text-transform: none;
+	text-align: center;
+	z-index: 10;
 }
