@@ -131,3 +131,29 @@ func TestGetProductBySlugNotFound(t *testing.T) {
 		t.Errorf("expected sql.ErrNoRows for missing slug, got %v", err)
 	}
 }
+
+func TestGetProductByStripePriceID(t *testing.T) {
+	conn := newTestDB(t)
+
+	p := &models.Product{Name: "Priced", Slug: "priced", PriceCents: 700, StripePriceID: "price_lookup_me", ProductCode: "PRCD", TaxCode: "txcd_10202000"}
+	if err := CreateProduct(conn, p); err != nil {
+		t.Fatalf("CreateProduct failed: %v", err)
+	}
+
+	found, err := GetProductByStripePriceID(conn, "price_lookup_me")
+	if err != nil {
+		t.Fatalf("GetProductByStripePriceID failed: %v", err)
+	}
+	if found.ProductCode != "PRCD" {
+		t.Errorf("expected product code 'PRCD', got %q", found.ProductCode)
+	}
+}
+
+func TestGetProductByStripePriceIDNotFound(t *testing.T) {
+	conn := newTestDB(t)
+
+	_, err := GetProductByStripePriceID(conn, "price_does_not_exist")
+	if !errors.Is(err, sql.ErrNoRows) {
+		t.Errorf("expected sql.ErrNoRows for missing price id, got %v", err)
+	}
+}

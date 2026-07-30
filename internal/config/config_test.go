@@ -74,3 +74,12 @@ func TestSessionSecretReturnsBytes(t *testing.T) {
 		t.Errorf("expected 'my-secret-value', got %q", string(got))
 	}
 }
+
+
+func TestInternalAPISecretReturnsValue(t *testing.T) {
+	t.Setenv("INTERNAL_API_SECRET", "shared-secret-abc")
+	got := InternalAPISecret()
+	if got != "shared-secret-abc" {
+		t.Errorf("expected 'shared-secret-abc', got %q", got)
+	}
+}

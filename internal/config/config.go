@@ -36,3 +36,10 @@ func SecureCookies() bool {
 func BaseURL() string {
 	return requireEnv("BASE_URL")
 }
+
+// InternalAPISecret authenticates service-to-service requests (e.g. from
+// Quartermaster) to softstore's /internal/* endpoints. Not a user-facing
+// credential — a static shared secret checked via constant-time compare.
+func InternalAPISecret() string {
+	return requireEnv("INTERNAL_API_SECRET")
+}

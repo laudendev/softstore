@@ -36,6 +36,22 @@ func GetProductBySlug(conn *sql.DB, slug string) (*models.Product, error) {
 	return &p, nil
 }
 
+// GetProductByStripePriceID looks up a product by its Stripe Price ID,
+// used by Quartermaster to resolve a product code from a checkout
+// session's line items.
+func GetProductByStripePriceID(conn *sql.DB, priceID string) (*models.Product, error) {
+	var p models.Product
+	err := conn.QueryRow(
+		`SELECT id, name, slug, description, price_cents, stripe_price_id, product_code, stub_url, tax_code, created_at
+		 FROM products WHERE stripe_price_id = ?`,
+		priceID,
+	).Scan(&p.ID, &p.Name, &p.Slug, &p.Description, &p.PriceCents, &p.StripePriceID, &p.ProductCode, &p.StubURL, &p.TaxCode, &p.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
+	return &p, nil
+}
+
 func ListProducts(conn *sql.DB) ([]models.Product, error) {
 	rows, err := conn.Query(
 		`SELECT id, name, slug, description, price_cents, stripe_price_id, product_code, stub_url, tax_code, created_at
