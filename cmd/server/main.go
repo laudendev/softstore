@@ -59,6 +59,7 @@ func main() {
 	mux.HandleFunc("POST /cart/add/{slug}", handlers.AddToCart(database, cartTmpl))
 	mux.HandleFunc("GET /cart", handlers.GetCart(database, cartTmpl))
 	mux.HandleFunc("POST /cart/remove/{slug}", handlers.RemoveFromCart(database, cartTmpl))
+	mux.HandleFunc("POST /checkout", handlers.CartCheckout(database, provider, baseURL))
 	mux.HandleFunc("GET /thank-you", func(w http.ResponseWriter, r *http.Request) {
 		thankYouTmpl.ExecuteTemplate(w, "layout", handlers.ShopData{Title: "Thank You"})
 	})

@@ -5,7 +5,9 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"strings"
 
+	"softstore/internal/cartsession"
 	"softstore/internal/db"
 	"softstore/internal/payments"
 )
@@ -39,6 +41,53 @@ func Checkout(conn *sql.DB, provider payments.Provider, baseURL string) http.Han
 
 		if err != nil {
 			log.Println("start purchase:", err)
+			http.Error(w, "checkout error", http.StatusInternalServerError)
+			return
+		}
+
+		http.Redirect(w, r, purchase.RedirectURL, http.StatusSeeOther)
+	}
+}
+
+// CartCheckout handles POST /checkout. It builds a single Stripe session
+// from every item in the caller's cart and redirects to it.
+func CartCheckout(conn *sql.DB, provider payments.Provider, baseURL string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		token := cartsession.Token(w, r)
+
+		cart, err := db.GetCartWithItems(conn, token)
+		if err != nil {
+			log.Println("cart checkout, get cart:", err)
+			http.Error(w, "internal error", http.StatusInternalServerError)
+			return
+		}
+
+		if len(cart.Items) == 0 {
+			http.Error(w, "cart is empty", http.StatusBadRequest)
+			return
+		}
+
+		lineItems := make([]payments.LineItem, 0, len(cart.Items))
+		productCodes := make([]string, 0, len(cart.Items))
+		for _, item := range cart.Items {
+			lineItems = append(lineItems, payments.LineItem{
+				ProviderItemID: item.Product.StripePriceID,
+				Quantity:       item.Quantity,
+			})
+			productCodes = append(productCodes, item.Product.ProductCode)
+		}
+
+		purchase, err := provider.StartPurchase(payments.PurchaseRequest{
+			LineItems: lineItems,
+			Metadata: map[string]string{
+				"cart_token":    token,
+				"product_codes": strings.Join(productCodes, ","),
+			},
+			SuccessURL: baseURL + "/thank-you",
+			CancelURL:  baseURL + "/",
+		})
+		if err != nil {
+			log.Println("cart checkout, start purchase:", err)
 			http.Error(w, "checkout error", http.StatusInternalServerError)
 			return
 		}

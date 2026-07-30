@@ -104,3 +104,73 @@ func TestCheckoutProviderError(t *testing.T) {
 		t.Errorf("expected 500, got %d", w.Code)
 	}
 }
+
+func TestCartCheckoutSuccess(t *testing.T) {
+	conn := newTestDBWithSchema(t)
+	mock := mockprovider.New()
+
+	p1 := &models.Product{
+		Name: "Widget A", Slug: "widget-a", PriceCents: 1000,
+		StripePriceID: "price_a", ProductCode: "WGTA", TaxCode: "txcd_10202000",
+	}
+	p2 := &models.Product{
+		Name: "Widget B", Slug: "widget-b", PriceCents: 2000,
+		StripePriceID: "price_b", ProductCode: "WGTB", TaxCode: "txcd_10202000",
+	}
+	if err := db.CreateProduct(conn, p1); err != nil {
+		t.Fatalf("seed p1: %v", err)
+	}
+	if err := db.CreateProduct(conn, p2); err != nil {
+		t.Fatalf("seed p2: %v", err)
+	}
+
+	cart, err := db.GetOrCreateCart(conn, "test-token")
+	if err != nil {
+		t.Fatalf("get or create cart: %v", err)
+	}
+	if err := db.AddCartItem(conn, cart.ID, p1.ID, 1); err != nil {
+		t.Fatalf("add p1 to cart: %v", err)
+	}
+	if err := db.AddCartItem(conn, cart.ID, p2.ID, 2); err != nil {
+		t.Fatalf("add p2 to cart: %v", err)
+	}
+
+	req := httptest.NewRequest(http.MethodPost, "/checkout", nil)
+	req.AddCookie(&http.Cookie{Name: "softstore_cart", Value: "test-token"})
+	w := httptest.NewRecorder()
+
+	CartCheckout(conn, mock, "https://store.example.com")(w, req)
+
+	if w.Code != http.StatusSeeOther {
+		t.Fatalf("expected redirect status %d, got %d", http.StatusSeeOther, w.Code)
+	}
+
+	if len(mock.StartPurchaseCalls) != 1 {
+		t.Fatalf("expected 1 StartPurchase call, got %d", len(mock.StartPurchaseCalls))
+	}
+	call := mock.StartPurchaseCalls[0]
+	if len(call.LineItems) != 2 {
+		t.Fatalf("expected 2 line items, got %d", len(call.LineItems))
+	}
+	if call.Metadata["cart_token"] != "test-token" {
+		t.Errorf("expected cart_token metadata 'test-token', got %q", call.Metadata["cart_token"])
+	}
+}
+
+func TestCartCheckoutEmptyCart(t *testing.T) {
+	conn := newTestDBWithSchema(t)
+	mock := mockprovider.New()
+
+	req := httptest.NewRequest(http.MethodPost, "/checkout", nil)
+	req.AddCookie(&http.Cookie{Name: "softstore_cart", Value: "empty-token"})
+	w := httptest.NewRecorder()
+
+	CartCheckout(conn, mock, "https://store.example.com")(w, req)
+
+	if w.Code != http.StatusBadRequest {
+		t.Errorf("expected status %d for empty cart, got %d", http.StatusBadRequest, w.Code)
+	}
+	if len(mock.StartPurchaseCalls) != 0 {
+		t.Errorf("expected no StartPurchase call for empty cart, got %d", len(mock.StartPurchaseCalls))
+	}
+}
