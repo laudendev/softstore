@@ -2,7 +2,7 @@
 {{if .Ready}}
 <div class="receipt-ready">
 	<img src="/static/img/logo-lava-icon.svg" alt="" class="receipt-ready-icon" width="60" height="60">
-	<h3>Your license key{{if gt (len .Items) 1}}s{{end}} — ready!</h3>
+	<h3>Your license key{{if gt (len .Items) 1}}s{{end}} are ready!</h3>
 	<ul class="receipt-item-list">
 		{{range .Items}}
 		<li class="receipt-item">
@@ -20,6 +20,11 @@
 		{{if .TotalLine}}<div class="receipt-totals-row receipt-totals-final"><span>Total paid</span><span>{{.TotalLine}}</span></div>{{end}}
 	</div>
 	{{end}}
+    <div class="receipt-next-steps">
+		<p class="receipt-next-steps-title">What's next</p>
+		<p>Grab the launcher, paste in your license key, and you're running — no account, no install wizard, no phone-home after the first run.</p>
+		<a href="https://quartermaster.lauden.dev/launcher" download class="launcher-button">Download Launcher</a>
+	</div>
 	<p class="receipt-note">A copy of this receipt, including these keys, has also been emailed to you.</p>
 </div>
 {{else}}

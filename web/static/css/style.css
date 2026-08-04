@@ -765,3 +765,23 @@ footer p {
 		animation: none;
 	}
 }
+
+.receipt-next-steps {
+	width: 100%;
+	text-align: center;
+	padding: 1.25rem 0 0.5rem;
+	border-top: 1px solid var(--border);
+	margin-top: 0.5rem;
+}
+
+.receipt-next-steps-title {
+	font-weight: 600;
+	color: var(--ink);
+	margin: 0 0 0.4rem;
+}
+
+.receipt-next-steps p:not(.receipt-next-steps-title) {
+	color: var(--ink-soft);
+	font-size: 0.9rem;
+	margin: 0 0 1rem;
+}
