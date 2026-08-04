@@ -30,8 +30,9 @@ func AdminNew(tmpl *template.Template) http.HandlerFunc {
 func AdminLoginForm(tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		data := struct {
-			Title string
-			Error string
+			Title     string
+			Error     string
+			CartCount int64
 		}{Title: "Admin Login"}
 		if err := tmpl.ExecuteTemplate(w, "layout", data); err != nil {
 			log.Println("render admin_login:", err)
@@ -54,13 +55,14 @@ func AdminLoginSubmit(tmpl *template.Template, username, passwordHash string, se
 
 		if !validUsername || !validPassword {
 			data := struct {
-				Title string
-				Error string
+				Title     string
+				Error     string
+				CartCount int64
 			}{Title: "Admin Login", Error: "Incorrect username or password."}
 			tmpl.ExecuteTemplate(w, "layout", data)
 			return
 		}
-
+		
 		auth.SetSessionCookie(w, sessionSecret)
 		http.Redirect(w, r, "/admin/products/new", http.StatusSeeOther)
 	}

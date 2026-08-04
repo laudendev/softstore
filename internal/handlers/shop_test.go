@@ -87,3 +87,42 @@ func TestShopWithProducts(t *testing.T) {
 		t.Error("expected formatted price in response body")
 	}
 }
+
+func TestCartCountForRequestNoCookie(t *testing.T) {
+	conn := newTestDBWithSchema(t)
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	count := cartCountForRequest(conn, req)
+
+	if count != 0 {
+		t.Errorf("expected 0 for request with no cart cookie, got %d", count)
+	}
+}
+
+func TestCartCountForRequestExistingCart(t *testing.T) {
+	conn := newTestDBWithSchema(t)
+
+	p := &models.Product{
+		Name: "Test Widget", Slug: "test-widget", PriceCents: 1999,
+		StripePriceID: "price_abc123", ProductCode: "TWDG", TaxCode: "txcd_10202000",
+	}
+	if err := db.CreateProduct(conn, p); err != nil {
+		t.Fatalf("failed to seed product: %v", err)
+	}
+
+	cart, err := db.GetOrCreateCart(conn, "existing-token")
+	if err != nil {
+		t.Fatalf("get or create cart: %v", err)
+	}
+	if err := db.AddCartItem(conn, cart.ID, p.ID, 3); err != nil {
+		t.Fatalf("add cart item: %v", err)
+	}
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req.AddCookie(&http.Cookie{Name: "softstore_cart", Value: "existing-token"})
+	count := cartCountForRequest(conn, req)
+
+	if count != 3 {
+		t.Errorf("expected 3, got %d", count)
+	}
+}

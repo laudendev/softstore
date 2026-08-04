@@ -63,7 +63,7 @@ func main() {
 	mux.HandleFunc("GET /internal/products/by-price/{price_id}", handlers.RequireInternalSecret(config.InternalAPISecret(), handlers.GetProductByPrice(database)))
 	mux.HandleFunc("POST /internal/cart/clear", handlers.RequireInternalSecret(config.InternalAPISecret(), handlers.ClearCart(database)))
 	mux.HandleFunc("GET /thank-you", func(w http.ResponseWriter, r *http.Request) {
-		thankYouTmpl.ExecuteTemplate(w, "layout", handlers.ShopData{Title: "Thank You"})
+		thankYouTmpl.ExecuteTemplate(w, "layout", handlers.ShopData{Title: "Thank You", CartCount: 0})
 	})
 
 	mux.HandleFunc("GET /admin/login", handlers.AdminLoginForm(loginTmpl))
