@@ -785,3 +785,9 @@ footer p {
 	font-size: 0.9rem;
 	margin: 0 0 1rem;
 }
+
+.thank-you-check {
+	color: var(--go-green);
+	margin: 0 auto 0.75rem;
+	display: block;
+}
