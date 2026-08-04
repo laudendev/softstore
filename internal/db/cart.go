@@ -95,3 +95,14 @@ func RemoveCartItem(conn *sql.DB, cartID, productID int64) error {
 	)
 	return err
 }
+
+// ClearCart deletes all items from a cart, identified by its session
+// token. Used after a successful purchase to empty the cart so a
+// completed order doesn't linger and reappear on the next visit.
+func ClearCart(conn *sql.DB, token string) error {
+	_, err := conn.Exec(
+		`DELETE FROM cart_items WHERE cart_id = (SELECT id FROM carts WHERE token = ?)`,
+		token,
+	)
+	return err
+}

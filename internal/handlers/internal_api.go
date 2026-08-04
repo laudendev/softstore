@@ -44,3 +44,30 @@ func GetProductByPrice(conn *sql.DB) http.HandlerFunc {
 		})
 	}
 }
+
+// clearCartRequest is the JSON body for POST /internal/cart/clear.
+type clearCartRequest struct {
+	CartToken string `json:"cart_token"`
+}
+
+// ClearCart handles POST /internal/cart/clear. It's a service-to-service
+// endpoint (guarded by RequireInternalSecret) called by Quartermaster
+// after a purchase has been successfully fulfilled, so a completed
+// cart doesn't linger and reappear on the buyer's next visit.
+func ClearCart(conn *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var body clearCartRequest
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil || body.CartToken == "" {
+			http.Error(w, "bad request", http.StatusBadRequest)
+			return
+		}
+
+		if err := db.ClearCart(conn, body.CartToken); err != nil {
+			log.Println("internal clear cart:", err)
+			http.Error(w, "internal error", http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}

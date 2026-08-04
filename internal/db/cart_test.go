@@ -127,3 +127,37 @@ func TestRemoveCartItem(t *testing.T) {
 		t.Errorf("expected 0 items after removal, got %d", len(got.Items))
 	}
 }
+
+func TestClearCart(t *testing.T) {
+	conn := newTestDB(t)
+	p1 := seedProduct(t, conn, "item-one", 500)
+	p2 := seedProduct(t, conn, "item-two", 700)
+	cart, _ := GetOrCreateCart(conn, "token-clear")
+
+	if err := AddCartItem(conn, cart.ID, p1.ID, 1); err != nil {
+		t.Fatalf("add p1: %v", err)
+	}
+	if err := AddCartItem(conn, cart.ID, p2.ID, 2); err != nil {
+		t.Fatalf("add p2: %v", err)
+	}
+
+	if err := ClearCart(conn, "token-clear"); err != nil {
+		t.Fatalf("ClearCart failed: %v", err)
+	}
+
+	got, err := GetCartWithItems(conn, "token-clear")
+	if err != nil {
+		t.Fatalf("GetCartWithItems failed: %v", err)
+	}
+	if len(got.Items) != 0 {
+		t.Errorf("expected 0 items after clear, got %d", len(got.Items))
+	}
+}
+
+func TestClearCartNonexistentTokenNoError(t *testing.T) {
+	conn := newTestDB(t)
+
+	if err := ClearCart(conn, "no-such-token"); err != nil {
+		t.Errorf("expected no error clearing a nonexistent cart, got: %v", err)
+	}
+}
