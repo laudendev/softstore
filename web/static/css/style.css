@@ -704,6 +704,41 @@ footer p {
 	text-align: left;
 }
 
+.receipt-item-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+}
+
+.receipt-item-price {
+	font-family: 'JetBrains Mono', monospace;
+	color: var(--brand-blue);
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.receipt-totals {
+	width: 100%;
+	border-top: 1px solid var(--border);
+	padding-top: 0.75rem;
+	margin-top: 0.25rem;
+}
+
+.receipt-totals-row {
+	display: flex;
+	justify-content: space-between;
+	padding: 0.25rem 0;
+	color: var(--ink-soft);
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.9rem;
+}
+
+.receipt-totals-final {
+	color: var(--ink);
+	font-weight: 700;
+}
+
 .receipt-item-product {
 	font-weight: 600;
 	color: var(--ink);

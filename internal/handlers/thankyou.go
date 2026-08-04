@@ -36,8 +36,10 @@ func ThankYou(conn *sql.DB, tmpl *template.Template) http.HandlerFunc {
 // SessionStatusData is the data passed to the session-status fragment
 // template, rendered on each poll.
 type SessionStatusData struct {
-	Ready bool
-	Items []quartermaster.SessionItem
+	Ready     bool
+	Items     []quartermaster.ReceiptItem
+	TaxLine   string
+	TotalLine string
 }
 
 // SessionStatus handles GET /session-status/{session_id}. It polls
@@ -62,10 +64,12 @@ func SessionStatus(client *quartermaster.Client, tmpl *template.Template) http.H
 		}
 
 		data := SessionStatusData{
-			Ready: status.Ready,
-			Items: status.Items,
+			Ready:     status.Ready,
+			Items:     status.Items,
+			TaxLine:   status.TaxLine,
+			TotalLine: status.TotalLine,
 		}
-
+		
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		if err := tmpl.ExecuteTemplate(w, "session-status-fragment", data); err != nil {
 			log.Println("render session status fragment:", err)

@@ -6,20 +6,22 @@ import (
 	"net/http"
 )
 
-// SessionItem is one purchased item within a checkout session, as
-// reported by Quartermaster.
-type SessionItem struct {
-	Product    string `json:"Product"`
-	PriceID    string `json:"PriceID"`
-	LicenseKey string `json:"LicenseKey"`
+// ReceiptItem is one purchased product's row in a checkout session's
+// receipt, as reported by Quartermaster once fulfillment is complete.
+type ReceiptItem struct {
+	ProductName string `json:"product_name"`
+	AmountLine  string `json:"amount_line"`
+	LicenseKey  string `json:"license_key"`
 }
 
 // SessionStatus reports whether a checkout session's license
-// fulfillment has completed, and its items if so.
+// fulfillment has completed, and its receipt detail if so.
 type SessionStatus struct {
-	Found bool          `json:"found"`
-	Ready bool          `json:"ready"`
-	Items []SessionItem `json:"items"`
+	Found     bool          `json:"found"`
+	Ready     bool          `json:"ready"`
+	Items     []ReceiptItem `json:"items"`
+	TaxLine   string        `json:"tax_line"`
+	TotalLine string        `json:"total_line"`
 }
 
 // Client calls Quartermaster's internal API over the WireGuard tunnel.
