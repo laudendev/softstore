@@ -32,11 +32,12 @@ func (p *StripeProvider) RegisterItem(item payments.SellableItem) (payments.Regi
 	}
 
 	stripePrice, err := price.New(&stripe.PriceParams{
-		Product:    stripe.String(stripeProd.ID),
-		UnitAmount: stripe.Int64(item.PriceCents),
-		Currency:   stripe.String(currency),
+		Product:     stripe.String(stripeProd.ID),
+		UnitAmount:  stripe.Int64(item.PriceCents),
+		Currency:    stripe.String(currency),
+		TaxBehavior: stripe.String(string(stripe.PriceTaxBehaviorExclusive)),
 	})
-	if err != nil {
+		if err != nil {
 		return payments.RegisteredItem{}, err
 	}
 
@@ -53,11 +54,15 @@ func (p *StripeProvider) StartPurchase(req payments.PurchaseRequest) (payments.P
 	}
 
 	params := &stripe.CheckoutSessionParams{
-		Mode:       stripe.String(string(stripe.CheckoutSessionModePayment)),
-		LineItems:  lineItems,
-		Metadata:   req.Metadata,
-		SuccessURL: stripe.String(req.SuccessURL),
-		CancelURL:  stripe.String(req.CancelURL),
+		Mode:      stripe.String(string(stripe.CheckoutSessionModePayment)),
+		LineItems: lineItems,
+		AutomaticTax: &stripe.CheckoutSessionAutomaticTaxParams{
+			Enabled: stripe.Bool(true),
+		},
+		BillingAddressCollection: stripe.String(string(stripe.CheckoutSessionBillingAddressCollectionRequired)),
+		Metadata:                 req.Metadata,
+		SuccessURL:               stripe.String(req.SuccessURL),
+		CancelURL:                stripe.String(req.CancelURL),
 	}
 
 	s, err := session.New(params)
