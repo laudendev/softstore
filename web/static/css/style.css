@@ -209,9 +209,10 @@ h2 {
 
 .cart-link {
 	position: sticky;
+	top: 1rem;
+	z-index: 20;
 	display: inline-flex;
 	align-items: center;
-    color: var(--ink);
 	background: var(--card-bg);
 	border: none;
 	cursor: pointer;
