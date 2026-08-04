@@ -83,3 +83,11 @@ func TestInternalAPISecretReturnsValue(t *testing.T) {
 		t.Errorf("expected 'shared-secret-abc', got %q", got)
 	}
 }
+
+func TestQuartermasterInternalURLReturnsValue(t *testing.T) {
+	t.Setenv("QUARTERMASTER_INTERNAL_URL", "http://10.20.0.2:6774")
+	got := QuartermasterInternalURL()
+	if got != "http://10.20.0.2:6774" {
+		t.Errorf("expected 'http://10.20.0.2:6774', got %q", got)
+	}
+}

@@ -35,7 +35,7 @@ func Checkout(conn *sql.DB, provider payments.Provider, baseURL string) http.Han
 				"product": product.ProductCode,
 				"seats":   "1",
 			},
-			SuccessURL: baseURL + "/thank-you",
+			SuccessURL: baseURL + "/thank-you?session_id={CHECKOUT_SESSION_ID}",
 			CancelURL:  baseURL + "/",
 		})
 
@@ -83,7 +83,7 @@ func CartCheckout(conn *sql.DB, provider payments.Provider, baseURL string) http
 				"cart_token":    token,
 				"product_codes": strings.Join(productCodes, ","),
 			},
-			SuccessURL: baseURL + "/thank-you",
+			SuccessURL: baseURL + "/thank-you?session_id={CHECKOUT_SESSION_ID}",
 			CancelURL:  baseURL + "/",
 		})
 		if err != nil {

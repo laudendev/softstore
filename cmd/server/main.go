@@ -10,6 +10,7 @@ import (
 	"softstore/internal/auth"
 	"softstore/internal/cartsession"
 	"softstore/internal/config"
+	"softstore/internal/quartermaster"
 	"softstore/internal/db"
 	"softstore/internal/handlers"
 	"softstore/internal/payments/stripeprovider"
@@ -47,6 +48,7 @@ func main() {
 	thankYouTmpl := template.Must(template.ParseFS(web.Templates,
 		"templates/layout.html",
 		"templates/thank_you.html",
+		"templates/session_status_fragment.html",
 	))
 	cartTmpl := template.Must(template.ParseFS(web.Templates, "templates/cart_drawer.html",))
 
@@ -62,9 +64,14 @@ func main() {
 	mux.HandleFunc("POST /checkout", handlers.CartCheckout(database, provider, baseURL))
 	mux.HandleFunc("GET /internal/products/by-price/{price_id}", handlers.RequireInternalSecret(config.InternalAPISecret(), handlers.GetProductByPrice(database)))
 	mux.HandleFunc("POST /internal/cart/clear", handlers.RequireInternalSecret(config.InternalAPISecret(), handlers.ClearCart(database)))
-	mux.HandleFunc("GET /thank-you", func(w http.ResponseWriter, r *http.Request) {
-		thankYouTmpl.ExecuteTemplate(w, "layout", handlers.ShopData{Title: "Thank You", CartCount: 0})
-	})
+
+	quartermasterClient := &quartermaster.Client{
+		BaseURL:        config.QuartermasterInternalURL(),
+		InternalSecret: config.InternalAPISecret(),
+	}
+
+	mux.HandleFunc("GET /thank-you", handlers.ThankYou(database, thankYouTmpl))
+	mux.HandleFunc("GET /session-status/{session_id}", handlers.SessionStatus(quartermasterClient, thankYouTmpl))
 
 	mux.HandleFunc("GET /admin/login", handlers.AdminLoginForm(loginTmpl))
 	mux.HandleFunc("POST /admin/login", handlers.AdminLoginSubmit(loginTmpl, adminUsername, passwordHash, sessionSecret))

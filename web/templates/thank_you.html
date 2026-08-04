@@ -1,6 +1,25 @@
 {{define "content"}}
-<section>
+<section class="thank-you">
 	<h2>Thank you!</h2>
+	{{if .SessionID}}
+	<div
+		id="session-status"
+		hx-get="/session-status/{{.SessionID}}"
+		hx-trigger="load, every 2s"
+		hx-swap="innerHTML"
+	>
+		{{template "session-status-loading" .}}
+	</div>
+	{{else}}
 	<p>Check your email for your license key.</p>
+	{{end}}
 </section>
+{{end}}
+
+{{define "session-status-loading"}}
+<div class="receipt-loading">
+	<img src="/static/img/logo-lava-icon.svg" alt="" class="receipt-loading-icon" width="90" height="90">
+    <p class="receipt-loading-text">Signing your license key…</p>
+	<p class="receipt-loading-subtext">This usually takes just a few seconds. Hang tight — your receipt and license key will appear here, and we're also emailing a copy.</p>
+</div>
 {{end}}

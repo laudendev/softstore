@@ -56,7 +56,7 @@ func TestCheckoutSuccess(t *testing.T) {
 	if call.Metadata["seats"] != "1" {
 		t.Errorf("expected metadata seats '1', got %q", call.Metadata["seats"])
 	}
-	if call.SuccessURL != "https://store.example.com/thank-you" {
+	if call.SuccessURL != "https://store.example.com/thank-you?session_id={CHECKOUT_SESSION_ID}" {
 		t.Errorf("expected success URL to use provided base URL, got %q", call.SuccessURL)
 	}
 }

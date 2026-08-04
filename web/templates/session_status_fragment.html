@@ -1,0 +1,19 @@
+{{define "session-status-fragment"}}
+{{if .Ready}}
+<div class="receipt-ready">
+	<img src="/static/img/logo-lava-icon.svg" alt="" class="receipt-ready-icon" width="60" height="60">
+	<h3>Your license key{{if gt (len .Items) 1}}s{{end}} — ready!</h3>
+	<ul class="receipt-item-list">
+		{{range .Items}}
+		<li class="receipt-item">
+			<span class="receipt-item-product">{{.Product}}</span>
+			<code class="receipt-item-key">{{.LicenseKey}}</code>
+		</li>
+		{{end}}
+	</ul>
+	<p class="receipt-note">A copy of this receipt, including these keys, has also been emailed to you.</p>
+</div>
+{{else}}
+{{template "session-status-loading" .}}
+{{end}}
+{{end}}

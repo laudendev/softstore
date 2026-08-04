@@ -43,3 +43,10 @@ func BaseURL() string {
 func InternalAPISecret() string {
 	return requireEnv("INTERNAL_API_SECRET")
 }
+
+
+// QuartermasterInternalURL is Quartermaster's WireGuard-only internal API
+// base URL, used by softstore to poll checkout session fulfillment status.
+func QuartermasterInternalURL() string {
+	return requireEnv("QUARTERMASTER_INTERNAL_URL")
+}
