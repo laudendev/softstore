@@ -16,7 +16,7 @@
 	</ul>
 	{{if or .TaxLine .TotalLine}}
 	<div class="receipt-totals">
-		{{if .TaxLine}}<div class="receipt-totals-row"><span>Tax</span><span>${{.TaxLine}}</span></div>{{end}}
+		{{if .TaxLine}}<div class="receipt-totals-row"><span>Tax</span><span>{{.TaxLine}}</span></div>{{end}}
 		{{if .TotalLine}}<div class="receipt-totals-row receipt-totals-final"><span>Total paid</span><span>{{.TotalLine}}</span></div>{{end}}
 	</div>
 	{{end}}
