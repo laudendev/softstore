@@ -48,7 +48,7 @@ func TestAddToCartCreatesCartAndCookie(t *testing.T) {
 	}
 
 	body := w.Body.String()
-	if !strings.Contains(body, `id="cart-count" hx-swap-oob="true">1<`) {
+	if !strings.Contains(body, `id="cart-count" class="cart-count-badge" hx-swap-oob="true">1<`) {
 		t.Errorf("expected cart-count oob swap showing 1, got %q", body)
 	}
 	if !strings.Contains(body, "Test Widget") {
@@ -83,7 +83,7 @@ func TestAddToCartIncrementsExistingCart(t *testing.T) {
 	AddToCart(conn, newTestCartTmpl(t))(w2, req2)
 
 	body := w2.Body.String()
-	if !strings.Contains(body, `id="cart-count" hx-swap-oob="true">2<`) {
+	if !strings.Contains(body, `id="cart-count" class="cart-count-badge" hx-swap-oob="true">2<`) {
 		t.Errorf("expected cart-count oob swap showing 2, got %q", body)
 	}
 }
@@ -128,7 +128,7 @@ func TestRemoveFromCartUpdatesCartCountBadge(t *testing.T) {
 	RemoveFromCart(conn, newTestCartTmpl(t))(removeW, removeReq)
 
 	body := removeW.Body.String()
-	if !strings.Contains(body, `id="cart-count" hx-swap-oob="true">0<`) {
+	if !strings.Contains(body, `id="cart-count" class="cart-count-badge" hx-swap-oob="true">0<`) {
 		t.Errorf("expected cart-count oob swap showing 0 after removal, got %q", body)
 	}
 }

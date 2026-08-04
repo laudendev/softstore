@@ -52,7 +52,7 @@ func AddToCart(conn *sql.DB, tmpl *template.Template) http.HandlerFunc {
 		}
 
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		fmt.Fprintf(w, `<span id="cart-count" hx-swap-oob="true">%d</span>`, updated.ItemCount())
+		fmt.Fprintf(w, `<span id="cart-count" class="cart-count-badge" hx-swap-oob="true">%d</span>`, updated.ItemCount())
 		if err := tmpl.ExecuteTemplate(w, "cart-drawer-content", updated); err != nil {
 			log.Println("render cart drawer:", err)
 			http.Error(w, "internal error", http.StatusInternalServerError)
@@ -122,7 +122,7 @@ func RemoveFromCart(conn *sql.DB, tmpl *template.Template) http.HandlerFunc {
 		}
 
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		fmt.Fprintf(w, `<span id="cart-count" hx-swap-oob="true">%d</span>`, updated.ItemCount())
+		fmt.Fprintf(w, `<span id="cart-count" class="cart-count-badge" hx-swap-oob="true">%d</span>`, updated.ItemCount())
 		if err := tmpl.ExecuteTemplate(w, "cart-drawer-content", updated); err != nil {
 			log.Println("render cart drawer:", err)
 			http.Error(w, "internal error", http.StatusInternalServerError)
