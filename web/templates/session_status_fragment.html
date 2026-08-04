@@ -1,7 +1,6 @@
 {{define "session-status-fragment"}}
 {{if .Ready}}
 <div class="receipt-ready">
-	<img src="/static/img/logo-lava-icon.svg" alt="" class="receipt-ready-icon" width="60" height="60">
 	<h3>Your license key{{if gt (len .Items) 1}}s{{end}} are ready!</h3>
 	<ul class="receipt-item-list">
 		{{range .Items}}
