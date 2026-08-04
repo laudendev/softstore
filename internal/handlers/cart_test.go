@@ -101,3 +101,34 @@ func TestAddToCartProductNotFound(t *testing.T) {
 		t.Errorf("expected 404, got %d", w.Code)
 	}
 }
+
+func TestRemoveFromCartUpdatesCartCountBadge(t *testing.T) {
+	conn := newTestDBWithSchema(t)
+
+	p := &models.Product{
+		Name: "Test Widget", Slug: "test-widget", PriceCents: 1999,
+		StripePriceID: "price_abc123", ProductCode: "TWDG", TaxCode: "txcd_10202000",
+	}
+	if err := db.CreateProduct(conn, p); err != nil {
+		t.Fatalf("failed to seed product: %v", err)
+	}
+
+	// Add the item first, keep its cookie.
+	addReq := httptest.NewRequest(http.MethodPost, "/cart/add/test-widget", nil)
+	addReq.SetPathValue("slug", "test-widget")
+	addW := httptest.NewRecorder()
+	AddToCart(conn, newTestCartTmpl(t))(addW, addReq)
+	cartCookie := addW.Result().Cookies()[0]
+
+	// Now remove it, using the same cart.
+	removeReq := httptest.NewRequest(http.MethodPost, "/cart/remove/test-widget", nil)
+	removeReq.SetPathValue("slug", "test-widget")
+	removeReq.AddCookie(cartCookie)
+	removeW := httptest.NewRecorder()
+	RemoveFromCart(conn, newTestCartTmpl(t))(removeW, removeReq)
+
+	body := removeW.Body.String()
+	if !strings.Contains(body, `id="cart-count" hx-swap-oob="true">0<`) {
+		t.Errorf("expected cart-count oob swap showing 0 after removal, got %q", body)
+	}
+}
