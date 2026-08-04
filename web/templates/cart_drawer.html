@@ -1,6 +1,6 @@
 {{define "cart-drawer-content"}}
 <div class="cart-drawer-header">
-	<h3>Your Cart</h3>
+	<h3>Shopping Cart</h3>
 	<button type="button" class="cart-close-button" onclick="document.getElementById('cart-drawer').classList.remove('open')" aria-label="Close cart">&times;</button>
 </div>
 {{if .Items}}
@@ -23,7 +23,7 @@
 				>&times;</button>
 			</div>
 		</li>
-		{{end}}
+		{{- end}}
 	</ul>
 	<div class="cart-total">
 		<span>Total</span>
