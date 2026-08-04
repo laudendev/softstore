@@ -638,7 +638,7 @@ footer p {
 
 .thank-you {
 	max-width: 480px;
-	margin: 3rem auto;
+	margin: 0.5rem auto 3rem;
 	text-align: center;
 }
 
