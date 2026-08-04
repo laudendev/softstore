@@ -791,3 +791,97 @@ footer p {
 	margin: 0 auto 0.75rem;
 	display: block;
 }
+
+
+.legal-doc {
+	max-width: 720px;
+	margin: 2rem auto 4rem;
+	padding: 0 1rem;
+}
+
+.legal-doc h1 {
+	font-family: 'Space Grotesk', sans-serif;
+	font-size: 2rem;
+	color: var(--ink);
+	margin: 0 0 0.25rem;
+}
+
+.legal-doc .legal-updated {
+	color: var(--ink-soft);
+	font-size: 0.85rem;
+	margin: 0 0 2rem;
+}
+
+.legal-doc h2 {
+	font-family: 'Space Grotesk', sans-serif;
+	font-size: 1.25rem;
+	color: var(--ink);
+	margin: 2rem 0 0.75rem;
+}
+
+.legal-doc h3 {
+	font-family: 'Space Grotesk', sans-serif;
+	font-size: 1.05rem;
+	color: var(--ink);
+	margin: 1.5rem 0 0.5rem;
+}
+
+.legal-doc p {
+	color: var(--ink);
+	line-height: 1.7;
+	margin: 0 0 1rem;
+}
+
+.legal-doc ul, .legal-doc ol {
+	color: var(--ink);
+	line-height: 1.7;
+	margin: 0 0 1rem;
+	padding-left: 1.5rem;
+}
+
+.legal-doc li {
+	margin-bottom: 0.4rem;
+}
+
+.legal-doc a {
+	color: var(--brand-blue);
+}
+
+.legal-doc strong {
+	color: var(--ink);
+}
+
+.legal-nav {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem 1.25rem;
+	max-width: 720px;
+	margin: 0 auto;
+	padding: 1rem 1rem 0;
+	font-size: 0.85rem;
+}
+
+.legal-nav a {
+	color: var(--ink-soft);
+	text-decoration: none;
+}
+
+.legal-nav a:hover {
+	color: var(--brand-blue);
+	text-decoration: underline;
+}
+
+.footer-legal-links {
+	margin-top: 0.5rem !important;
+	font-size: 0.8rem;
+}
+
+.footer-legal-links a {
+	color: var(--ink-soft);
+	text-decoration: none;
+}
+
+.footer-legal-links a:hover {
+	color: var(--brand-blue);
+	text-decoration: underline;
+}

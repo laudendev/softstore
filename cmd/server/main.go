@@ -52,6 +52,16 @@ func main() {
 	))
 	cartTmpl := template.Must(template.ParseFS(web.Templates, "templates/cart_drawer.html",))
 
+	legalBaseTmpl := template.Must(template.ParseFS(web.Templates,
+		"templates/layout.html",
+		"templates/legal_layout.html",
+	))
+	legalTermsTmpl := template.Must(template.Must(legalBaseTmpl.Clone()).ParseFS(web.Templates, "templates/legal_terms.html"))
+	legalPrivacyTmpl := template.Must(template.Must(legalBaseTmpl.Clone()).ParseFS(web.Templates, "templates/legal_privacy.html"))
+	legalEulaTmpl := template.Must(template.Must(legalBaseTmpl.Clone()).ParseFS(web.Templates, "templates/legal_eula.html"))
+	legalRefundsTmpl := template.Must(template.Must(legalBaseTmpl.Clone()).ParseFS(web.Templates, "templates/legal_refunds.html"))
+	legalCookiesTmpl := template.Must(template.Must(legalBaseTmpl.Clone()).ParseFS(web.Templates, "templates/legal_cookies.html"))
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("ok"))
@@ -64,6 +74,12 @@ func main() {
 	mux.HandleFunc("POST /checkout", handlers.CartCheckout(database, provider, baseURL))
 	mux.HandleFunc("GET /internal/products/by-price/{price_id}", handlers.RequireInternalSecret(config.InternalAPISecret(), handlers.GetProductByPrice(database)))
 	mux.HandleFunc("POST /internal/cart/clear", handlers.RequireInternalSecret(config.InternalAPISecret(), handlers.ClearCart(database)))
+
+	mux.HandleFunc("GET /legal/terms", handlers.LegalPage(database, legalTermsTmpl, "Terms of Service"))
+	mux.HandleFunc("GET /legal/privacy", handlers.LegalPage(database, legalPrivacyTmpl, "Privacy Policy"))
+	mux.HandleFunc("GET /legal/eula", handlers.LegalPage(database, legalEulaTmpl, "EULA"))
+	mux.HandleFunc("GET /legal/refunds", handlers.LegalPage(database, legalRefundsTmpl, "Refund Policy"))
+	mux.HandleFunc("GET /legal/cookies", handlers.LegalPage(database, legalCookiesTmpl, "Cookie Policy"))
 
 	quartermasterClient := &quartermaster.Client{
 		BaseURL:        config.QuartermasterInternalURL(),
