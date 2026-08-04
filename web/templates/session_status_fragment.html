@@ -8,7 +8,7 @@
 		<li class="receipt-item">
 			<div class="receipt-item-header">
 				<span class="receipt-item-product">{{.ProductName}}</span>
-				{{if .AmountLine}}<span class="receipt-item-price">${{.AmountLine}}</span>{{end}}
+				{{if .AmountLine}}<span class="receipt-item-price">{{.AmountLine}}</span>{{end}}
 			</div>
 			<code class="receipt-item-key">{{.LicenseKey}}</code>
 		</li>
@@ -17,7 +17,7 @@
 	{{if or .TaxLine .TotalLine}}
 	<div class="receipt-totals">
 		{{if .TaxLine}}<div class="receipt-totals-row"><span>Tax</span><span>${{.TaxLine}}</span></div>{{end}}
-		{{if .TotalLine}}<div class="receipt-totals-row receipt-totals-final"><span>Total paid</span><span>${{.TotalLine}}</span></div>{{end}}
+		{{if .TotalLine}}<div class="receipt-totals-row receipt-totals-final"><span>Total paid</span><span>{{.TotalLine}}</span></div>{{end}}
 	</div>
 	{{end}}
 	<p class="receipt-note">A copy of this receipt, including these keys, has also been emailed to you.</p>
