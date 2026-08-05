@@ -477,13 +477,12 @@ footer p {
 
 .beta-badge {
 	position: absolute;
-	top: 0.5rem;
+	top: 1.5rem;
 	left: 50%;
-    margin: 0 auto;
 	transform: translateX(-50%);
 	max-width: 90%;
 	width: fit-content;
-	padding: 1.5rem 0.9rem 0.4rem;
+	padding: 0.4rem 1.25rem;
 	background: var(--brand-blue-soft);
 	color: var(--brand-blue);
 	border-radius: 999px;
@@ -496,13 +495,16 @@ footer p {
 	z-index: 10;
 }
 
+
+
 @media (max-width: 480px) {
     .beta-badge-wrap {
-		padding-top: 1.5rem;
-		display: flex;
-		justify-content: center;
-	}
-	.beta-badge {
+	  padding-top: 1.5rem;
+	  display: flex;
+	  justify-content: center;
+    }
+
+   	.beta-badge {
 		position: static;
 		transform: none;
 		margin: 0;

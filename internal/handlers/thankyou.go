@@ -14,6 +14,7 @@ type ThankYouData struct {
 	Title     string
 	CartCount int64
 	SessionID string
+	ShowCart bool
 }
 
 // ThankYou renders the post-checkout thank-you page immediately, with a

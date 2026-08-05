@@ -33,6 +33,7 @@ func AdminLoginForm(tmpl *template.Template) http.HandlerFunc {
 			Title     string
 			Error     string
 			CartCount int64
+			ShowCart bool
 		}{Title: "Admin Login"}
 		if err := tmpl.ExecuteTemplate(w, "layout", data); err != nil {
 			log.Println("render admin_login:", err)
@@ -58,6 +59,7 @@ func AdminLoginSubmit(tmpl *template.Template, username, passwordHash string, se
 				Title     string
 				Error     string
 				CartCount int64
+				ShowCart bool
 			}{Title: "Admin Login", Error: "Incorrect username or password."}
 			tmpl.ExecuteTemplate(w, "layout", data)
 			return

@@ -13,6 +13,7 @@ type ShopData struct {
 	Title    string
 	Products interface{}
 	CartCount int64
+	ShowCart bool
 }
 
 
@@ -45,6 +46,7 @@ func Shop(conn *sql.DB, tmpl *template.Template) http.HandlerFunc {
 			Title:    "shop",
 			Products: products,
 			CartCount: cartCountForRequest(conn, r),
+			ShowCart: true,
 		}
 
 		if err := tmpl.ExecuteTemplate(w, "layout", data); err != nil {
