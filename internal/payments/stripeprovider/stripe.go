@@ -37,11 +37,34 @@ func (p *StripeProvider) RegisterItem(item payments.SellableItem) (payments.Regi
 		Currency:    stripe.String(currency),
 		TaxBehavior: stripe.String(string(stripe.PriceTaxBehaviorExclusive)),
 	})
-		if err != nil {
+	if err != nil {
 		return payments.RegisteredItem{}, err
 	}
 
-	return payments.RegisteredItem{ProviderItemID: stripePrice.ID}, nil
+	return payments.RegisteredItem{ProviderItemID: stripePrice.ID, ProviderProductID: stripeProd.ID}, nil
+}
+
+// AddPrice creates a new Price attached to an already-registered Stripe
+// Product — used for multi-seat license tiers of the same underlying
+// software, so Stripe holds one Product with several Prices rather than
+// several unrelated Products.
+func (p *StripeProvider) AddPrice(req payments.AdditionalPrice) (payments.RegisteredItem, error) {
+	currency := req.Currency
+	if currency == "" {
+		currency = string(stripe.CurrencyUSD)
+	}
+
+	stripePrice, err := price.New(&stripe.PriceParams{
+		Product:     stripe.String(req.ProviderProductID),
+		UnitAmount:  stripe.Int64(req.PriceCents),
+		Currency:    stripe.String(currency),
+		TaxBehavior: stripe.String(string(stripe.PriceTaxBehaviorExclusive)),
+	})
+	if err != nil {
+		return payments.RegisteredItem{}, err
+	}
+
+	return payments.RegisteredItem{ProviderItemID: stripePrice.ID, ProviderProductID: req.ProviderProductID}, nil
 }
 
 func (p *StripeProvider) StartPurchase(req payments.PurchaseRequest) (payments.Purchase, error) {
