@@ -125,6 +125,7 @@ func AdminCreateProduct(conn *sql.DB, provider payments.Provider) http.HandlerFu
 			Description:   description,
 			PriceCents:    priceCents,
 			StripePriceID: registered.ProviderItemID,
+			StripeProductID: registered.ProviderProductID,
 			ProductCode:   code,
 			StubURL:       r.FormValue("stub_url"),
 			TaxCode:       taxCode,

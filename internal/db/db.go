@@ -29,6 +29,7 @@ func migrate(conn *sql.DB) error {
 		description TEXT NOT NULL DEFAULT '',
 		price_cents INTEGER NOT NULL,
 		stripe_price_id TEXT NOT NULL,
+		stripe_product_id TEXT NOT NULL DEFAULT '',
 		product_code TEXT NOT NULL,
         stub_url TEXT NOT NULL DEFAULT '',
 		tax_code TEXT NOT NULL,

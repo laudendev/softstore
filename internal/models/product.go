@@ -12,6 +12,7 @@ type Product struct {
 	Description     string
 	PriceCents      int64
 	StripePriceID   string
+	StripeProductID string
 	ProductCode     string
 	StubURL         string
 	TaxCode         string

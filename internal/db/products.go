@@ -12,9 +12,9 @@ func CreateProduct(conn *sql.DB, p *models.Product) error {
 		seats = 1
 	}
 	res, err := conn.Exec(
-		`INSERT INTO products (name, slug, description, price_cents, stripe_price_id, product_code, stub_url, tax_code, seats)
-		 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-		p.Name, p.Slug, p.Description, p.PriceCents, p.StripePriceID, p.ProductCode, p.StubURL, p.TaxCode, seats,
+		`INSERT INTO products (name, slug, description, price_cents, stripe_price_id, stripe_product_id, product_code, stub_url, tax_code, seats)
+		 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		p.Name, p.Slug, p.Description, p.PriceCents, p.StripePriceID, p.StripeProductID, p.ProductCode, p.StubURL, p.TaxCode, seats,
 	)
 	if err != nil {
 		return err
@@ -31,10 +31,10 @@ func CreateProduct(conn *sql.DB, p *models.Product) error {
 func GetProductBySlug(conn *sql.DB, slug string) (*models.Product, error) {
 	var p models.Product
 	err := conn.QueryRow(
-		`SELECT id, name, slug, description, price_cents, stripe_price_id, product_code, stub_url, tax_code, seats, created_at
+		`SELECT id, name, slug, description, price_cents, stripe_price_id, stripe_product_id, product_code, stub_url, tax_code, seats, created_at
 		 FROM products WHERE slug = ?`,
 		slug,
-	).Scan(&p.ID, &p.Name, &p.Slug, &p.Description, &p.PriceCents, &p.StripePriceID, &p.ProductCode, &p.StubURL, &p.TaxCode, &p.Seats, &p.CreatedAt)
+	).Scan(&p.ID, &p.Name, &p.Slug, &p.Description, &p.PriceCents, &p.StripePriceID, &p.StripeProductID, &p.ProductCode, &p.StubURL, &p.TaxCode, &p.Seats, &p.CreatedAt)
 	if err != nil {
 		return nil, err
 	}
@@ -47,10 +47,10 @@ func GetProductBySlug(conn *sql.DB, slug string) (*models.Product, error) {
 func GetProductByStripePriceID(conn *sql.DB, priceID string) (*models.Product, error) {
 	var p models.Product
 	err := conn.QueryRow(
-		`SELECT id, name, slug, description, price_cents, stripe_price_id, product_code, stub_url, tax_code, seats, created_at
+		`SELECT id, name, slug, description, price_cents, stripe_price_id, stripe_product_id, product_code, stub_url, tax_code, seats, created_at
 		 FROM products WHERE stripe_price_id = ?`,
 		priceID,
-	).Scan(&p.ID, &p.Name, &p.Slug, &p.Description, &p.PriceCents, &p.StripePriceID, &p.ProductCode, &p.StubURL, &p.TaxCode, &p.Seats, &p.CreatedAt)
+	).Scan(&p.ID, &p.Name, &p.Slug, &p.Description, &p.PriceCents, &p.StripePriceID, &p.StripeProductID, &p.ProductCode, &p.StubURL, &p.TaxCode, &p.Seats, &p.CreatedAt)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +59,7 @@ func GetProductByStripePriceID(conn *sql.DB, priceID string) (*models.Product, e
 
 func ListProducts(conn *sql.DB) ([]models.Product, error) {
 	rows, err := conn.Query(
-		`SELECT id, name, slug, description, price_cents, stripe_price_id, product_code, stub_url, tax_code, seats, created_at
+		`SELECT id, name, slug, description, price_cents, stripe_price_id, stripe_product_id, product_code, stub_url, tax_code, seats, created_at
 		 FROM products ORDER BY created_at DESC, id DESC`,
 	)
 	if err != nil {
@@ -70,7 +70,7 @@ func ListProducts(conn *sql.DB) ([]models.Product, error) {
 	var products []models.Product
 	for rows.Next() {
 		var p models.Product
-		if err := rows.Scan(&p.ID, &p.Name, &p.Slug, &p.Description, &p.PriceCents, &p.StripePriceID, &p.ProductCode, &p.StubURL, &p.TaxCode, &p.Seats, &p.CreatedAt); err != nil {
+		if err := rows.Scan(&p.ID, &p.Name, &p.Slug, &p.Description, &p.PriceCents, &p.StripePriceID, &p.StripeProductID, &p.ProductCode, &p.StubURL, &p.TaxCode, &p.Seats, &p.CreatedAt); err != nil {
 			return nil, err
 		}
 		products = append(products, p)
