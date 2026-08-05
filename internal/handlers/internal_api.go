@@ -15,6 +15,7 @@ import (
 type productByPriceResponse struct {
 	ProductCode string `json:"product_code"`
 	Name        string `json:"name"`
+	Seats       int64  `json:"seats"`
 }
 
 // GetProductByPrice handles GET /internal/products/by-price/{price_id}.
@@ -41,6 +42,7 @@ func GetProductByPrice(conn *sql.DB) http.HandlerFunc {
 		json.NewEncoder(w).Encode(productByPriceResponse{
 			ProductCode: product.ProductCode,
 			Name:        product.Name,
+			Seats:       product.Seats,
 		})
 	}
 }

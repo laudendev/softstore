@@ -16,6 +16,7 @@ type Product struct {
 	StubURL         string
 	TaxCode         string
 	PreviewVideoURL string
+	Seats           int64
 	CreatedAt       time.Time
 }
 

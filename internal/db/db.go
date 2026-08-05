@@ -32,6 +32,7 @@ func migrate(conn *sql.DB) error {
 		product_code TEXT NOT NULL,
         stub_url TEXT NOT NULL DEFAULT '',
 		tax_code TEXT NOT NULL,
+		seats INTEGER NOT NULL DEFAULT 1,
 		created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 	);
 

@@ -25,6 +25,7 @@ func TestAdminCreateProductSuccess(t *testing.T) {
 		"product_code": {"TWDG"},
 		"stub_url":     {"https://example.com/stub.zip"},
 		"tax_code":     {"txcd_10202000"},
+		"seats":       {"1"},
 	}
 
 	req := httptest.NewRequest(http.MethodPost, "/admin/products", strings.NewReader(form.Encode()))
@@ -75,6 +76,7 @@ func TestAdminCreateProductInvalidProductCode(t *testing.T) {
 		"price":        {"19.99"},
 		"product_code": {"TOOLONG"}, // not exactly 4 chars
 		"tax_code":     {"txcd_10202000"},
+		"seats":       {"1"},
 	}
 
 	req := httptest.NewRequest(http.MethodPost, "/admin/products", strings.NewReader(form.Encode()))
@@ -101,6 +103,7 @@ func TestAdminCreateProductInvalidPrice(t *testing.T) {
 		"price":        {"not-a-number"},
 		"product_code": {"TWDG"},
 		"tax_code":     {"txcd_10202000"},
+		"seats":       {"1"},
 	}
 
 	req := httptest.NewRequest(http.MethodPost, "/admin/products", strings.NewReader(form.Encode()))
@@ -130,6 +133,7 @@ func TestAdminCreateProductProviderError(t *testing.T) {
 		"price":        {"19.99"},
 		"product_code": {"TWDG"},
 		"tax_code":     {"txcd_10202000"},
+		"seats":       {"1"},
 	}
 
 	req := httptest.NewRequest(http.MethodPost, "/admin/products", strings.NewReader(form.Encode()))
@@ -146,5 +150,64 @@ func TestAdminCreateProductProviderError(t *testing.T) {
 	_, err := db.GetProductBySlug(conn, "test-widget")
 	if err == nil {
 		t.Error("expected product NOT to be saved when provider registration fails")
+	}
+}
+
+func TestAdminCreateProductWithMultipleSeats(t *testing.T) {
+	conn := newTestDBWithSchema(t)
+	mock := mockprovider.New()
+
+	form := url.Values{
+		"name":         {"Team License"},
+		"slug":         {"team-license"},
+		"price":        {"49.99"},
+		"product_code": {"TEAM"},
+		"tax_code":     {"txcd_10202000"},
+		"seats":        {"5"},
+	}
+
+	req := httptest.NewRequest(http.MethodPost, "/admin/products", strings.NewReader(form.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	w := httptest.NewRecorder()
+
+	AdminCreateProduct(conn, mock)(w, req)
+
+	if !strings.Contains(w.Body.String(), "Created \"Team License\" successfully") {
+		t.Fatalf("expected success message, got: %s", w.Body.String())
+	}
+
+	saved, err := db.GetProductBySlug(conn, "team-license")
+	if err != nil {
+		t.Fatalf("expected product to be saved: %v", err)
+	}
+	if saved.Seats != 5 {
+		t.Errorf("expected saved product to have 5 seats, got %d", saved.Seats)
+	}
+}
+
+func TestAdminCreateProductRejectsInvalidSeats(t *testing.T) {
+	conn := newTestDBWithSchema(t)
+	mock := mockprovider.New()
+
+	form := url.Values{
+		"name":         {"Bad Seats"},
+		"slug":         {"bad-seats"},
+		"price":        {"9.99"},
+		"product_code": {"BADS"},
+		"tax_code":     {"txcd_10202000"},
+		"seats":        {"0"},
+	}
+
+	req := httptest.NewRequest(http.MethodPost, "/admin/products", strings.NewReader(form.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	w := httptest.NewRecorder()
+
+	AdminCreateProduct(conn, mock)(w, req)
+
+	if !strings.Contains(w.Body.String(), "Seats must be") {
+		t.Errorf("expected seats validation error, got: %s", w.Body.String())
+	}
+	if len(mock.RegisterItemCalls) != 0 {
+		t.Error("expected provider NOT to be called when seats is invalid")
 	}
 }

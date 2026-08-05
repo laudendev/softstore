@@ -105,3 +105,34 @@ func TestClearCartMissingToken(t *testing.T) {
 		t.Errorf("expected status 400, got %d", w.Code)
 	}
 }
+
+func TestGetProductByPriceReturnsSeats(t *testing.T) {
+	conn := newTestDBWithSchema(t)
+
+	p := &models.Product{
+		Name: "Team License", Slug: "team-license", PriceCents: 4999,
+		StripePriceID: "price_team", ProductCode: "TEAM", TaxCode: "txcd_10202000",
+		Seats: 5,
+	}
+	if err := db.CreateProduct(conn, p); err != nil {
+		t.Fatalf("failed to seed product: %v", err)
+	}
+
+	req := httptest.NewRequest(http.MethodGet, "/internal/products/by-price/price_team", nil)
+	req.SetPathValue("price_id", "price_team")
+	w := httptest.NewRecorder()
+
+	GetProductByPrice(conn)(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d", w.Code)
+	}
+
+	var resp productByPriceResponse
+	if err := json.Unmarshal(w.Body.Bytes(), &resp); err != nil {
+		t.Fatalf("failed to decode response: %v", err)
+	}
+	if resp.Seats != 5 {
+		t.Errorf("expected seats 5, got %d", resp.Seats)
+	}
+}

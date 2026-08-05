@@ -96,6 +96,12 @@ func AdminCreateProduct(conn *sql.DB, provider payments.Provider) http.HandlerFu
 			return
 		}
 
+		seats, err := strconv.ParseInt(r.FormValue("seats"), 10, 64)
+		if err != nil || seats < 1 {
+			fmt.Fprintf(w, `<p class="error">Seats must be a whole number of 1 or more.</p>`)
+			return
+		}
+
 		name := r.FormValue("name")
 		description := r.FormValue("description")
 		taxCode := r.FormValue("tax_code")
@@ -122,6 +128,7 @@ func AdminCreateProduct(conn *sql.DB, provider payments.Provider) http.HandlerFu
 			ProductCode:   code,
 			StubURL:       r.FormValue("stub_url"),
 			TaxCode:       taxCode,
+			Seats:         seats,
 		}
 
 		if err := db.CreateProduct(conn, p); err != nil {

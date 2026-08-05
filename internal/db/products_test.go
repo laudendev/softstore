@@ -157,3 +157,44 @@ func TestGetProductByStripePriceIDNotFound(t *testing.T) {
 		t.Errorf("expected sql.ErrNoRows for missing price id, got %v", err)
 	}
 }
+
+func TestCreateProductWithSeats(t *testing.T) {
+	conn := newTestDB(t)
+
+	p := &models.Product{
+		Name: "Multi-seat", Slug: "multi-seat", PriceCents: 999,
+		StripePriceID: "price_multi", ProductCode: "MSET", TaxCode: "txcd_10202000",
+		Seats: 5,
+	}
+	if err := CreateProduct(conn, p); err != nil {
+		t.Fatalf("CreateProduct failed: %v", err)
+	}
+
+	found, err := GetProductBySlug(conn, "multi-seat")
+	if err != nil {
+		t.Fatalf("GetProductBySlug failed: %v", err)
+	}
+	if found.Seats != 5 {
+		t.Errorf("expected seats 5, got %d", found.Seats)
+	}
+}
+
+func TestCreateProductDefaultsSeatsToOne(t *testing.T) {
+	conn := newTestDB(t)
+
+	p := &models.Product{
+		Name: "Default Seats", Slug: "default-seats", PriceCents: 500,
+		StripePriceID: "price_default", ProductCode: "DFLT", TaxCode: "txcd_10202000",
+	}
+	if err := CreateProduct(conn, p); err != nil {
+		t.Fatalf("CreateProduct failed: %v", err)
+	}
+
+	found, err := GetProductBySlug(conn, "default-seats")
+	if err != nil {
+		t.Fatalf("GetProductBySlug failed: %v", err)
+	}
+	if found.Seats != 1 {
+		t.Errorf("expected default seats 1, got %d", found.Seats)
+	}
+}
