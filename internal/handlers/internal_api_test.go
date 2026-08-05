@@ -69,7 +69,7 @@ func TestClearCartSuccess(t *testing.T) {
 	if err != nil {
 		t.Fatalf("get or create cart: %v", err)
 	}
-	if err := db.AddCartItem(conn, cart.ID, p.ID, 1); err != nil {
+	if err := db.AddCartItem(conn, cart.ID, p.ID, 1, 1); err != nil {
 		t.Fatalf("add cart item: %v", err)
 	}
 

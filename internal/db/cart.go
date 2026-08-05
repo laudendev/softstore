@@ -33,14 +33,19 @@ func GetOrCreateCart(conn *sql.DB, token string) (*models.Cart, error) {
 	return &models.Cart{ID: id, Token: token}, nil
 }
 
-// AddCartItem adds quantity of a product to a cart, or increments the
-// existing row's quantity if the product is already in the cart.
-func AddCartItem(conn *sql.DB, cartID, productID, quantity int64) error {
+// AddCartItem adds quantity units of a product at a given seat tier to a
+// cart. The same product at different seat tiers (e.g. a 1-seat and a
+// 3-seat purchase of the same license) are distinct line items — only
+// an identical product+seats combination increments in place.
+func AddCartItem(conn *sql.DB, cartID, productID, seats, quantity int64) error {
+	if seats <= 0 {
+		seats = 1
+	}
 	_, err := conn.Exec(
-		`INSERT INTO cart_items (cart_id, product_id, quantity)
-		 VALUES (?, ?, ?)
-		 ON CONFLICT(cart_id, product_id) DO UPDATE SET quantity = quantity + excluded.quantity`,
-		cartID, productID, quantity,
+		`INSERT INTO cart_items (cart_id, product_id, seats, quantity)
+		 VALUES (?, ?, ?, ?)
+		 ON CONFLICT(cart_id, product_id, seats) DO UPDATE SET quantity = quantity + excluded.quantity`,
+		cartID, productID, seats, quantity,
 	)
 	return err
 }
@@ -54,9 +59,9 @@ func GetCartWithItems(conn *sql.DB, token string) (*models.Cart, error) {
 	}
 
 	rows, err := conn.Query(
-		`SELECT ci.id, ci.cart_id, ci.product_id, ci.quantity, ci.created_at,
-		        p.id, p.name, p.slug, p.description, p.price_cents,
-		        p.stripe_price_id, p.product_code, p.stub_url, p.tax_code, p.created_at
+		`SELECT ci.id, ci.cart_id, ci.product_id, ci.quantity, ci.seats, ci.created_at,
+			p.id, p.name, p.slug, p.description, p.price_cents,
+			p.stripe_price_id, p.product_code, p.stub_url, p.tax_code, p.created_at
 		 FROM cart_items ci
 		 JOIN products p ON p.id = ci.product_id
 		 WHERE ci.cart_id = ?
@@ -71,7 +76,7 @@ func GetCartWithItems(conn *sql.DB, token string) (*models.Cart, error) {
 	for rows.Next() {
 		var item models.CartItem
 		if err := rows.Scan(
-			&item.ID, &item.CartID, &item.ProductID, &item.Quantity, &item.CreatedAt,
+			&item.ID, &item.CartID, &item.ProductID, &item.Quantity, &item.Seats, &item.CreatedAt,
 			&item.Product.ID, &item.Product.Name, &item.Product.Slug, &item.Product.Description,
 			&item.Product.PriceCents, &item.Product.StripePriceID, &item.Product.ProductCode,
 			&item.Product.StubURL, &item.Product.TaxCode, &item.Product.CreatedAt,

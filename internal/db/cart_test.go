@@ -57,10 +57,10 @@ func TestAddCartItemIncrementsOnDuplicate(t *testing.T) {
 	p := seedProduct(t, conn, "widget", 1000)
 	cart, _ := GetOrCreateCart(conn, "token-1")
 
-	if err := AddCartItem(conn, cart.ID, p.ID, 1); err != nil {
+	if err := AddCartItem(conn, cart.ID, p.ID, 1, 1); err != nil {
 		t.Fatalf("first AddCartItem failed: %v", err)
 	}
-	if err := AddCartItem(conn, cart.ID, p.ID, 1); err != nil {
+	if err := AddCartItem(conn, cart.ID, p.ID, 1, 1); err != nil {
 		t.Fatalf("second AddCartItem failed: %v", err)
 	}
 
@@ -81,7 +81,7 @@ func TestGetCartWithItemsJoinsProductData(t *testing.T) {
 	p := seedProduct(t, conn, "gadget", 2500)
 	cart, _ := GetOrCreateCart(conn, "token-2")
 
-	if err := AddCartItem(conn, cart.ID, p.ID, 3); err != nil {
+	if err := AddCartItem(conn, cart.ID, p.ID, 1, 3); err != nil {
 		t.Fatalf("AddCartItem failed: %v", err)
 	}
 
@@ -112,7 +112,7 @@ func TestRemoveCartItem(t *testing.T) {
 	p := seedProduct(t, conn, "removable", 500)
 	cart, _ := GetOrCreateCart(conn, "token-3")
 
-	if err := AddCartItem(conn, cart.ID, p.ID, 1); err != nil {
+	if err := AddCartItem(conn, cart.ID, p.ID, 1, 1); err != nil {
 		t.Fatalf("AddCartItem failed: %v", err)
 	}
 	if err := RemoveCartItem(conn, cart.ID, p.ID); err != nil {
@@ -134,10 +134,10 @@ func TestClearCart(t *testing.T) {
 	p2 := seedProduct(t, conn, "item-two", 700)
 	cart, _ := GetOrCreateCart(conn, "token-clear")
 
-	if err := AddCartItem(conn, cart.ID, p1.ID, 1); err != nil {
+	if err := AddCartItem(conn, cart.ID, p1.ID, 1, 1); err != nil {
 		t.Fatalf("add p1: %v", err)
 	}
-	if err := AddCartItem(conn, cart.ID, p2.ID, 2); err != nil {
+	if err := AddCartItem(conn, cart.ID, p2.ID, 1, 2); err != nil {
 		t.Fatalf("add p2: %v", err)
 	}
 

@@ -38,7 +38,7 @@ func AddToCart(conn *sql.DB, tmpl *template.Template) http.HandlerFunc {
 			return
 		}
 
-		if err := db.AddCartItem(conn, cart.ID, product.ID, 1); err != nil {
+		if err := db.AddCartItem(conn, cart.ID, product.ID, 1, 1); err != nil {
 			log.Println("add to cart, add item:", err)
 			http.Error(w, "internal error", http.StatusInternalServerError)
 			return

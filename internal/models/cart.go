@@ -16,6 +16,7 @@ type CartItem struct {
 	CartID     int64
 	ProductID  int64
 	Quantity   int64
+	Seats      int64
 	Product    Product
 	CreatedAt  time.Time
 }

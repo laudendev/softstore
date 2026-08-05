@@ -128,10 +128,10 @@ func TestCartCheckoutSuccess(t *testing.T) {
 	if err != nil {
 		t.Fatalf("get or create cart: %v", err)
 	}
-	if err := db.AddCartItem(conn, cart.ID, p1.ID, 1); err != nil {
+	if err := db.AddCartItem(conn, cart.ID, p1.ID, 1, 1); err != nil {
 		t.Fatalf("add p1 to cart: %v", err)
 	}
-	if err := db.AddCartItem(conn, cart.ID, p2.ID, 2); err != nil {
+	if err := db.AddCartItem(conn, cart.ID, p2.ID, 1, 2); err != nil {
 		t.Fatalf("add p2 to cart: %v", err)
 	}
 
