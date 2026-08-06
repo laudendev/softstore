@@ -68,7 +68,7 @@ func main() {
 	})
 	mux.HandleFunc("/", handlers.Shop(database, shopTmpl))
 	mux.HandleFunc("POST /checkout/{slug}", handlers.Checkout(database, provider, baseURL))
-	mux.HandleFunc("POST /cart/add/{slug}", handlers.AddToCart(database, cartTmpl))
+	mux.HandleFunc("POST /cart/add/{slug}", handlers.AddToCart(database, cartTmpl, provider))
 	mux.HandleFunc("GET /cart", handlers.GetCart(database, cartTmpl))
 	mux.HandleFunc("POST /cart/remove/{slug}", handlers.RemoveFromCart(database, cartTmpl))
 	mux.HandleFunc("POST /checkout", handlers.CartCheckout(database, provider, baseURL))

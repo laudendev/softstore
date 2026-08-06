@@ -7,15 +7,33 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
 
 	"softstore/internal/cartsession"
 	"softstore/internal/db"
+	"softstore/internal/payments"
 )
+
+// parseSeatsForm reads the "seats" form value from an add-to-cart
+// request, defaulting to 1 (and clamping to the same [1, 24] range
+// enforced elsewhere) if missing, empty, or unparseable — a bare "+"
+// click with no seat selection should behave exactly like a 1-seat
+// purchase, not fail the request.
+func parseSeatsForm(r *http.Request) int64 {
+	seats, err := strconv.ParseInt(r.FormValue("seats"), 10, 64)
+	if err != nil || seats < 1 {
+		return 1
+	}
+	if seats > 24 {
+		return 24
+	}
+	return seats
+}
 
 // AddToCart handles POST /cart/add/{slug}. It adds one unit of the product
 // to the caller's cart and responds with an HTMX fragment showing the
 // updated cart item count, for out-of-band swap into the nav.
-func AddToCart(conn *sql.DB, tmpl *template.Template) http.HandlerFunc {
+func AddToCart(conn *sql.DB, tmpl *template.Template, provider payments.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		slug := r.PathValue("slug")
 
@@ -30,6 +48,13 @@ func AddToCart(conn *sql.DB, tmpl *template.Template) http.HandlerFunc {
 			return
 		}
 
+		seats := parseSeatsForm(r)
+		if _, err := GetOrCreatePriceForSeats(conn, provider, product, seats); err != nil {
+			log.Println("add to cart, resolve price for seats:", err)
+			http.Error(w, "internal error", http.StatusInternalServerError)
+			return
+		}
+
 		token := cartsession.Token(w, r)
 		cart, err := db.GetOrCreateCart(conn, token)
 		if err != nil {
@@ -38,7 +63,7 @@ func AddToCart(conn *sql.DB, tmpl *template.Template) http.HandlerFunc {
 			return
 		}
 
-		if err := db.AddCartItem(conn, cart.ID, product.ID, 1, 1); err != nil {
+		if err := db.AddCartItem(conn, cart.ID, product.ID, seats, 1); err != nil {
 			log.Println("add to cart, add item:", err)
 			http.Error(w, "internal error", http.StatusInternalServerError)
 			return

@@ -9,6 +9,7 @@ import (
 
 	"softstore/internal/db"
 	"softstore/internal/models"
+	"softstore/internal/payments/mockprovider"
 	"softstore/web"
 )
 
@@ -36,7 +37,7 @@ func TestAddToCartCreatesCartAndCookie(t *testing.T) {
 	req.SetPathValue("slug", "test-widget")
 	w := httptest.NewRecorder()
 
-	AddToCart(conn, newTestCartTmpl(t))(w, req)
+	AddToCart(conn, newTestCartTmpl(t), mockprovider.New())(w, req)
 
 	if w.Code != http.StatusOK {
 		t.Fatalf("expected status 200, got %d", w.Code)
@@ -72,7 +73,7 @@ func TestAddToCartIncrementsExistingCart(t *testing.T) {
 	req1 := httptest.NewRequest(http.MethodPost, "/cart/add/test-widget", nil)
 	req1.SetPathValue("slug", "test-widget")
 	w1 := httptest.NewRecorder()
-	AddToCart(conn, newTestCartTmpl(t))(w1, req1)
+	AddToCart(conn, newTestCartTmpl(t), mockprovider.New())(w1, req1)
 	cartCookie := w1.Result().Cookies()[0]
 
 	// Second add — reuse the cookie, expect count to increment to 2.
@@ -80,7 +81,7 @@ func TestAddToCartIncrementsExistingCart(t *testing.T) {
 	req2.SetPathValue("slug", "test-widget")
 	req2.AddCookie(cartCookie)
 	w2 := httptest.NewRecorder()
-	AddToCart(conn, newTestCartTmpl(t))(w2, req2)
+	AddToCart(conn, newTestCartTmpl(t), mockprovider.New())(w2, req2)
 
 	body := w2.Body.String()
 	if !strings.Contains(body, `id="cart-count" class="cart-count-badge" hx-swap-oob="true">2<`) {
@@ -95,7 +96,7 @@ func TestAddToCartProductNotFound(t *testing.T) {
 	req.SetPathValue("slug", "does-not-exist")
 	w := httptest.NewRecorder()
 
-	AddToCart(conn, newTestCartTmpl(t))(w, req)
+	AddToCart(conn, newTestCartTmpl(t), mockprovider.New())(w, req)
 
 	if w.Code != http.StatusNotFound {
 		t.Errorf("expected 404, got %d", w.Code)
@@ -117,7 +118,7 @@ func TestRemoveFromCartUpdatesCartCountBadge(t *testing.T) {
 	addReq := httptest.NewRequest(http.MethodPost, "/cart/add/test-widget", nil)
 	addReq.SetPathValue("slug", "test-widget")
 	addW := httptest.NewRecorder()
-	AddToCart(conn, newTestCartTmpl(t))(addW, addReq)
+	AddToCart(conn, newTestCartTmpl(t), mockprovider.New())(addW, addReq)
 	cartCookie := addW.Result().Cookies()[0]
 
 	// Now remove it, using the same cart.
@@ -130,5 +131,50 @@ func TestRemoveFromCartUpdatesCartCountBadge(t *testing.T) {
 	body := removeW.Body.String()
 	if !strings.Contains(body, `id="cart-count" class="cart-count-badge" hx-swap-oob="true">0<`) {
 		t.Errorf("expected cart-count oob swap showing 0 after removal, got %q", body)
+	}
+}
+
+func TestAddToCartWithMultipleSeats(t *testing.T) {
+	conn := newTestDBWithSchema(t)
+	mock := mockprovider.New()
+
+	p := &models.Product{
+		Name: "Team License", Slug: "team-license", PriceCents: 4999,
+		StripePriceID: "price_team", StripeProductID: "prod_team",
+		ProductCode: "TEAM", TaxCode: "txcd_10202000",
+	}
+	if err := db.CreateProduct(conn, p); err != nil {
+		t.Fatalf("failed to seed product: %v", err)
+	}
+
+	form := "seats=3"
+	req := httptest.NewRequest(http.MethodPost, "/cart/add/team-license", strings.NewReader(form))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.SetPathValue("slug", "team-license")
+	w := httptest.NewRecorder()
+
+	AddToCart(conn, newTestCartTmpl(t), mock)(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+
+	cartCookie := w.Result().Cookies()[0]
+	cart, err := db.GetCartWithItems(conn, cartCookie.Value)
+	if err != nil {
+		t.Fatalf("GetCartWithItems failed: %v", err)
+	}
+	if len(cart.Items) != 1 {
+		t.Fatalf("expected 1 cart item, got %d", len(cart.Items))
+	}
+	if cart.Items[0].Seats != 3 {
+		t.Errorf("expected cart item seats=3, got %d", cart.Items[0].Seats)
+	}
+
+	if len(mock.AddPriceCalls) != 1 {
+		t.Fatalf("expected 1 AddPrice call for the new 3-seat tier, got %d", len(mock.AddPriceCalls))
+	}
+	if mock.AddPriceCalls[0].PriceCents != 14997 {
+		t.Errorf("expected 14997 cents (4999 * 3), got %d", mock.AddPriceCalls[0].PriceCents)
 	}
 }
