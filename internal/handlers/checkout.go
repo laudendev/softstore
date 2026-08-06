@@ -70,13 +70,19 @@ func CartCheckout(conn *sql.DB, provider payments.Provider, baseURL string) http
 		lineItems := make([]payments.LineItem, 0, len(cart.Items))
 		productCodes := make([]string, 0, len(cart.Items))
 		for _, item := range cart.Items {
+			priceID, err := GetOrCreatePriceForSeats(conn, provider, &item.Product, item.Seats)
+			if err != nil {
+				log.Println("cart checkout, resolve price for seats:", err)
+				http.Error(w, "internal error", http.StatusInternalServerError)
+				return
+			}
 			lineItems = append(lineItems, payments.LineItem{
-				ProviderItemID: item.Product.StripePriceID,
+				ProviderItemID: priceID,
 				Quantity:       item.Quantity,
 			})
 			productCodes = append(productCodes, item.Product.ProductCode)
 		}
-
+		
 		purchase, err := provider.StartPurchase(payments.PurchaseRequest{
 			LineItems: lineItems,
 			Metadata: map[string]string{

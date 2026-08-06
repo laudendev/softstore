@@ -174,3 +174,53 @@ func TestCartCheckoutEmptyCart(t *testing.T) {
 		t.Errorf("expected no StartPurchase call for empty cart, got %d", len(mock.StartPurchaseCalls))
 	}
 }
+
+func TestCartCheckoutUsesCorrectSeatTierPrice(t *testing.T) {
+	conn := newTestDBWithSchema(t)
+	mock := mockprovider.New()
+
+	p := &models.Product{
+		Name: "Team License", Slug: "team-license", PriceCents: 1000,
+		StripePriceID: "price_base", StripeProductID: "prod_base",
+		ProductCode: "TEAM", TaxCode: "txcd_10202000",
+	}
+	if err := db.CreateProduct(conn, p); err != nil {
+		t.Fatalf("seed product: %v", err)
+	}
+
+	cart, err := db.GetOrCreateCart(conn, "seat-tier-token")
+	if err != nil {
+		t.Fatalf("get or create cart: %v", err)
+	}
+	if err := db.AddCartItem(conn, cart.ID, p.ID, 3, 1); err != nil {
+		t.Fatalf("add 3-seat item to cart: %v", err)
+	}
+
+	req := httptest.NewRequest(http.MethodPost, "/checkout", nil)
+	req.AddCookie(&http.Cookie{Name: "softstore_cart", Value: "seat-tier-token"})
+	w := httptest.NewRecorder()
+
+	CartCheckout(conn, mock, "https://store.example.com")(w, req)
+
+	if w.Code != http.StatusSeeOther {
+		t.Fatalf("expected redirect, got %d: %s", w.Code, w.Body.String())
+	}
+
+	if len(mock.StartPurchaseCalls) != 1 {
+		t.Fatalf("expected 1 StartPurchase call, got %d", len(mock.StartPurchaseCalls))
+	}
+	lineItems := mock.StartPurchaseCalls[0].LineItems
+	if len(lineItems) != 1 {
+		t.Fatalf("expected 1 line item, got %d", len(lineItems))
+	}
+	if lineItems[0].ProviderItemID == "price_base" {
+		t.Error("expected the 3-seat tier price, not the base 1-seat price")
+	}
+
+	if len(mock.AddPriceCalls) != 1 {
+		t.Fatalf("expected 1 AddPrice call for the 3-seat tier, got %d", len(mock.AddPriceCalls))
+	}
+	if mock.AddPriceCalls[0].PriceCents != 3000 {
+		t.Errorf("expected 3000 cents (1000 * 3), got %d", mock.AddPriceCalls[0].PriceCents)
+	}
+}
