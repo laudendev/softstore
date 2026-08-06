@@ -61,13 +61,14 @@ func GetCartWithItems(conn *sql.DB, token string) (*models.Cart, error) {
 	rows, err := conn.Query(
 		`SELECT ci.id, ci.cart_id, ci.product_id, ci.quantity, ci.seats, ci.created_at,
 			p.id, p.name, p.slug, p.description, p.price_cents,
-			p.stripe_price_id, p.product_code, p.stub_url, p.tax_code, p.created_at
+			p.stripe_price_id, p.stripe_product_id, p.product_code, p.stub_url, p.tax_code, p.created_at
 		 FROM cart_items ci
 		 JOIN products p ON p.id = ci.product_id
 		 WHERE ci.cart_id = ?
 		 ORDER BY ci.created_at ASC, ci.id ASC`,
 		cart.ID,
 	)
+
 	if err != nil {
 		return nil, err
 	}
@@ -78,13 +79,13 @@ func GetCartWithItems(conn *sql.DB, token string) (*models.Cart, error) {
 		if err := rows.Scan(
 			&item.ID, &item.CartID, &item.ProductID, &item.Quantity, &item.Seats, &item.CreatedAt,
 			&item.Product.ID, &item.Product.Name, &item.Product.Slug, &item.Product.Description,
-			&item.Product.PriceCents, &item.Product.StripePriceID, &item.Product.ProductCode,
+			&item.Product.PriceCents, &item.Product.StripePriceID, &item.Product.StripeProductID, &item.Product.ProductCode,
 			&item.Product.StubURL, &item.Product.TaxCode, &item.Product.CreatedAt,
 		); err != nil {
 			return nil, err
 		}
 		cart.Items = append(cart.Items, item)
-	}
+		}
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}

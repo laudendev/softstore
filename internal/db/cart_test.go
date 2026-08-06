@@ -161,3 +161,30 @@ func TestClearCartNonexistentTokenNoError(t *testing.T) {
 		t.Errorf("expected no error clearing a nonexistent cart, got: %v", err)
 	}
 }
+
+func TestGetCartWithItemsIncludesStripeProductID(t *testing.T) {
+	conn := newTestDB(t)
+	p := &models.Product{
+		Name: "widget", Slug: "widget-prod-id", PriceCents: 1000,
+		StripePriceID: "price_x", StripeProductID: "prod_x_real",
+		ProductCode: "WGT1", TaxCode: "txcd_10202000",
+	}
+	if err := CreateProduct(conn, p); err != nil {
+		t.Fatalf("CreateProduct failed: %v", err)
+	}
+	cart, _ := GetOrCreateCart(conn, "token-prod-id")
+	if err := AddCartItem(conn, cart.ID, p.ID, 1, 1); err != nil {
+		t.Fatalf("AddCartItem failed: %v", err)
+	}
+
+	got, err := GetCartWithItems(conn, "token-prod-id")
+	if err != nil {
+		t.Fatalf("GetCartWithItems failed: %v", err)
+	}
+	if len(got.Items) != 1 {
+		t.Fatalf("expected 1 item, got %d", len(got.Items))
+	}
+	if got.Items[0].Product.StripeProductID != "prod_x_real" {
+		t.Errorf("expected StripeProductID 'prod_x_real', got %q", got.Items[0].Product.StripeProductID)
+	}
+}
