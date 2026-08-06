@@ -41,9 +41,13 @@ func GetProductBySlug(conn *sql.DB, slug string) (*models.Product, error) {
 	return &p, nil
 }
 
-// GetProductByStripePriceID looks up a product by its Stripe Price ID,
-// used by Quartermaster to resolve a product code from a checkout
-// session's line items.
+// GetProductByStripePriceID looks up a product by any of its Stripe
+// Price IDs — either the product's own default (1-seat) price, or a
+// price recorded in product_prices for a different seat tier. When the
+// match comes from product_prices, the returned Product's Seats field
+// is overridden to reflect that specific tier's seat count, since the
+// caller needs to know how many seats THIS price actually represents,
+// not the product's base/default seat count.
 func GetProductByStripePriceID(conn *sql.DB, priceID string) (*models.Product, error) {
 	var p models.Product
 	err := conn.QueryRow(
@@ -51,9 +55,27 @@ func GetProductByStripePriceID(conn *sql.DB, priceID string) (*models.Product, e
 		 FROM products WHERE stripe_price_id = ?`,
 		priceID,
 	).Scan(&p.ID, &p.Name, &p.Slug, &p.Description, &p.PriceCents, &p.StripePriceID, &p.StripeProductID, &p.ProductCode, &p.StubURL, &p.TaxCode, &p.Seats, &p.CreatedAt)
+	if err == nil {
+		return &p, nil
+	}
+	if err != sql.ErrNoRows {
+		return nil, err
+	}
+
+	// Not the product's default price — check whether it's a recorded
+	// seat-tier price instead.
+	var tierSeats int64
+	err = conn.QueryRow(
+		`SELECT p.id, p.name, p.slug, p.description, p.price_cents, p.stripe_price_id, p.stripe_product_id, p.product_code, p.stub_url, p.tax_code, pp.seats, p.created_at
+		 FROM product_prices pp
+		 JOIN products p ON p.id = pp.product_id
+		 WHERE pp.stripe_price_id = ?`,
+		priceID,
+	).Scan(&p.ID, &p.Name, &p.Slug, &p.Description, &p.PriceCents, &p.StripePriceID, &p.StripeProductID, &p.ProductCode, &p.StubURL, &p.TaxCode, &tierSeats, &p.CreatedAt)
 	if err != nil {
 		return nil, err
 	}
+	p.Seats = tierSeats
 	return &p, nil
 }
 

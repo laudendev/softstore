@@ -198,3 +198,54 @@ func TestCreateProductDefaultsSeatsToOne(t *testing.T) {
 		t.Errorf("expected default seats 1, got %d", found.Seats)
 	}
 }
+
+func TestGetProductByStripePriceIDMatchesSeatTierPrice(t *testing.T) {
+	conn := newTestDB(t)
+
+	p := &models.Product{
+		Name: "Team License", Slug: "team-license-lookup", PriceCents: 1000,
+		StripePriceID: "price_default", StripeProductID: "prod_x",
+		ProductCode: "TEAM", TaxCode: "txcd_10202000",
+	}
+	if err := CreateProduct(conn, p); err != nil {
+		t.Fatalf("CreateProduct failed: %v", err)
+	}
+	if _, err := CreateProductPrice(conn, p.ID, 5, "price_5seat"); err != nil {
+		t.Fatalf("CreateProductPrice failed: %v", err)
+	}
+
+	found, err := GetProductByStripePriceID(conn, "price_5seat")
+	if err != nil {
+		t.Fatalf("GetProductByStripePriceID failed: %v", err)
+	}
+	if found.ID != p.ID {
+		t.Errorf("expected matched product id %d, got %d", p.ID, found.ID)
+	}
+	if found.Seats != 5 {
+		t.Errorf("expected Seats overridden to 5 for this tier, got %d", found.Seats)
+	}
+	if found.ProductCode != "TEAM" {
+		t.Errorf("expected product code TEAM, got %q", found.ProductCode)
+	}
+}
+
+func TestGetProductByStripePriceIDStillMatchesDefaultPrice(t *testing.T) {
+	conn := newTestDB(t)
+
+	p := &models.Product{
+		Name: "Solo License", Slug: "solo-license-lookup", PriceCents: 500,
+		StripePriceID: "price_solo_default", StripeProductID: "prod_y",
+		ProductCode: "SOLO", TaxCode: "txcd_10202000",
+	}
+	if err := CreateProduct(conn, p); err != nil {
+		t.Fatalf("CreateProduct failed: %v", err)
+	}
+
+	found, err := GetProductByStripePriceID(conn, "price_solo_default")
+	if err != nil {
+		t.Fatalf("GetProductByStripePriceID failed: %v", err)
+	}
+	if found.Seats != 1 {
+		t.Errorf("expected default Seats 1, got %d", found.Seats)
+	}
+}
