@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"strings"
 
 	"softstore/internal/db"
 	"softstore/internal/models"
@@ -52,9 +53,6 @@ func TestCheckoutSuccess(t *testing.T) {
 	}
 	if call.Metadata["product"] != "TWDG" {
 		t.Errorf("expected metadata product 'TWDG', got %q", call.Metadata["product"])
-	}
-	if call.Metadata["seats"] != "1" {
-		t.Errorf("expected metadata seats '1', got %q", call.Metadata["seats"])
 	}
 	if call.SuccessURL != "https://store.example.com/thank-you?session_id={CHECKOUT_SESSION_ID}" {
 		t.Errorf("expected success URL to use provided base URL, got %q", call.SuccessURL)
@@ -222,5 +220,43 @@ func TestCartCheckoutUsesCorrectSeatTierPrice(t *testing.T) {
 	}
 	if mock.AddPriceCalls[0].PriceCents != 3000 {
 		t.Errorf("expected 3000 cents (1000 * 3), got %d", mock.AddPriceCalls[0].PriceCents)
+	}
+}
+
+func TestCheckoutWithMultipleSeatsUsesCorrectPrice(t *testing.T) {
+	conn := newTestDBWithSchema(t)
+	mock := mockprovider.New()
+
+	p := &models.Product{
+		Name: "Team License", Slug: "team-license", PriceCents: 1500,
+		StripePriceID: "price_base", StripeProductID: "prod_base",
+		ProductCode: "TEAM", TaxCode: "txcd_10202000",
+	}
+	if err := db.CreateProduct(conn, p); err != nil {
+		t.Fatalf("failed to seed product: %v", err)
+	}
+
+	form := "seats=4"
+	req := httptest.NewRequest(http.MethodPost, "/checkout/team-license", strings.NewReader(form))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.SetPathValue("slug", "team-license")
+	w := httptest.NewRecorder()
+
+	Checkout(conn, mock, "https://store.example.com")(w, req)
+
+	if w.Code != http.StatusSeeOther {
+		t.Fatalf("expected redirect, got %d: %s", w.Code, w.Body.String())
+	}
+
+	if len(mock.AddPriceCalls) != 1 {
+		t.Fatalf("expected 1 AddPrice call, got %d", len(mock.AddPriceCalls))
+	}
+	if mock.AddPriceCalls[0].PriceCents != 6000 {
+		t.Errorf("expected 6000 cents (1500 * 4), got %d", mock.AddPriceCalls[0].PriceCents)
+	}
+
+	call := mock.StartPurchaseCalls[0]
+	if call.LineItems[0].ProviderItemID == "price_base" {
+		t.Error("expected the 4-seat tier price, not the base price")
 	}
 }

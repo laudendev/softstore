@@ -922,3 +922,32 @@ footer p {
 	color: var(--brand-blue);
 	text-decoration: underline;
 }
+
+.seat-picker {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-bottom: 0.5rem;
+}
+
+.seat-select {
+	font-family: 'Inter', sans-serif;
+	font-size: 0.85rem;
+	padding: 0.4rem 0.6rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	background: var(--card-bg);
+	color: var(--ink);
+	flex: 1;
+}
+
+.seat-custom-input {
+	width: 4.5rem;
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.85rem;
+	padding: 0.4rem 0.5rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	background: var(--card-bg);
+	color: var(--ink);
+}

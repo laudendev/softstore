@@ -9,10 +9,10 @@
 		<li class="cart-item">
 			<div class="cart-item-info">
 				<span class="cart-item-name">{{.Product.Name}}</span>
-				<span class="cart-item-qty">Qty: {{.Quantity}}</span>
+                <span class="cart-item-qty">Qty: {{.Quantity}}{{if gt .Seats 1}} · {{.Seats}} seats{{end}}</span>
 			</div>
 			<div class="cart-item-actions">
-				<span class="cart-item-price">${{.Product.PriceDollars}}</span>
+				<span class="cart-item-price">${{.LineTotalDollars}}</span>
 				<button
 					type="button"
 					class="cart-remove-button"

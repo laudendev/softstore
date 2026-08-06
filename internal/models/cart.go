@@ -21,11 +21,25 @@ type CartItem struct {
 	CreatedAt  time.Time
 }
 
-// TotalCents sums quantity * price across every item in the cart.
+// LineTotalCents is one cart item's total price: base price * seats *
+// quantity — e.g. a $10 product at 3 seats, quantity 2, costs $60.
+func (ci CartItem) LineTotalCents() int64 {
+	seats := ci.Seats
+	if seats <= 0 {
+		seats = 1
+	}
+	return ci.Product.PriceCents * seats * ci.Quantity
+}
+
+// LineTotalDollars formats LineTotalCents as a dollar string.
+func (ci CartItem) LineTotalDollars() string {
+	return formatCents(ci.LineTotalCents())
+}
+
 func (c Cart) TotalCents() int64 {
 	var total int64
 	for _, item := range c.Items {
-		total += item.Quantity * item.Product.PriceCents
+		total += item.LineTotalCents()
 	}
 	return total
 }

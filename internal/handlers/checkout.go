@@ -26,14 +26,20 @@ func Checkout(conn *sql.DB, provider payments.Provider, baseURL string) http.Han
 			http.Error(w, "internal error", http.StatusInternalServerError)
 			return
 		}
+        seats := parseSeatsForm(r)
+		priceID, err := GetOrCreatePriceForSeats(conn, provider, product, seats)
+		if err != nil {
+			log.Println("checkout, resolve price for seats:", err)
+			http.Error(w, "internal error", http.StatusInternalServerError)
+			return
+		}
 
 		purchase, err := provider.StartPurchase(payments.PurchaseRequest{
 			LineItems: []payments.LineItem{
-				{ProviderItemID: product.StripePriceID, Quantity: 1},
+				{ProviderItemID: priceID, Quantity: 1},
 			},
 			Metadata: map[string]string{
 				"product": product.ProductCode,
-				"seats":   "1",
 			},
 			SuccessURL: baseURL + "/thank-you?session_id={CHECKOUT_SESSION_ID}",
 			CancelURL:  baseURL + "/",

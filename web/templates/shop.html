@@ -24,9 +24,19 @@
 					<h3>{{.Name}}</h3>
 					<p class="description">{{.Description}}</p>
                     <p class="price">${{.PriceDollars}}</p>
-                    <div class="product-actions">
+                    	<div class="seat-picker">
+						<select class="seat-select" id="seats-{{.Slug}}" onchange="document.getElementById('custom-seats-{{.Slug}}').style.display = this.value === 'custom' ? 'inline-block' : 'none'">
+							<option value="1">1 seat</option>
+							<option value="2">2 seats</option>
+							<option value="3">3 seats</option>
+							<option value="custom">Custom…</option>
+						</select>
+						<input type="number" id="custom-seats-{{.Slug}}" class="seat-custom-input" min="1" max="24" value="4" style="display:none" aria-label="Custom seat count">
+					</div>
+					<div class="product-actions">
 						<form method="POST" action="/checkout/{{.Slug}}">
-							<button type="submit" class="buy-button">Buy Now</button>
+							<input type="hidden" name="seats" id="checkout-seats-{{.Slug}}" value="1">
+							<button type="submit" class="buy-button" onclick="document.getElementById('checkout-seats-{{.Slug}}').value = document.getElementById('seats-{{.Slug}}').value === 'custom' ? document.getElementById('custom-seats-{{.Slug}}').value : document.getElementById('seats-{{.Slug}}').value">Buy Now</button>
 						</form>
 						<button
 							type="button"
@@ -34,10 +44,11 @@
 							hx-post="/cart/add/{{.Slug}}"
 							hx-target="#cart-drawer-content"
 							hx-swap="innerHTML"
+							hx-vals="js:{seats: document.getElementById('seats-{{.Slug}}').value === 'custom' ? document.getElementById('custom-seats-{{.Slug}}').value : document.getElementById('seats-{{.Slug}}').value}"
 							hx-on::after-request="document.getElementById('cart-drawer').classList.add('open')"
 						>+</button>
-					</div>
-								</article>
+					</div>							
+             </article>
 			{{end}}
 		{{else}}
 			<p>No products yet.</p>
