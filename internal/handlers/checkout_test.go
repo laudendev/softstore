@@ -218,8 +218,8 @@ func TestCartCheckoutUsesCorrectSeatTierPrice(t *testing.T) {
 	if len(mock.AddPriceCalls) != 1 {
 		t.Fatalf("expected 1 AddPrice call for the 3-seat tier, got %d", len(mock.AddPriceCalls))
 	}
-	if mock.AddPriceCalls[0].PriceCents != 3000 {
-		t.Errorf("expected 3000 cents (1000 * 3), got %d", mock.AddPriceCalls[0].PriceCents)
+	if mock.AddPriceCalls[0].PriceCents != 2550 {
+		t.Errorf("expected 2550 cents (1000 * 3 * 0.85 discount), got %d", mock.AddPriceCalls[0].PriceCents)
 	}
 }
 
@@ -251,8 +251,8 @@ func TestCheckoutWithMultipleSeatsUsesCorrectPrice(t *testing.T) {
 	if len(mock.AddPriceCalls) != 1 {
 		t.Fatalf("expected 1 AddPrice call, got %d", len(mock.AddPriceCalls))
 	}
-	if mock.AddPriceCalls[0].PriceCents != 6000 {
-		t.Errorf("expected 6000 cents (1500 * 4), got %d", mock.AddPriceCalls[0].PriceCents)
+	if mock.AddPriceCalls[0].PriceCents != 5100 {
+		t.Errorf("expected 5100 cents (1500 * 4 * 0.85 discount), got %d", mock.AddPriceCalls[0].PriceCents)
 	}
 
 	call := mock.StartPurchaseCalls[0]

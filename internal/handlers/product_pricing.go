@@ -9,6 +9,29 @@ import (
 	"softstore/internal/payments"
 )
 
+// deviceDiscountTiers maps a device count to its discount fraction off
+// the per-device base price. Tiers are stepped (not a smooth formula) so
+// the pricing is easy to state plainly to a buyer: "10-14 devices: 25%
+// off," etc. Capped at 35% — even a 24-device purchase remains solidly
+// profitable, since there's no real per-device cost increase behind the
+// scenes to justify discounting further.
+func deviceDiscountTiers(seats int64) float64 {
+	switch {
+	case seats <= 1:
+		return 0
+	case seats == 2:
+		return 0.10
+	case seats <= 4:
+		return 0.15
+	case seats <= 9:
+		return 0.20
+	case seats <= 14:
+		return 0.25
+	default: // 15-24
+		return 0.35
+	}
+}
+
 // GetOrCreatePriceForSeats returns the Stripe Price ID a buyer should be
 // charged for purchasing the given product at the given seat count. The
 // product's own stripe_price_id (registered at creation time) is always
@@ -34,11 +57,16 @@ func GetOrCreatePriceForSeats(conn *sql.DB, provider payments.Provider, product 
 		return "", fmt.Errorf("look up existing product price: %w", err)
 	}
 
+	discount := deviceDiscountTiers(seats)
+	perDeviceCents := int64(float64(product.PriceCents) * (1 - discount))
+	totalCents := perDeviceCents * seats
+
 	registered, err := provider.AddPrice(payments.AdditionalPrice{
 		ProviderProductID: product.StripeProductID,
-		PriceCents:        product.PriceCents * seats,
+		PriceCents:        totalCents,
 		Currency:          "usd",
 	})
+
 	if err != nil {
 		return "", fmt.Errorf("create provider price for %d seats: %w", seats, err)
 	}

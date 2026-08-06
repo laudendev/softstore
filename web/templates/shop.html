@@ -26,9 +26,9 @@
                     <p class="price">${{.PriceDollars}}</p>
                     	<div class="seat-picker">
 						<select class="seat-select" id="seats-{{.Slug}}" onchange="document.getElementById('custom-seats-{{.Slug}}').style.display = this.value === 'custom' ? 'inline-block' : 'none'">
-							<option value="1">1 seat</option>
-							<option value="2">2 seats</option>
-							<option value="3">3 seats</option>
+							<option value="1">1 device</option>
+							<option value="2">2 devices</option>
+							<option value="3">3 devices</option>
 							<option value="custom">Custom…</option>
 						</select>
 						<input type="number" id="custom-seats-{{.Slug}}" class="seat-custom-input" min="1" max="24" value="4" style="display:none" aria-label="Custom seat count">

@@ -61,8 +61,8 @@ func TestGetOrCreatePriceForSeatsCreatesNewTier(t *testing.T) {
 		t.Fatalf("expected 1 AddPrice call, got %d", len(mock.AddPriceCalls))
 	}
 	call := mock.AddPriceCalls[0]
-	if call.PriceCents != 3000 {
-		t.Errorf("expected 3000 cents (1000 * 3 seats), got %d", call.PriceCents)
+	if call.PriceCents != 2550 {
+		t.Errorf("expected 2550 cents (1000 * 3 seats * 0.85 discount), got %d", call.PriceCents)
 	}
 	if call.ProviderProductID != "prod_base2" {
 		t.Errorf("expected product id 'prod_base2', got %q", call.ProviderProductID)
@@ -131,5 +131,29 @@ func TestGetOrCreatePriceForSeatsProviderError(t *testing.T) {
 
 	if _, lookupErr := db.GetProductPrice(conn, p.ID, 2); lookupErr == nil {
 		t.Error("expected no product_prices row to be saved when provider call fails")
+	}
+}
+
+func TestDeviceDiscountTiers(t *testing.T) {
+	cases := []struct {
+		seats int64
+		want  float64
+	}{
+		{1, 0},
+		{2, 0.10},
+		{3, 0.15},
+		{4, 0.15},
+		{5, 0.20},
+		{9, 0.20},
+		{10, 0.25},
+		{14, 0.25},
+		{15, 0.35},
+		{24, 0.35},
+	}
+	for _, c := range cases {
+		got := deviceDiscountTiers(c.seats)
+		if got != c.want {
+			t.Errorf("seats=%d: expected discount %.2f, got %.2f", c.seats, c.want, got)
+		}
 	}
 }
