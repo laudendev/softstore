@@ -67,6 +67,19 @@ func (p *StripeProvider) AddPrice(req payments.AdditionalPrice) (payments.Regist
 	return payments.RegisteredItem{ProviderItemID: stripePrice.ID, ProviderProductID: req.ProviderProductID}, nil
 }
 
+// UpdateProductDescription sets the name/description on an existing
+// Stripe Product. Checkout reads a Price's product live at session
+// creation time, so this lets a shared product's checkout page show
+// which specific tier (e.g. "3 devices — 15% off") is being purchased,
+// without creating a separate Stripe Product per tier.
+func (p *StripeProvider) UpdateProductDescription(providerProductID, name, description string) error {
+	_, err := product.Update(providerProductID, &stripe.ProductParams{
+		Name:        stripe.String(name),
+		Description: stripe.String(description),
+	})
+	return err
+}
+
 func (p *StripeProvider) StartPurchase(req payments.PurchaseRequest) (payments.Purchase, error) {
 	lineItems := make([]*stripe.CheckoutSessionLineItemParams, 0, len(req.LineItems))
 	for _, li := range req.LineItems {

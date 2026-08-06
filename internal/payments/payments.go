@@ -59,5 +59,12 @@ type AdditionalPrice struct {
 type Provider interface {
 	RegisterItem(item SellableItem) (RegisteredItem, error)
 	AddPrice(req AdditionalPrice) (RegisteredItem, error)
+	// UpdateProductDescription sets the customer-visible name/description
+	// on an existing provider product. Checkout reads this live at
+	// session-creation time, so calling this right before StartPurchase
+	// lets a shared product's checkout page reflect which specific
+	// price tier (e.g. "3 devices — 15% off") the buyer is purchasing,
+	// without creating a new product per tier.
+	UpdateProductDescription(providerProductID, name, description string) error
 	StartPurchase(req PurchaseRequest) (Purchase, error)
 }
