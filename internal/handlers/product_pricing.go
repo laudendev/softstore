@@ -32,6 +32,25 @@ func deviceDiscountTiers(seats int64) float64 {
 	}
 }
 
+// UpdateCheckoutProductDescription sets the Stripe product's name and
+// description to reflect the specific device count and volume discount
+// about to be purchased, so Stripe's own checkout page shows this
+// clearly rather than a generic product name. Only meaningful for
+// multi-device purchases — a 1-device purchase uses the product's
+// normal registered name/description as-is, so this is a no-op then.
+func UpdateCheckoutProductDescription(provider payments.Provider, product *models.Product, seats int64) error {
+	if seats <= 1 {
+		return nil
+	}
+	discount := deviceDiscountTiers(seats)
+	name := fmt.Sprintf("%s (%d devices)", product.Name, seats)
+	description := fmt.Sprintf("%d-device license for %s", seats, product.Name)
+	if discount > 0 {
+		description = fmt.Sprintf("%s — %.0f%% volume discount applied", description, discount*100)
+	}
+	return provider.UpdateProductDescription(product.StripeProductID, name, description)
+}
+
 // GetOrCreatePriceForSeats returns the Stripe Price ID a buyer should be
 // charged for purchasing the given product at the given seat count. The
 // product's own stripe_price_id (registered at creation time) is always

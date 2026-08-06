@@ -26,18 +26,24 @@ func Checkout(conn *sql.DB, provider payments.Provider, baseURL string) http.Han
 			http.Error(w, "internal error", http.StatusInternalServerError)
 			return
 		}
-        seats := parseSeatsForm(r)
+        	seats := parseSeatsForm(r)
 		priceID, err := GetOrCreatePriceForSeats(conn, provider, product, seats)
 		if err != nil {
 			log.Println("checkout, resolve price for seats:", err)
 			http.Error(w, "internal error", http.StatusInternalServerError)
 			return
 		}
+		if err := UpdateCheckoutProductDescription(provider, product, seats); err != nil {
+			// Not fatal — the purchase can still proceed with the
+			// product's normal name if this update fails; the checkout
+			// itself isn't broken, just slightly less descriptive.
+			log.Println("checkout, update product description:", err)
+		}
 
 		purchase, err := provider.StartPurchase(payments.PurchaseRequest{
 			LineItems: []payments.LineItem{
 				{ProviderItemID: priceID, Quantity: 1},
-			},
+			},		
 			Metadata: map[string]string{
 				"product": product.ProductCode,
 			},
@@ -82,12 +88,15 @@ func CartCheckout(conn *sql.DB, provider payments.Provider, baseURL string) http
 				http.Error(w, "internal error", http.StatusInternalServerError)
 				return
 			}
+			if err := UpdateCheckoutProductDescription(provider, &item.Product, item.Seats); err != nil {
+				log.Println("cart checkout, update product description:", err)
+			}
 			lineItems = append(lineItems, payments.LineItem{
 				ProviderItemID: priceID,
 				Quantity:       item.Quantity,
 			})
 			productCodes = append(productCodes, item.Product.ProductCode)
-		}
+				}
 		
 		purchase, err := provider.StartPurchase(payments.PurchaseRequest{
 			LineItems: lineItems,

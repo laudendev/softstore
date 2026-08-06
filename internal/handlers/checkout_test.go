@@ -260,3 +260,71 @@ func TestCheckoutWithMultipleSeatsUsesCorrectPrice(t *testing.T) {
 		t.Error("expected the 4-seat tier price, not the base price")
 	}
 }
+
+func TestCheckoutUpdatesProductDescriptionForMultiDevice(t *testing.T) {
+	conn := newTestDBWithSchema(t)
+	mock := mockprovider.New()
+
+	p := &models.Product{
+		Name: "Widget", Slug: "widget-desc", PriceCents: 1000,
+		StripePriceID: "price_base", StripeProductID: "prod_base",
+		ProductCode: "WGET", TaxCode: "txcd_10202000",
+	}
+	if err := db.CreateProduct(conn, p); err != nil {
+		t.Fatalf("seed product: %v", err)
+	}
+
+	form := "seats=3"
+	req := httptest.NewRequest(http.MethodPost, "/checkout/widget-desc", strings.NewReader(form))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.SetPathValue("slug", "widget-desc")
+	w := httptest.NewRecorder()
+
+	Checkout(conn, mock, "https://store.example.com")(w, req)
+
+	if w.Code != http.StatusSeeOther {
+		t.Fatalf("expected redirect, got %d: %s", w.Code, w.Body.String())
+	}
+
+	if len(mock.UpdateProductDescriptionCalls) != 1 {
+		t.Fatalf("expected 1 UpdateProductDescription call, got %d", len(mock.UpdateProductDescriptionCalls))
+	}
+	call := mock.UpdateProductDescriptionCalls[0]
+	if call.ProviderProductID != "prod_base" {
+		t.Errorf("expected product id 'prod_base', got %q", call.ProviderProductID)
+	}
+	if !strings.Contains(call.Name, "3 devices") {
+		t.Errorf("expected name to mention '3 devices', got %q", call.Name)
+	}
+	if !strings.Contains(call.Description, "15%") {
+		t.Errorf("expected description to mention the 15%% discount, got %q", call.Description)
+	}
+}
+
+func TestCheckoutSkipsProductDescriptionUpdateForSingleDevice(t *testing.T) {
+	conn := newTestDBWithSchema(t)
+	mock := mockprovider.New()
+
+	p := &models.Product{
+		Name: "Widget", Slug: "widget-single", PriceCents: 1000,
+		StripePriceID: "price_base_single", StripeProductID: "prod_base_single",
+		ProductCode: "WGT2", TaxCode: "txcd_10202000",
+	}
+	if err := db.CreateProduct(conn, p); err != nil {
+		t.Fatalf("seed product: %v", err)
+	}
+
+	req := httptest.NewRequest(http.MethodPost, "/checkout/widget-single", nil)
+	req.SetPathValue("slug", "widget-single")
+	w := httptest.NewRecorder()
+
+	Checkout(conn, mock, "https://store.example.com")(w, req)
+
+	if w.Code != http.StatusSeeOther {
+		t.Fatalf("expected redirect, got %d: %s", w.Code, w.Body.String())
+	}
+
+	if len(mock.UpdateProductDescriptionCalls) != 0 {
+		t.Errorf("expected no UpdateProductDescription call for a 1-device purchase, got %d", len(mock.UpdateProductDescriptionCalls))
+	}
+}
