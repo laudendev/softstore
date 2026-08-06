@@ -13,15 +13,16 @@
 			</div>
 			<div class="cart-item-actions">
 				<span class="cart-item-price">${{.LineTotalDollars}}</span>
-				<button
+                <button
 					type="button"
 					class="cart-remove-button"
 					hx-post="/cart/remove/{{.Product.Slug}}"
+					hx-vals='{"seats": "{{.Seats}}"}'
 					hx-target="#cart-drawer-content"
 					hx-swap="innerHTML"
 					aria-label="Remove {{.Product.Name}}"
 				>&times;</button>
-			</div>
+						</div>
 		</li>
 		{{- end}}
 	</ul>

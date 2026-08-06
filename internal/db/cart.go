@@ -93,11 +93,17 @@ func GetCartWithItems(conn *sql.DB, token string) (*models.Cart, error) {
 	return cart, nil
 }
 
-// RemoveCartItem deletes a single product from a cart.
-func RemoveCartItem(conn *sql.DB, cartID, productID int64) error {
+// RemoveCartItem deletes one specific product+seat-tier line item from a
+// cart. Since the same product can appear as multiple distinct line
+// items at different seat tiers, both product_id and seats are needed
+// to identify exactly which row to remove.
+func RemoveCartItem(conn *sql.DB, cartID, productID, seats int64) error {
+	if seats <= 0 {
+		seats = 1
+	}
 	_, err := conn.Exec(
-		`DELETE FROM cart_items WHERE cart_id = ? AND product_id = ?`,
-		cartID, productID,
+		`DELETE FROM cart_items WHERE cart_id = ? AND product_id = ? AND seats = ?`,
+		cartID, productID, seats,
 	)
 	return err
 }

@@ -115,7 +115,7 @@ func TestRemoveCartItem(t *testing.T) {
 	if err := AddCartItem(conn, cart.ID, p.ID, 1, 1); err != nil {
 		t.Fatalf("AddCartItem failed: %v", err)
 	}
-	if err := RemoveCartItem(conn, cart.ID, p.ID); err != nil {
+	if err := RemoveCartItem(conn, cart.ID, p.ID, 1); err != nil {
 		t.Fatalf("RemoveCartItem failed: %v", err)
 	}
 
@@ -186,5 +186,33 @@ func TestGetCartWithItemsIncludesStripeProductID(t *testing.T) {
 	}
 	if got.Items[0].Product.StripeProductID != "prod_x_real" {
 		t.Errorf("expected StripeProductID 'prod_x_real', got %q", got.Items[0].Product.StripeProductID)
+	}
+}
+
+func TestRemoveCartItemOnlyAffectsMatchingSeatTier(t *testing.T) {
+	conn := newTestDB(t)
+	p := seedProduct(t, conn, "multi-tier-widget", 1000)
+	cart, _ := GetOrCreateCart(conn, "token-multi-tier")
+
+	if err := AddCartItem(conn, cart.ID, p.ID, 1, 1); err != nil {
+		t.Fatalf("add 1-seat item: %v", err)
+	}
+	if err := AddCartItem(conn, cart.ID, p.ID, 2, 1); err != nil {
+		t.Fatalf("add 2-seat item: %v", err)
+	}
+
+	if err := RemoveCartItem(conn, cart.ID, p.ID, 2); err != nil {
+		t.Fatalf("RemoveCartItem failed: %v", err)
+	}
+
+	got, err := GetCartWithItems(conn, "token-multi-tier")
+	if err != nil {
+		t.Fatalf("GetCartWithItems failed: %v", err)
+	}
+	if len(got.Items) != 1 {
+		t.Fatalf("expected 1 remaining item (the 1-seat tier), got %d", len(got.Items))
+	}
+	if got.Items[0].Seats != 1 {
+		t.Errorf("expected the remaining item to be the 1-seat tier, got seats=%d", got.Items[0].Seats)
 	}
 }

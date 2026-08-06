@@ -113,6 +113,7 @@ func GetCart(conn *sql.DB, tmpl *template.Template) http.HandlerFunc {
 func RemoveFromCart(conn *sql.DB, tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		slug := r.PathValue("slug")
+		seats := parseSeatsForm(r)
 
 		product, err := db.GetProductBySlug(conn, slug)
 		if err != nil {
@@ -133,7 +134,7 @@ func RemoveFromCart(conn *sql.DB, tmpl *template.Template) http.HandlerFunc {
 			return
 		}
 
-		if err := db.RemoveCartItem(conn, cart.ID, product.ID); err != nil {
+		if err := db.RemoveCartItem(conn, cart.ID, product.ID, seats); err != nil {
 			log.Println("remove from cart, delete item:", err)
 			http.Error(w, "internal error", http.StatusInternalServerError)
 			return
