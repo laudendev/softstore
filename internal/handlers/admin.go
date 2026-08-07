@@ -108,7 +108,7 @@ func AdminCreateProduct(conn *sql.DB, provider payments.Provider) http.HandlerFu
 
 		registered, err := provider.RegisterItem(payments.SellableItem{
 			Name:        fmt.Sprintf("%s (1 device)", name),
-			Description: description,
+			Description: fmt.Sprintf("1-device license for %s", description),
 			PriceCents:  priceCents,
 			Currency:    "usd",
 			TaxCategory: taxCode,

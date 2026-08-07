@@ -40,7 +40,7 @@ func UpdateCheckoutProductDescription(provider payments.Provider, product *model
 	}
 	discount := deviceDiscountTiers(seats)
 	name := fmt.Sprintf("%s (%d devices)", product.Name, seats)
-	description := fmt.Sprintf("%d-device license for %s", seats, product.Name)
+	description := fmt.Sprintf("%d-device license for %s", seats, product.Description)
 	if discount > 0 {
 		description = fmt.Sprintf("%s — %.0f%% volume discount applied", description, discount*100)
 	}
@@ -77,7 +77,7 @@ func GetOrCreatePriceForSeats(conn *sql.DB, provider payments.Provider, product 
 	totalCents := perDeviceCents * seats
 
 	name := fmt.Sprintf("%s (%d devices)", product.Name, seats)
-	description := fmt.Sprintf("%d-device license for %s", seats, product.Name)
+	description := fmt.Sprintf("%d-device license for %s", seats, product.Description)
 	if discount > 0 {
 		description = fmt.Sprintf("%s — %.0f%% volume discount applied", description, discount*100)
 	}
