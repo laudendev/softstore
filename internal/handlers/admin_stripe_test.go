@@ -46,8 +46,8 @@ func TestAdminCreateProductSuccess(t *testing.T) {
 		t.Fatalf("expected 1 RegisterItem call, got %d", len(mock.RegisterItemCalls))
 	}
 	call := mock.RegisterItemCalls[0]
-	if call.Name != "Test Widget" {
-		t.Errorf("expected provider call name 'Test Widget', got %q", call.Name)
+	if call.Name != "Test Widget (1 device)" {
+		t.Errorf("expected provider call name 'Test Widget (1 device)', got %q", call.Name)
 	}
 	if call.PriceCents != 1999 {
 		t.Errorf("expected provider call price 1999 cents, got %d", call.PriceCents)

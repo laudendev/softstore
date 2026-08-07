@@ -107,7 +107,7 @@ func AdminCreateProduct(conn *sql.DB, provider payments.Provider) http.HandlerFu
 		taxCode := r.FormValue("tax_code")
 
 		registered, err := provider.RegisterItem(payments.SellableItem{
-			Name:        name,
+			Name:        fmt.Sprintf("%s (1 device)", name),
 			Description: description,
 			PriceCents:  priceCents,
 			Currency:    "usd",
