@@ -23,12 +23,8 @@ func deviceDiscountTiers(seats int64) float64 {
 		return 0.10
 	case seats <= 4:
 		return 0.15
-	case seats <= 9:
+	default: // 5-6
 		return 0.20
-	case seats <= 14:
-		return 0.25
-	default: // 15-24
-		return 0.35
 	}
 }
 
@@ -80,16 +76,30 @@ func GetOrCreatePriceForSeats(conn *sql.DB, provider payments.Provider, product 
 	perDeviceCents := int64(float64(product.PriceCents) * (1 - discount))
 	totalCents := perDeviceCents * seats
 
-	registered, err := provider.AddPrice(payments.AdditionalPrice{
-		ProviderProductID: product.StripeProductID,
-		PriceCents:        totalCents,
-		Currency:          "usd",
-	})
-
-	if err != nil {
-		return "", fmt.Errorf("create provider price for %d seats: %w", seats, err)
+	name := fmt.Sprintf("%s (%d devices)", product.Name, seats)
+	description := fmt.Sprintf("%d-device license for %s", seats, product.Name)
+	if discount > 0 {
+		description = fmt.Sprintf("%s — %.0f%% volume discount applied", description, discount*100)
 	}
 
+	// Each seat tier gets its own dedicated Stripe Product+Price, created
+	// once and reused forever — not a Price attached to the shared base
+	// Product. Sharing one Product across tiers and mutating its
+	// description at checkout time doesn't work: a cart containing
+	// multiple tiers of the same product needs each line item to show
+	// its own tier correctly at the same time, which a single mutable
+	// Product description can never do.
+	registered, err := provider.RegisterItem(payments.SellableItem{
+		Name:        name,
+		Description: description,
+		PriceCents:  totalCents,
+		Currency:    "usd",
+		TaxCategory: product.TaxCode,
+	})
+	if err != nil {
+		return "", fmt.Errorf("create provider product+price for %d seats: %w", seats, err)
+	}
+	
 	if _, err := db.CreateProductPrice(conn, product.ID, seats, registered.ProviderItemID); err != nil {
 		return "", fmt.Errorf("record new product price: %w", err)
 	}

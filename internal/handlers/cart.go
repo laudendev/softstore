@@ -24,8 +24,8 @@ func parseSeatsForm(r *http.Request) int64 {
 	if err != nil || seats < 1 {
 		return 1
 	}
-	if seats > 24 {
-		return 24
+	if seats > 6 {
+		return 6
 	}
 	return seats
 }

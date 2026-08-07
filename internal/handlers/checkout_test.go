@@ -215,11 +215,11 @@ func TestCartCheckoutUsesCorrectSeatTierPrice(t *testing.T) {
 		t.Error("expected the 3-seat tier price, not the base 1-seat price")
 	}
 
-	if len(mock.AddPriceCalls) != 1 {
-		t.Fatalf("expected 1 AddPrice call for the 3-seat tier, got %d", len(mock.AddPriceCalls))
+	if len(mock.RegisterItemCalls) != 1 {
+		t.Fatalf("expected 1 AddPrice call for the 3-seat tier, got %d", len(mock.RegisterItemCalls))
 	}
-	if mock.AddPriceCalls[0].PriceCents != 2550 {
-		t.Errorf("expected 2550 cents (1000 * 3 * 0.85 discount), got %d", mock.AddPriceCalls[0].PriceCents)
+	if mock.RegisterItemCalls[0].PriceCents != 2550 {
+		t.Errorf("expected 2550 cents (1000 * 3 * 0.85 discount), got %d", mock.RegisterItemCalls[0].PriceCents)
 	}
 }
 
@@ -248,11 +248,11 @@ func TestCheckoutWithMultipleSeatsUsesCorrectPrice(t *testing.T) {
 		t.Fatalf("expected redirect, got %d: %s", w.Code, w.Body.String())
 	}
 
-	if len(mock.AddPriceCalls) != 1 {
-		t.Fatalf("expected 1 AddPrice call, got %d", len(mock.AddPriceCalls))
+	if len(mock.RegisterItemCalls) != 1 {
+		t.Fatalf("expected 1 AddPrice call, got %d", len(mock.RegisterItemCalls))
 	}
-	if mock.AddPriceCalls[0].PriceCents != 5100 {
-		t.Errorf("expected 5100 cents (1500 * 4 * 0.85 discount), got %d", mock.AddPriceCalls[0].PriceCents)
+	if mock.RegisterItemCalls[0].PriceCents != 5100 {
+		t.Errorf("expected 5100 cents (1500 * 4 * 0.85 discount), got %d", mock.RegisterItemCalls[0].PriceCents)
 	}
 
 	call := mock.StartPurchaseCalls[0]
@@ -261,7 +261,7 @@ func TestCheckoutWithMultipleSeatsUsesCorrectPrice(t *testing.T) {
 	}
 }
 
-func TestCheckoutUpdatesProductDescriptionForMultiDevice(t *testing.T) {
+func TestCheckoutCreatesDistinctlyNamedProductForMultiDevice(t *testing.T) {
 	conn := newTestDBWithSchema(t)
 	mock := mockprovider.New()
 
@@ -286,13 +286,10 @@ func TestCheckoutUpdatesProductDescriptionForMultiDevice(t *testing.T) {
 		t.Fatalf("expected redirect, got %d: %s", w.Code, w.Body.String())
 	}
 
-	if len(mock.UpdateProductDescriptionCalls) != 1 {
-		t.Fatalf("expected 1 UpdateProductDescription call, got %d", len(mock.UpdateProductDescriptionCalls))
+	if len(mock.RegisterItemCalls) != 1 {
+		t.Fatalf("expected 1 RegisterItem call for the new tier's dedicated product, got %d", len(mock.RegisterItemCalls))
 	}
-	call := mock.UpdateProductDescriptionCalls[0]
-	if call.ProviderProductID != "prod_base" {
-		t.Errorf("expected product id 'prod_base', got %q", call.ProviderProductID)
-	}
+	call := mock.RegisterItemCalls[0]
 	if !strings.Contains(call.Name, "3 devices") {
 		t.Errorf("expected name to mention '3 devices', got %q", call.Name)
 	}
@@ -301,30 +298,3 @@ func TestCheckoutUpdatesProductDescriptionForMultiDevice(t *testing.T) {
 	}
 }
 
-func TestCheckoutSkipsProductDescriptionUpdateForSingleDevice(t *testing.T) {
-	conn := newTestDBWithSchema(t)
-	mock := mockprovider.New()
-
-	p := &models.Product{
-		Name: "Widget", Slug: "widget-single", PriceCents: 1000,
-		StripePriceID: "price_base_single", StripeProductID: "prod_base_single",
-		ProductCode: "WGT2", TaxCode: "txcd_10202000",
-	}
-	if err := db.CreateProduct(conn, p); err != nil {
-		t.Fatalf("seed product: %v", err)
-	}
-
-	req := httptest.NewRequest(http.MethodPost, "/checkout/widget-single", nil)
-	req.SetPathValue("slug", "widget-single")
-	w := httptest.NewRecorder()
-
-	Checkout(conn, mock, "https://store.example.com")(w, req)
-
-	if w.Code != http.StatusSeeOther {
-		t.Fatalf("expected redirect, got %d: %s", w.Code, w.Body.String())
-	}
-
-	if len(mock.UpdateProductDescriptionCalls) != 0 {
-		t.Errorf("expected no UpdateProductDescription call for a 1-device purchase, got %d", len(mock.UpdateProductDescriptionCalls))
-	}
-}

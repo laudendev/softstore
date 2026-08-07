@@ -32,7 +32,7 @@ func TestGetOrCreatePriceForSeatsReturnsBasePriceFor1Seat(t *testing.T) {
 	if priceID != "price_base" {
 		t.Errorf("expected base price id for 1 seat, got %q", priceID)
 	}
-	if len(mock.AddPriceCalls) != 0 {
+	if len(mock.RegisterItemCalls) != 0 {
 		t.Error("expected provider NOT to be called for the 1-seat tier")
 	}
 }
@@ -57,15 +57,15 @@ func TestGetOrCreatePriceForSeatsCreatesNewTier(t *testing.T) {
 	if priceID == "" || priceID == "price_base2" {
 		t.Errorf("expected a distinct new price id for 3 seats, got %q", priceID)
 	}
-	if len(mock.AddPriceCalls) != 1 {
-		t.Fatalf("expected 1 AddPrice call, got %d", len(mock.AddPriceCalls))
+	if len(mock.RegisterItemCalls) != 1 {
+		t.Fatalf("expected 1 AddPrice call, got %d", len(mock.RegisterItemCalls))
 	}
-	call := mock.AddPriceCalls[0]
+	call := mock.RegisterItemCalls[0]
 	if call.PriceCents != 2550 {
 		t.Errorf("expected 2550 cents (1000 * 3 seats * 0.85 discount), got %d", call.PriceCents)
 	}
-	if call.ProviderProductID != "prod_base2" {
-		t.Errorf("expected product id 'prod_base2', got %q", call.ProviderProductID)
+	if call.Name != "Widget (3 devices)" {
+		t.Errorf("expected name 'Widget (3 devices)', got %q", call.Name)
 	}
 
 	saved, err := db.GetProductPrice(conn, p.ID, 3)
@@ -103,15 +103,15 @@ func TestGetOrCreatePriceForSeatsReusesExistingTier(t *testing.T) {
 	if first != second {
 		t.Errorf("expected the same price id on repeat calls, got %q and %q", first, second)
 	}
-	if len(mock.AddPriceCalls) != 1 {
-		t.Errorf("expected AddPrice to be called only once (first time), got %d calls", len(mock.AddPriceCalls))
+	if len(mock.RegisterItemCalls) != 1 {
+		t.Errorf("expected AddPrice to be called only once (first time), got %d calls", len(mock.RegisterItemCalls))
 	}
 }
 
 func TestGetOrCreatePriceForSeatsProviderError(t *testing.T) {
 	conn := newTestDBWithSchema(t)
 	mock := mockprovider.New()
-	mock.AddPriceFunc = func(payments.AdditionalPrice) (payments.RegisteredItem, error) {
+	mock.RegisterItemFunc = func(payments.SellableItem) (payments.RegisteredItem, error) {
 		return payments.RegisteredItem{}, errTestProviderDown
 	}
 
@@ -144,11 +144,7 @@ func TestDeviceDiscountTiers(t *testing.T) {
 		{3, 0.15},
 		{4, 0.15},
 		{5, 0.20},
-		{9, 0.20},
-		{10, 0.25},
-		{14, 0.25},
-		{15, 0.35},
-		{24, 0.35},
+		{6, 0.20},
 	}
 	for _, c := range cases {
 		got := deviceDiscountTiers(c.seats)

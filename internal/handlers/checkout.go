@@ -88,9 +88,7 @@ func CartCheckout(conn *sql.DB, provider payments.Provider, baseURL string) http
 				http.Error(w, "internal error", http.StatusInternalServerError)
 				return
 			}
-			if err := UpdateCheckoutProductDescription(provider, &item.Product, item.Seats); err != nil {
-				log.Println("cart checkout, update product description:", err)
-			}
+
 			lineItems = append(lineItems, payments.LineItem{
 				ProviderItemID: priceID,
 				Quantity:       item.Quantity,
