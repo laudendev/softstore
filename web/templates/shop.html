@@ -23,28 +23,24 @@
 				<div class="product-body">
 					<h3>{{.Name}}</h3>
 					<p class="description">{{.Description}}</p>
-                    <p class="price">${{.PriceDollars}}</p>
-                    	<div class="seat-picker">
-						<select class="seat-select" id="seats-{{.Slug}}" onchange="document.getElementById('custom-seats-{{.Slug}}').style.display = this.value === 'custom' ? 'inline-block' : 'none'">
-							<option value="1">1 device</option>
-							<option value="2">2 devices</option>
-							<option value="3">3 devices</option>
-							<option value="custom">Custom…</option>
-						</select>
-						<input type="number" id="custom-seats-{{.Slug}}" class="seat-custom-input" min="1" max="6" value="4" style="display:none" aria-label="Custom seat count">
+                    <p class="price" id="price-{{.Slug}}" data-base-price-dollars="{{.PriceDollars}}">${{.PriceDollars}}</p>
+                    <div class="seat-picker" data-base-price="{{.PriceCents}}">
+						<button type="button" class="seat-step-btn" aria-label="Fewer devices" onclick="softstoreStepSeats('{{.Slug}}', -1)">&minus;</button>
+						<span class="seat-count-display" id="seats-{{.Slug}}" data-seats="1">1 device</span>
+						<button type="button" class="seat-step-btn" aria-label="More devices" onclick="softstoreStepSeats('{{.Slug}}', 1)">+</button>
 					</div>
-					<div class="product-actions">
+                    						<div class="product-actions">
 						<form method="POST" action="/checkout/{{.Slug}}">
 							<input type="hidden" name="seats" id="checkout-seats-{{.Slug}}" value="1">
-							<button type="submit" class="buy-button" onclick="document.getElementById('checkout-seats-{{.Slug}}').value = document.getElementById('seats-{{.Slug}}').value === 'custom' ? document.getElementById('custom-seats-{{.Slug}}').value : document.getElementById('seats-{{.Slug}}').value">Buy Now</button>
-						</form>
+								<button type="submit" class="buy-button" onclick="document.getElementById('checkout-seats-{{.Slug}}').value = document.getElementById('seats-{{.Slug}}').dataset.seats">Buy Now</button>
+                        </form>
 						<button
 							type="button"
 							class="add-to-cart-button"
 							hx-post="/cart/add/{{.Slug}}"
 							hx-target="#cart-drawer-content"
 							hx-swap="innerHTML"
-							hx-vals="js:{seats: document.getElementById('seats-{{.Slug}}').value === 'custom' ? document.getElementById('custom-seats-{{.Slug}}').value : document.getElementById('seats-{{.Slug}}').value}"
+                            hx-vals="js:{seats: document.getElementById('seats-{{.Slug}}').dataset.seats}"
 							hx-on::after-request="document.getElementById('cart-drawer').classList.add('open')"
 						>+</button>
 					</div>							

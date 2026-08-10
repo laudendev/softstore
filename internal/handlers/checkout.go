@@ -33,13 +33,8 @@ func Checkout(conn *sql.DB, provider payments.Provider, baseURL string) http.Han
 			http.Error(w, "internal error", http.StatusInternalServerError)
 			return
 		}
-		if err := UpdateCheckoutProductDescription(provider, product, seats); err != nil {
-			// Not fatal — the purchase can still proceed with the
-			// product's normal name if this update fails; the checkout
-			// itself isn't broken, just slightly less descriptive.
-			log.Println("checkout, update product description:", err)
-		}
 
+		
 		purchase, err := provider.StartPurchase(payments.PurchaseRequest{
 			LineItems: []payments.LineItem{
 				{ProviderItemID: priceID, Quantity: 1},
