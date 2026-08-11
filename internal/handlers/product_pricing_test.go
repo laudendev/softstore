@@ -147,7 +147,7 @@ func TestDeviceDiscountTiers(t *testing.T) {
 		{6, 0.20},
 	}
 	for _, c := range cases {
-		got := deviceDiscountTiers(c.seats)
+		got := models.DeviceDiscountTiers(c.seats)
 		if got != c.want {
 			t.Errorf("seats=%d: expected discount %.2f, got %.2f", c.seats, c.want, got)
 		}

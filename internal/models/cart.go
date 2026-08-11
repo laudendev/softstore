@@ -21,14 +21,35 @@ type CartItem struct {
 	CreatedAt  time.Time
 }
 
-// LineTotalCents is one cart item's total price: base price * seats *
-// quantity — e.g. a $10 product at 3 seats, quantity 2, costs $60.
+// DeviceDiscountTiers maps a device count to its discount fraction off
+// the per-device base price. Shared between cart display math and the
+// checkout pricing logic (internal/handlers/product_pricing.go), so
+// both layers apply the exact same discount — this is the single
+// source of truth for the tier table.
+func DeviceDiscountTiers(seats int64) float64 {
+	switch {
+	case seats <= 1:
+		return 0
+	case seats == 2:
+		return 0.10
+	case seats <= 4:
+		return 0.15
+	default: // 5-6
+		return 0.20
+	}
+}
+
+// LineTotalCents is one cart item's total price: discounted per-device
+// price * seats * quantity — e.g. a $10 product at 3 seats (15% off)
+// and quantity 2 costs (10 * 0.85 * 3) * 2 = $51, not $60.
 func (ci CartItem) LineTotalCents() int64 {
 	seats := ci.Seats
 	if seats <= 0 {
 		seats = 1
 	}
-	return ci.Product.PriceCents * seats * ci.Quantity
+	discount := DeviceDiscountTiers(seats)
+	perDeviceCents := int64(float64(ci.Product.PriceCents) * (1 - discount))
+	return perDeviceCents * seats * ci.Quantity
 }
 
 // LineTotalDollars formats LineTotalCents as a dollar string.
