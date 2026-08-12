@@ -3,22 +3,22 @@
         <defs>
             <filter id="goo-dark">
                 <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="b"/>
-                <feColorMatrix in="b" mode="matrix"
+                <feColorMatrix in="b" mode="matrix" 
                     values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -9"/>
             </filter>
             <radialGradient id="blob-dark" cx="42%" cy="32%" r="80%">
-                <stop offset="0%" stop-color="#E600C2"/>
-                <stop offset="100%" stop-color="#8A0072"/>
+                <stop offset="0%" stop-color="#FFFFFF"/>
+                <stop offset="100%" stop-color="#BFDBFE"/>
             </radialGradient>
             <clipPath id="glass-dark">
                 <path d="M 59 28 L 76 28 L 85 86 L 50 86 Z"/>
             </clipPath>
         </defs>
 
-        <rect x="0" y="0" width="135.46667" height="135.46667" rx="20" fill="#39FF14"/>
+        <rect x="0" y="0" width="135.46667" height="135.46667" rx="20" fill="#3B82F6"/>
 
         <g clip-path="url(#glass-dark)">
-            <rect x="50" y="28" width="35" height="58" fill="#0A0A0F" opacity="0.35"/>
+            <rect x="50" y="28" width="35" height="58" fill="#1E3A8A" opacity="0.35"/>
             <g filter="url(#goo-dark)" fill="url(#blob-dark)">
                 <ellipse cx="67.5" cy="86" rx="17" ry="8"/>
                 <circle cx="64" cy="72" r="8">
@@ -32,27 +32,27 @@
             </g>
         </g>
 
-        <path d="M 60 20
-                 Q 59 20 59 22
-                 L 50 86
-                 L 58 98
-                 L 49 114
-                 Q 48 116 51 116
-                 L 84 116
-                 Q 87 116 86 114
-                 L 77 98
-                 L 85 86
-                 L 76 22
-                 Q 76 20 75 20
+        <path d="M 60 20 
+                 Q 59 20 59 22 
+                 L 50 86 
+                 L 58 98 
+                 L 49 114 
+                 Q 48 116 51 116 
+                 L 84 116 
+                 Q 87 116 86 114 
+                 L 77 98 
+                 L 85 86 
+                 L 76 22 
+                 Q 76 20 75 20 
                  Z"
-              fill="none" stroke="#0A0A0F" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>
+              fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>
 
-        <path d="M 58 31 L 77 31" stroke="#0A0A0F" stroke-width="3" stroke-linecap="round"/>
+        <path d="M 58 31 L 77 31" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
     </svg>
 
     <text x="150" y="65" font-family="'JetBrains Mono', 'Fira Code', monospace" font-weight="500"
-          font-size="34" fill="#E4E4E7">lauden<tspan fill="#39FF14">.dev</tspan></text>
+          font-size="34" fill="#FFFFFF">lauden<tspan fill="#3B82F6">.dev</tspan></text>
 
-    <text x="150" y="98" font-family="'JetBrains Mono', 'Fira Code', monospace" font-weight="400"
-          font-size="19" fill="#9CA3AF" letter-spacing="0.5">software &amp; systems</text>
+    <text x="150" y="98" font-family="'JetBrains Mono', 'Fira Code', monospace" font-weight="400" 
+          font-size="21" fill="#FFFFFF" letter-spacing="0.5">software &amp; systems</text>
 </svg>
