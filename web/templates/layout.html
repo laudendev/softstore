@@ -71,11 +71,7 @@
 	let label = 'Linux (x86-64)';
 	let url = 'https://github.com/laudendev/launcher/releases/download/v0.1.0/lauden-dev-launcher';
 
-	if (/Mac/i.test(platform) || /Macintosh/i.test(ua)) {
-        os = 'macos';
-		label = 'macOS (Apple Silicon)';
-		url = 'https://github.com/laudendev/launcher/releases/download/v0.1.0/shop.lauden.dev-Launcher-arm64.dmg';
-	} else if (/Win/i.test(platform) || /Windows/i.test(ua)) {
+	if (/Win/i.test(platform) || /Windows/i.test(ua)) {
 		os = 'windows';
 		label = 'Windows';
 		url = 'https://github.com/laudendev/launcher/releases/download/v0.1.0/lauden-dev-launcher.exe';
