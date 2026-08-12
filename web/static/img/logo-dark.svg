@@ -51,7 +51,7 @@
     </svg>
 
     <text x="150" y="65" font-family="'JetBrains Mono', 'Fira Code', monospace" font-weight="500"
-          font-size="34" fill="#FFFFFF">lauden<tspan fill="#3B82F6">.dev</tspan></text>
+          font-size="34" fill="#FFFFFF">lauden<tspan fill="#2E7CFF">.dev</tspan></text>
 
     <text x="150" y="98" font-family="'JetBrains Mono', 'Fira Code', monospace" font-weight="400" 
           font-size="21" fill="#FFFFFF" letter-spacing="0.5">software &amp; systems</text>
