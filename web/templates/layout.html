@@ -57,6 +57,34 @@
 	</footer>
 
 <script>
+// Best-effort client-side OS detection for the launcher download button.
+// Not authoritative — the "Not your platform?" picker below it is the
+// real fallback for anyone this gets wrong.
+(function() {
+	const noteEl = document.getElementById('launcher-platform-note');
+	const primaryEl = document.getElementById('launcher-primary-download');
+	if (!noteEl || !primaryEl) return;
+
+	const ua = navigator.userAgent || '';
+	const platform = navigator.platform || '';
+	let os = 'linux';
+	let label = 'Linux (x86-64)';
+	let url = 'https://github.com/laudendev/launcher/releases/download/v0.1.0/lauden-dev-launcher';
+
+	if (/Mac/i.test(platform) || /Macintosh/i.test(ua)) {
+		os = 'macos';
+		label = 'macOS';
+		url = 'https://github.com/laudendev/launcher/releases/download/v0.1.0/shop.lauden.dev-Launcher.dmg';
+	} else if (/Win/i.test(platform) || /Windows/i.test(ua)) {
+		os = 'windows';
+		label = 'Windows';
+		url = 'https://github.com/laudendev/launcher/releases/download/v0.1.0/lauden-dev-launcher.exe';
+	}
+
+	noteEl.textContent = label + ' — detected automatically';
+	primaryEl.href = url;
+})();
+
 // Volume discount tiers, mirroring internal/handlers/product_pricing.go's
 // deviceDiscountTiers — kept in sync manually since this is a small,
 // stable pricing table, not worth a server round-trip just to preview.

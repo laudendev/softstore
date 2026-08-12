@@ -943,3 +943,27 @@ footer p {
 	min-height: 1.1em;
 }
 
+.launcher-other-platforms {
+	margin-top: 0.75rem;
+	font-size: 0.85rem;
+}
+
+.launcher-other-platforms summary {
+	cursor: pointer;
+	color: var(--ink-soft);
+}
+
+.launcher-other-platforms summary:hover {
+	color: var(--brand-blue);
+}
+
+.launcher-alt-link {
+	display: block;
+	margin-top: 0.5rem;
+	color: var(--brand-blue);
+	text-decoration: none;
+}
+
+.launcher-alt-link:hover {
+	text-decoration: underline;
+}
