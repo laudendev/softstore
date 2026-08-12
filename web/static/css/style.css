@@ -93,7 +93,6 @@ main {
 
 .hero h1 .accent {
 	color: var(--brand-blue);
-	text-shadow: 0 0 12px rgba(59, 130, 246, 0.35);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -397,17 +396,17 @@ footer p {
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --paper: #1C1C22;
-		--ink: #E4E4E7;
-		--ink-soft: #A8AAB3;
+        --paper: #26262E;
+		--ink: #F0F0F2;
+		--ink-soft: #B4B6C0;
 		--brand-blue: #00F0FF;
-		--brand-blue-soft: #16404A;
+		--brand-blue-soft: #1A4550;
 		--go-green: #39FF14;
-		--go-green-soft: #16350F;
+		--go-green-soft: #1A3A12;
 		--accent-purple: #FF10F0;
-		--border: #38383F;
-		--card-bg: #26262E;
-			}
+		--border: #454550;
+		--card-bg: #32323C;
+       			}
 
     .hero h1 .accent {
 		color: #00F0FF;
