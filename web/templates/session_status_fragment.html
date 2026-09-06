@@ -22,7 +22,22 @@
     <div class="receipt-next-steps">
 		<p class="receipt-next-steps-title">What's next</p>
 		<p>Grab the launcher, paste in your license key, and you're running — no account, no install wizard, no phone-home after the first run.</p>
-		<a href="https://quartermaster.lauden.dev/launcher" download class="launcher-button">Download Launcher</a>
+        			<a href="https://github.com/laudendev/launcher/releases/download/v0.1.0/lauden-dev-launcher" download id="launcher-primary-download" class="launcher-button">Download Launcher</a>
+			<div id="windows-smartscreen-notice" style="display: none; margin-top: 18px;">
+				<p class="download-note">Windows may show a "Windows protected your PC" warning on first run. Click <strong>More info</strong> → <strong>Run anyway</strong>.</p>
+			</div>
+			<script>
+				if (navigator.userAgent.indexOf('Windows') !== -1) {
+					document.getElementById('windows-smartscreen-notice').style.display = 'block';
+				}
+			</script>
+			<p class="launcher-platform-note" id="launcher-platform-note">Linux (x86-64)</p>
+			<details class="launcher-other-platforms">
+				<summary>Not your platform?</summary>
+				<a href="https://github.com/laudendev/launcher/releases/download/v0.1.0/lauden-dev-launcher" download class="launcher-alt-link">Linux (x86-64)</a>
+				<a href="https://github.com/laudendev/launcher/releases/latest/download/Lauden.Launcher.dmg" download class="launcher-alt-link">macOS (Apple Silicon)</a>
+				<a href="https://github.com/laudendev/launcher/releases/latest/download/lauden-dev-launcher.exe" download class="launcher-alt-link">Windows</a>
+			</details>
 	</div>
 	<p class="receipt-note">A copy of this receipt, including these keys, has also been emailed to you.</p>
 </div>
