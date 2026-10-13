@@ -1,8 +1,18 @@
 {{define "content"}}
 <section class="hero">
     <h1>Software, <span class="accent">frozen</span> forever by design.</h1>
-    <p>No spying, no lock-in, no subscriptions you forgot to cancel. You choose when it updates. Yours to keep or sell, unshackled. Verified by the platforms it runs on. Purpose driven by one developer.</p>
+    <p>No spying, no lock-in, no subscriptions you forgot to cancel. You choose when it updates. Yours to keep or sell, unshackled. Apple-notarized and Windows code-signed. Purpose driven by one developer.</p>
 </section>
+
+<div class="subscribe-inline">
+    <span class="subscribe-label">Sign up for product releases and updates.</span>
+    <form hx-post="/subscribe" hx-target="#subscribe-result" hx-swap="innerHTML" class="subscribe-form">
+        <input type="email" name="email" placeholder="name@example.com" required>
+        <button type="submit" class="subscribe-btn">Notify me</button>
+    </form>
+    <div id="subscribe-result"></div>
+</div>
+
 
 <section class="launcher-cta">
 	<h2>Already made a purchase?</h2>

@@ -60,7 +60,38 @@ func migrate(conn *sql.DB) error {
 		stripe_price_id TEXT NOT NULL,
 		created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		UNIQUE(product_id, seats)
+	);
+
+
+	CREATE TABLE IF NOT EXISTS subscribers (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		email TEXT NOT NULL UNIQUE,
+		status TEXT NOT NULL DEFAULT 'pending',
+		confirm_token TEXT NOT NULL,
+		unsubscribe_token TEXT NOT NULL,
+		created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+		confirmed_at DATETIME
 	);`
 	_, err := conn.Exec(schema)
+	if err != nil {
+		return err
+	}
+	return addSubscriberSourceColumn(conn)
+}
+
+// addSubscriberSourceColumn adds subscribers.source on databases created
+// before the column existed. Existing rows default to 'shop'. Safe to run on
+// every start: it does nothing when the column is already present.
+func addSubscriberSourceColumn(conn *sql.DB) error {
+	var n int
+	if err := conn.QueryRow(
+		`SELECT COUNT(*) FROM pragma_table_info('subscribers') WHERE name = 'source'`,
+	).Scan(&n); err != nil {
+		return err
+	}
+	if n > 0 {
+		return nil
+	}
+	_, err := conn.Exec(`ALTER TABLE subscribers ADD COLUMN source TEXT NOT NULL DEFAULT 'shop'`)
 	return err
 }

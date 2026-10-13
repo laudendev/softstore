@@ -50,3 +50,9 @@ func InternalAPISecret() string {
 func QuartermasterInternalURL() string {
 	return requireEnv("QUARTERMASTER_INTERNAL_URL")
 }
+
+// ResendAPIKey authenticates outbound transactional email (receipts,
+// newsletter confirmation/unsubscribe) via Resend.
+func ResendAPIKey() string {
+	return requireEnv("RESEND_API_KEY")
+}

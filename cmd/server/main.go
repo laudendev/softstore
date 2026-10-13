@@ -50,6 +50,10 @@ func main() {
 		"templates/thank_you.html",
 		"templates/session_status_fragment.html",
 	))
+	subscribeTmpl := template.Must(template.ParseFS(web.Templates,
+		"templates/layout.html",
+		"templates/subscribe.html",
+	))
 	cartTmpl := template.Must(template.ParseFS(web.Templates, "templates/cart_drawer.html",))
 
 	legalBaseTmpl := template.Must(template.ParseFS(web.Templates,
@@ -66,6 +70,12 @@ func main() {
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("ok"))
 	})
+
+    mux.HandleFunc("POST /subscribe", handlers.SubscribeSignup(database))
+	mux.HandleFunc("GET /subscribe/confirm", handlers.SubscribeConfirm(database, subscribeTmpl))
+	mux.HandleFunc("GET /subscribe/unsubscribe", handlers.SubscribeUnsubscribe(database, subscribeTmpl))
+
+
 	mux.HandleFunc("/", handlers.Shop(database, shopTmpl))
 	mux.HandleFunc("POST /checkout/{slug}", handlers.Checkout(database, provider, baseURL))
 	mux.HandleFunc("POST /cart/add/{slug}", handlers.AddToCart(database, cartTmpl, provider))

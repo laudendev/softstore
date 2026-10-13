@@ -77,8 +77,8 @@ main {
 
 /* Hero */
 .hero {
-	padding: 4.5rem 0 3rem;
-	text-align: center;
+	padding: 2.5rem 0 2.5rem;
+    text-align: center;
 }
 
 .hero h1 {
@@ -250,6 +250,83 @@ h2 {
 	padding: 0 4px;
 }
 
+
+.subscribe-inline {
+	text-align: center;
+	margin: 0rem 0 2.5rem;
+}
+
+.subscribe-label {
+	display: block;
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.85rem;
+	color: var(--ink-soft);
+	margin-bottom: 0.6rem;
+}
+
+.subscribe-form {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	max-width: 24em;
+	margin: 0 auto 0.6rem;
+}
+
+.subscribe-form input[type="email"] {
+	flex: 1;
+	min-width: 0;
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.85rem;
+	height: 2.4rem;
+    line-height: 2.4rem;
+	padding: 0 0.8rem;
+	border-radius: var(--radius-sm);
+	border: 1px solid var(--ink-soft);
+	background: rgba(255, 255, 255, 0.03);
+	color: inherit;
+	box-sizing: border-box;
+    margin: 0;
+}
+
+.subscribe-form button.subscribe-btn {
+	width: auto;
+	flex-shrink: 0;
+	height: 2.4rem;
+    line-height: 2.4rem;
+	background: transparent;
+	color: var(--brand-blue);
+	border: 1px solid var(--brand-blue);
+	font-size: 0.85rem;
+	padding: 0 1.1rem;
+	box-sizing: border-box;
+}
+
+.subscribe-form button.subscribe-btn:hover {
+	background: var(--brand-blue);
+	color: #FFFFFF;
+}
+
+#subscribe-result {
+	margin-top: 0.6rem;
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 0.8rem;
+}
+
+.subscribe-success {
+	color: var(--brand-blue);
+}
+
+.subscribe-error {
+	color: #EF4444;
+}
+
+@media (max-width: 600px) {
+	.subscribe-form {
+		flex-direction: column;
+		max-width: 20em;
+	}
+}
+
 /* Launcher CTA */
 .launcher-cta {
 	text-align: center;
@@ -319,6 +396,15 @@ h2 {
 		color: #0A0A0F;
 		box-shadow: 0 0 6px rgba(0, 240, 255, 0.25);
 	}
+
+    .subscribe-cta {
+		box-shadow: 0 0 0 1px var(--border);
+	}
+
+    .subscribe-form button:hover {
+		color: #0A0A0F;
+	}
+
 }
 
 /* Buttons */
@@ -392,6 +478,33 @@ footer p {
     font-size: 0.85rem;
     color: var(--ink-soft);
     margin: 0;
+}
+
+.footer-badges {
+	display: flex;
+	align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+	gap: 0.6rem;
+	margin: 0.8rem 0;
+}
+
+.footer-flag,
+.footer-keystone {
+	height: 70px;
+	width: auto;
+	flex-shrink: 0;
+}
+
+.footer-flag {
+	border-radius: 2px;
+}
+
+
+.footer-badges-caption {
+    margin: 0.6rem;
+    flex-basis: 100%;
+    text-align: center;
 }
 
 @media (prefers-color-scheme: dark) {
