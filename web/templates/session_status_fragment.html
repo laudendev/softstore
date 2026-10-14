@@ -21,20 +21,39 @@
 	{{end}}
     <div class="receipt-next-steps">
 		<p class="receipt-next-steps-title">What's next</p>
-		<p>Grab the launcher, paste in your license key, and you're running — no account, no install wizard, no phone-home after the first run.</p>
-        			<a href="https://github.com/laudendev/launcher/releases/download/v0.1.0/lauden-dev-launcher" download id="launcher-primary-download" class="launcher-button">Download Launcher</a>
+		<p>Grab the launcher, paste in your license key, and it downloads your software for this computer — no account, no phone-home after the first run. Open the downloaded file to install.</p>
+        			<a href="https://github.com/laudendev/launcher/releases/latest/download/lauden-dev-launcher-linux.tar.gz" download id="launcher-primary-download" class="launcher-button">Download Launcher</a>
 			<div id="windows-smartscreen-notice" style="display: none; margin-top: 18px;">
 				<p class="download-note">Windows may show a "Windows protected your PC" warning on first run. Click <strong>More info</strong> → <strong>Run anyway</strong>.</p>
 			</div>
 			<script>
-				if (navigator.userAgent.indexOf('Windows') !== -1) {
-					document.getElementById('windows-smartscreen-notice').style.display = 'block';
-				}
+				(function () {
+                                          var base = 'https://github.com/laudendev/launcher/releases/latest/download/';
+                                          var ua = navigator.userAgent;
+                                          var os = ua.indexOf('Windows') !== -1 ? 'windows' : (ua.indexOf('Macintosh') !== -1 ? 'macos' : 'linux');
+                                          var files = {
+                                                  windows: ['lauden-dev-launcher.exe', 'Windows'],
+                                                  macos: ['Lauden.Launcher.dmg', 'macOS (Apple Silicon)'],
+                                                  linux: ['lauden-dev-launcher-linux.tar.gz', 'Linux (x86-64)']
+                                          };
+                                          function apply() {
+                                                  document.getElementById('launcher-primary-download').href = base + files[os][0];
+                                                  document.getElementById('launcher-platform-note').textContent = files[os][1];
+                                                  if (os === 'windows') {
+                                                          document.getElementById('windows-smartscreen-notice').style.display = 'block';
+                                                  }
+                                          }
+                                          if (document.readyState === 'loading') {
+                                                  document.addEventListener('DOMContentLoaded', apply);
+                                          } else {
+                                                  apply();
+                                          }
+                                  })();
 			</script>
 			<p class="launcher-platform-note" id="launcher-platform-note">Linux (x86-64)</p>
 			<details class="launcher-other-platforms">
 				<summary>Not your platform?</summary>
-				<a href="https://github.com/laudendev/launcher/releases/download/v0.1.0/lauden-dev-launcher" download class="launcher-alt-link">Linux (x86-64)</a>
+				<a href="https://github.com/laudendev/launcher/releases/latest/download/lauden-dev-launcher-linux.tar.gz" download class="launcher-alt-link">Linux (x86-64)</a>
 				<a href="https://github.com/laudendev/launcher/releases/latest/download/Lauden.Launcher.dmg" download class="launcher-alt-link">macOS (Apple Silicon)</a>
 				<a href="https://github.com/laudendev/launcher/releases/latest/download/lauden-dev-launcher.exe" download class="launcher-alt-link">Windows</a>
 			</details>
