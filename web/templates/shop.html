@@ -40,10 +40,42 @@
 
 <section>
 	<h2>Available now</h2>
+        <div id="product-preview" class="product-preview-panel" aria-hidden="true"><iframe title="Product page preview" tabindex="-1" sandbox="allow-scripts" referrerpolicy="no-referrer"></iframe></div>
+        <script>
+        (function () {
+          var mq = window.matchMedia('(hover: hover) and (min-width: 1000px)');
+          var panel = document.getElementById('product-preview');
+          if (!panel) return;
+          var frame = panel.querySelector('iframe');
+          var timer = null;
+          function tile(el) { return el && el.closest ? el.closest('article.product[data-preview-url]') : null; }
+          function show(t) {
+            if (!mq.matches) return;
+            var url = t.getAttribute('data-preview-url');
+            if (frame.getAttribute('data-loaded') !== url) { frame.src = url; frame.setAttribute('data-loaded', url); }
+            panel.classList.add('open');
+          }
+          function hide() { clearTimeout(timer); panel.classList.remove('open'); }
+          document.addEventListener('mouseover', function (e) {
+            var t = tile(e.target);
+            if (!t || t.contains(e.relatedTarget)) return;
+            clearTimeout(timer);
+            timer = setTimeout(function () { show(t); }, 250);
+          });
+          document.addEventListener('mouseout', function (e) {
+            var t = tile(e.target);
+            if (!t || t.contains(e.relatedTarget)) return;
+            hide();
+          });
+          document.addEventListener('focusin', function (e) { var t = tile(e.target); if (t) show(t); });
+          document.addEventListener('focusout', function (e) { var t = tile(e.target); if (t && !t.contains(e.relatedTarget)) hide(); });
+          document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hide(); });
+        })();
+        </script>
 	<div id="product-list">
 		{{if .Products}}
 			{{range .Products}}
-			<article class="product">
+			<article class="product"{{if .InfoURL}} data-preview-url="{{.InfoURL}}"{{end}}>
 				{{if .PreviewVideoURL}}
 				<video class="product-preview" src="{{.PreviewVideoURL}}" autoplay loop muted playsinline></video>
 				{{end}}
