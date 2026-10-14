@@ -30,7 +30,10 @@ var releaseHTML string
 //go:embed release.txt
 var releaseText string
 
-const fromAddr = "hello@lauden.dev"
+const (
+	fromAddr  = "Laudenslager Software <hello@lauden.dev>"
+	replyAddr = "hello@lauden.dev"
+)
 
 type recipient struct {
 	ID    int64
@@ -103,7 +106,7 @@ func buildMessage(baseURL, to, token, subject, address string) *resend.SendEmail
 	return &resend.SendEmailRequest{
 		From:    fromAddr,
 		To:      []string{to},
-		ReplyTo: fromAddr,
+		ReplyTo: replyAddr,
 		Subject: subject,
 		Html:    render(releaseHTML, unsub, address, true),
 		Text:    render(releaseText, unsub, address, false),
@@ -122,7 +125,7 @@ func sendOne(client *resend.Client, req *resend.SendEmailRequest) (string, error
 func main() {
 	campaign := flag.String("campaign", "", "campaign id, e.g. popfocus-launch-2026-10 (required)")
 	address := flag.String("address", "", "postal address for the footer (required)")
-	subject := flag.String("subject", "Pop Focus is out", "email subject")
+	subject := flag.String("subject", "Pop Focus is now available", "email subject")
 	testTo := flag.String("test-to", "", "send one test email to this address and exit (no send log)")
 	send := flag.Bool("send", false, "send to all pending confirmed subscribers")
 	flag.Parse()
