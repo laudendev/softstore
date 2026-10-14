@@ -378,15 +378,6 @@ h2 {
     padding: 1rem;
 }
 
-/* Beta ribbon — standard "corner ribbon" pattern (150x150 container,
-   span at a 45deg diagonal, small border triangles filling the gap
-   at the two ends so it reads as a proper folded ribbon rather than a
-   bare rotated bar). This is the well-established approach used
-   across most sites that do this — positioning purely by trial-and-
-   error offsets doesn't hold up well, so following the standard
-   shape/measurements here instead of inventing new ones. */
-
-
 @media (prefers-color-scheme: dark) {
 	.launcher-cta {
 		box-shadow: 0 0 0 1px var(--border);
@@ -563,46 +554,7 @@ footer p {
 	}
 }
 
-.beta-badge {
-	position: absolute;
-	top: 1.5rem;
-	left: 50%;
-	transform: translateX(-50%);
-	max-width: 90%;
-	width: fit-content;
-	padding: 0.4rem 1.25rem;
-	background: var(--brand-blue-soft);
-	color: var(--brand-blue);
-	border-radius: 999px;
-	font-family: 'Inter', sans-serif;
-	font-weight: 600;
-	font-size: 0.7rem;
-	letter-spacing: 0.04em;
-	text-transform: none;
-	text-align: center;
-	z-index: 10;
-}
-
-
-
 @media (max-width: 480px) {
-    .beta-badge-wrap {
-	  padding-top: 1.5rem;
-	  display: flex;
-	  justify-content: center;
-    }
-
-   	.beta-badge {
-		position: static;
-		transform: none;
-		margin: 0;
-		display: block;
-		width: fit-content;
-		max-width: 95%;
-		font-size: 0.65rem;
-		padding: 0.4rem 0.9rem;
-		line-height: 1.3;
-	}
     .cart-link {
 		top: 4.00rem;
 		right: 1rem;
