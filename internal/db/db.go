@@ -79,7 +79,10 @@ func migrate(conn *sql.DB) error {
 	if err := addSubscriberSourceColumn(conn); err != nil {
 		return err
 	}
-	return addProductLongDescriptionColumn(conn)
+	if err := addProductLongDescriptionColumn(conn); err != nil {
+		return err
+	}
+	return addProductInfoURLColumn(conn)
 }
 
 // addSubscriberSourceColumn adds subscribers.source on databases created
@@ -114,5 +117,21 @@ func addProductLongDescriptionColumn(conn *sql.DB) error {
 		return nil
 	}
 	_, err := conn.Exec(`ALTER TABLE products ADD COLUMN long_description TEXT NOT NULL DEFAULT ''`)
+	return err
+}
+
+// addProductInfoURLColumn adds the link from the shop page to a product's own
+// page (empty means no link). Safe to run on every start.
+func addProductInfoURLColumn(conn *sql.DB) error {
+	var n int
+	if err := conn.QueryRow(
+		`SELECT COUNT(*) FROM pragma_table_info('products') WHERE name = 'info_url'`,
+	).Scan(&n); err != nil {
+		return err
+	}
+	if n > 0 {
+		return nil
+	}
+	_, err := conn.Exec(`ALTER TABLE products ADD COLUMN info_url TEXT NOT NULL DEFAULT ''`)
 	return err
 }

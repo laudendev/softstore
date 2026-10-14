@@ -51,6 +51,7 @@
 					<h3>{{.Name}}</h3>
 					<p class="description">{{.Description}}</p>
                                         {{if .LongDescription}}<p class="long-description">{{.LongDescription}}</p>{{end}}
+                                        {{if .InfoURL}}<a class="product-more" href="{{.InfoURL}}">Learn more about {{.Name}}</a>{{end}}
                     <p class="price" id="price-{{.Slug}}" data-base-price-dollars="{{.PriceDollars}}">${{.PriceDollars}}</p>
                     <div class="seat-picker" data-base-price="{{.PriceCents}}">
 						<button type="button" class="seat-step-btn" aria-label="Fewer devices" onclick="softstoreStepSeats('{{.Slug}}', -1)">&minus;</button>

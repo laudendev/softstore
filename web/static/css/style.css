@@ -1044,3 +1044,8 @@ footer p {
 .product p.description:has(+ p.long-description) {
     flex: none;
 }
+
+.product a.product-more {
+    font-size: 0.9rem;
+    text-decoration: underline;
+}
