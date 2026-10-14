@@ -48,6 +48,14 @@
           if (!panel) return;
           var frame = panel.querySelector('iframe');
           var timer = null;
+          var W = 480, H = 320, GAP = 18;
+          function place(x, y) {
+            var left = x + GAP, top = y + GAP;
+            if (left + W > window.innerWidth - 8) left = x - GAP - W;
+            if (top + H > window.innerHeight - 8) top = y - GAP - H;
+            panel.style.left = Math.max(8, left) + 'px';
+            panel.style.top = Math.max(8, top) + 'px';
+          }
           function tile(el) { return el && el.closest ? el.closest('article.product[data-preview-url]') : null; }
           function show(t) {
             if (!mq.matches) return;
@@ -56,10 +64,12 @@
             panel.classList.add('open');
           }
           function hide() { clearTimeout(timer); panel.classList.remove('open'); }
+          document.addEventListener('mousemove', function (e) { if (tile(e.target)) place(e.clientX, e.clientY); });
           document.addEventListener('mouseover', function (e) {
             var t = tile(e.target);
             if (!t || t.contains(e.relatedTarget)) return;
             clearTimeout(timer);
+            place(e.clientX, e.clientY);
             timer = setTimeout(function () { show(t); }, 250);
           });
           document.addEventListener('mouseout', function (e) {
@@ -67,7 +77,7 @@
             if (!t || t.contains(e.relatedTarget)) return;
             hide();
           });
-          document.addEventListener('focusin', function (e) { var t = tile(e.target); if (t) show(t); });
+          document.addEventListener('focusin', function (e) { var t = tile(e.target); if (t) { var r = t.getBoundingClientRect(); place(r.right - 40, r.top + 40); show(t); } });
           document.addEventListener('focusout', function (e) { var t = tile(e.target); if (t && !t.contains(e.relatedTarget)) hide(); });
           document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hide(); });
         })();

@@ -1052,8 +1052,8 @@ footer p {
 
 .product-preview-panel {
     position: fixed;
-    right: 1.5rem;
-    bottom: 1.5rem;
+    left: 0;
+    top: 0;
     width: 480px;
     height: 320px;
     overflow: hidden;
