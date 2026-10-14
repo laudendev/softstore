@@ -1,0 +1,22 @@
+Hi,
+
+You asked to hear when Pop Focus was released. It is out now, for Windows, macOS and Linux.
+
+Pop Focus reminds you about a meeting without a loud alarm. Before it starts, bubbles appear over whatever you are working on. Pop them to dismiss the reminder.
+
+- Works with Google Calendar, Microsoft calendars, and ICS feeds
+- 14-day free trial
+- $16 per device, one time, plus tax where applicable. No subscription.
+- Windows, macOS, and Linux (.deb, x86-64)
+
+Learn more: https://popfocus.lauden.dev/
+Download the free trial: https://popfocus.lauden.dev/download/
+Buy: https://shop.lauden.dev/
+
+Sales are limited to US billing addresses for now.
+
+- Tyler L. Laudenslager, lauden.dev
+
+You are receiving this because you asked for release updates at lauden.dev.
+Unsubscribe: {{UNSUBSCRIBE_URL}}
+Laudenslager Software, LLC, {{POSTAL_ADDRESS}}
