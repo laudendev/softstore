@@ -1032,3 +1032,15 @@ footer p {
 .launcher-alt-link:hover {
 	text-decoration: underline;
 }
+
+.product p.long-description {
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+    margin: 0;
+    flex: 1;
+    white-space: pre-line;
+}
+
+.product p.description:has(+ p.long-description) {
+    flex: none;
+}

@@ -76,7 +76,10 @@ func migrate(conn *sql.DB) error {
 	if err != nil {
 		return err
 	}
-	return addSubscriberSourceColumn(conn)
+	if err := addSubscriberSourceColumn(conn); err != nil {
+		return err
+	}
+	return addProductLongDescriptionColumn(conn)
 }
 
 // addSubscriberSourceColumn adds subscribers.source on databases created
@@ -93,5 +96,23 @@ func addSubscriberSourceColumn(conn *sql.DB) error {
 		return nil
 	}
 	_, err := conn.Exec(`ALTER TABLE subscribers ADD COLUMN source TEXT NOT NULL DEFAULT 'shop'`)
+	return err
+}
+
+// addProductLongDescriptionColumn adds the description shown only on the shop
+// page. The short description stays separate because checkout builds the
+// Stripe line-item text from it. Safe to run on every start: it does nothing
+// when the column is already present.
+func addProductLongDescriptionColumn(conn *sql.DB) error {
+	var n int
+	if err := conn.QueryRow(
+		`SELECT COUNT(*) FROM pragma_table_info('products') WHERE name = 'long_description'`,
+	).Scan(&n); err != nil {
+		return err
+	}
+	if n > 0 {
+		return nil
+	}
+	_, err := conn.Exec(`ALTER TABLE products ADD COLUMN long_description TEXT NOT NULL DEFAULT ''`)
 	return err
 }

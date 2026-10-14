@@ -10,6 +10,7 @@ type Product struct {
 	Name            string
 	Slug            string
 	Description     string
+	LongDescription string
 	PriceCents      int64
 	StripePriceID   string
 	StripeProductID string

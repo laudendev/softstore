@@ -32,7 +32,7 @@
 	<p class="launcher-platform-note" id="launcher-platform-note">Linux (x86-64)</p>
 	<details class="launcher-other-platforms">
 		<summary>Not your platform?</summary>
-		<a href="https://github.com/laudendev/launcher/releases/download/v0.1.0/lauden-dev-launcher" download class="launcher-alt-link">Linux (x86-64)</a>
+		<a href="https://github.com/laudendev/launcher/releases/latest/download/lauden-dev-launcher-linux.tar.gz" download class="launcher-alt-link">Linux (x86-64)</a>
         <a href="https://github.com/laudendev/launcher/releases/latest/download/Lauden.Launcher.dmg" download class="launcher-alt-link">macOS (Apple Silicon)</a>
 		<a href="https://github.com/laudendev/launcher/releases/latest/download/lauden-dev-launcher.exe" download class="launcher-alt-link">Windows</a>
 	</details>
@@ -50,6 +50,7 @@
 				<div class="product-body">
 					<h3>{{.Name}}</h3>
 					<p class="description">{{.Description}}</p>
+                                        {{if .LongDescription}}<p class="long-description">{{.LongDescription}}</p>{{end}}
                     <p class="price" id="price-{{.Slug}}" data-base-price-dollars="{{.PriceDollars}}">${{.PriceDollars}}</p>
                     <div class="seat-picker" data-base-price="{{.PriceCents}}">
 						<button type="button" class="seat-step-btn" aria-label="Fewer devices" onclick="softstoreStepSeats('{{.Slug}}', -1)">&minus;</button>
