@@ -1,5 +1,6 @@
 {{define "session-status-fragment"}}
 {{if .Ready}}
+{{$pf := false}}
 <div class="receipt-ready">
     <h3>Your license key{{if gt (len .Items) 1}}s{{end}} {{if gt (len .Items) 1}}are{{else}}is{{end}} ready!</h3>
 	<ul class="receipt-item-list">
@@ -10,6 +11,7 @@
 				{{if .AmountLine}}<span class="receipt-item-price">{{.AmountLine}}</span>{{end}}
 			</div>
 			<code class="receipt-item-key">{{.LicenseKey}}</code>
+                        {{if eq .ProductName "Pop Focus"}}{{$pf = true}}{{end}}
 		</li>
 		{{end}}
 	</ul>
@@ -23,7 +25,8 @@
 		<p class="receipt-next-steps-title">What's next</p>
 		<p>Grab the launcher, paste in your license key, and it downloads your software for this computer — no account, no phone-home after the first run. Open the downloaded file to install.</p>
         			<a href="https://github.com/laudendev/launcher/releases/latest/download/lauden-dev-launcher-linux.tar.gz" download id="launcher-primary-download" class="launcher-button">Download Launcher</a>
-			<div id="windows-smartscreen-notice" style="display: none; margin-top: 18px;">
+			{{if $pf}}<p class="download-note" id="rpm-note" style="display: none;">On Fedora or Nobara? The launcher downloads a <code>.deb</code>, which does not install there. Get the <code>.rpm</code> from <a href="https://popfocus.lauden.dev/download/">popfocus.lauden.dev/download</a>, then paste your license key into Settings, License.</p>{{end}}
+                        <div id="windows-smartscreen-notice" style="display: none; margin-top: 18px;">
 				<p class="download-note">Windows may show a "Windows protected your PC" warning on first run. Click <strong>More info</strong> → <strong>Run anyway</strong>.</p>
 			</div>
 			<script>
@@ -39,6 +42,8 @@
                                           function apply() {
                                                   document.getElementById('launcher-primary-download').href = base + files[os][0];
                                                   document.getElementById('launcher-platform-note').textContent = files[os][1];
+                                                  var rpm = document.getElementById('rpm-note');
+                                                  if (rpm && os === 'linux') { rpm.style.display = 'block'; }
                                                   if (os === 'windows') {
                                                           document.getElementById('windows-smartscreen-notice').style.display = 'block';
                                                   }
