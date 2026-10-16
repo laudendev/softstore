@@ -59,10 +59,10 @@
             panel.style.left = Math.max(8, left) + 'px';
             panel.style.top = Math.max(8, top) + 'px';
           }
-          function tile(el) { return el && el.closest ? el.closest('article.product[data-preview-url]') : null; }
+          function tile(el) { return el && el.closest ? el.closest('article.product[data-preview-url] a.product-more') : null; }
           function show(t) {
             if (!mq.matches) return;
-            var url = t.getAttribute('data-preview-url');
+            var url = t.getAttribute('href');
             if (frame.getAttribute('data-loaded') !== url) { ready = false; frame.src = url; frame.setAttribute('data-loaded', url); }
             var wasOpen = panel.classList.contains('open');
             panel.classList.add('open');
