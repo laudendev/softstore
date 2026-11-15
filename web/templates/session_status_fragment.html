@@ -2,7 +2,7 @@
 {{if .Ready}}
 {{$pf := false}}
 <div class="receipt-ready">
-    <h3>Your license key{{if gt (len .Items) 1}}s{{end}} {{if gt (len .Items) 1}}are{{else}}is{{end}} ready!</h3>
+	<h3>Your license key{{if gt (len .Items) 1}}s{{end}} {{if gt (len .Items) 1}}are{{else}}is{{end}} ready!</h3>
 	<ul class="receipt-item-list">
 		{{range .Items}}
 		<li class="receipt-item">
@@ -11,7 +11,8 @@
 				{{if .AmountLine}}<span class="receipt-item-price">{{.AmountLine}}</span>{{end}}
 			</div>
 			<code class="receipt-item-key">{{.LicenseKey}}</code>
-                        {{if eq .ProductName "Pop Focus"}}{{$pf = true}}{{end}}
+			<button type="button" class="copy-key" data-key="{{.LicenseKey}}">Copy key</button>
+			{{if eq .ProductName "Pop Focus"}}{{$pf = true}}{{end}}
 		</li>
 		{{end}}
 	</ul>
@@ -21,49 +22,52 @@
 		{{if .TotalLine}}<div class="receipt-totals-row receipt-totals-final"><span>Total paid</span><span>{{.TotalLine}}</span></div>{{end}}
 	</div>
 	{{end}}
-    <div class="receipt-next-steps">
-		<p class="receipt-next-steps-title">What's next</p>
-		<p>Grab the launcher, paste in your license key, and it downloads your software for this computer — no account, no phone-home after the first run. Open the downloaded file to install.</p>
-        			<a href="https://github.com/laudendev/launcher/releases/latest/download/lauden-dev-launcher-linux.tar.gz" download id="launcher-primary-download" class="launcher-button">Download Launcher</a>
-			{{if $pf}}<p class="download-note" id="rpm-note" style="display: none;">On Fedora or Nobara? The launcher downloads a <code>.deb</code>, which does not install there. Get the <code>.rpm</code> from <a href="https://popfocus.lauden.dev/download/">popfocus.lauden.dev/download</a>, then paste your license key into Settings, License.</p>{{end}}
-                        <div id="windows-smartscreen-notice" style="display: none; margin-top: 18px;">
-				<p class="download-note">Windows may show a "Windows protected your PC" warning on first run. Click <strong>More info</strong> → <strong>Run anyway</strong>.</p>
-			</div>
-			<script>
-				(function () {
-                                          var base = 'https://github.com/laudendev/launcher/releases/latest/download/';
-                                          var ua = navigator.userAgent;
-                                          var os = ua.indexOf('Windows') !== -1 ? 'windows' : (ua.indexOf('Macintosh') !== -1 ? 'macos' : 'linux');
-                                          var files = {
-                                                  windows: ['lauden-dev-launcher.exe', 'Windows'],
-                                                  macos: ['Lauden.Launcher.dmg', 'macOS (Apple Silicon)'],
-                                                  linux: ['lauden-dev-launcher-linux.tar.gz', 'Linux (x86-64)']
-                                          };
-                                          function apply() {
-                                                  document.getElementById('launcher-primary-download').href = base + files[os][0];
-                                                  document.getElementById('launcher-platform-note').textContent = files[os][1];
-                                                  var rpm = document.getElementById('rpm-note');
-                                                  if (rpm && os === 'linux') { rpm.style.display = 'block'; }
-                                                  if (os === 'windows') {
-                                                          document.getElementById('windows-smartscreen-notice').style.display = 'block';
-                                                  }
-                                          }
-                                          if (document.readyState === 'loading') {
-                                                  document.addEventListener('DOMContentLoaded', apply);
-                                          } else {
-                                                  apply();
-                                          }
-                                  })();
-			</script>
-			<p class="launcher-platform-note" id="launcher-platform-note">Linux (x86-64)</p>
-			<details class="launcher-other-platforms">
-				<summary>Not your platform?</summary>
-				<a href="https://github.com/laudendev/launcher/releases/latest/download/lauden-dev-launcher-linux.tar.gz" download class="launcher-alt-link">Linux (x86-64)</a>
-				<a href="https://github.com/laudendev/launcher/releases/latest/download/Lauden.Launcher.dmg" download class="launcher-alt-link">macOS (Apple Silicon)</a>
-				<a href="https://github.com/laudendev/launcher/releases/latest/download/lauden-dev-launcher.exe" download class="launcher-alt-link">Windows</a>
-			</details>
+
+	<div class="receipt-next-steps">
+		<p class="receipt-next-steps-title">What&rsquo;s next</p>
+		{{if $pf}}
+		<ol class="receipt-steps">
+			<li>Open Pop Focus. Don&rsquo;t have it yet? <a href="https://popfocus.lauden.dev/download/">Download it for your computer</a>.</li>
+			<li>Go to Settings, then License, and paste your key.</li>
+			<li>It activates once over the internet, then works offline.</li>
+		</ol>
+		<p class="download-note" id="rpm-note" hidden>On Fedora or Nobara? Use the <code>.rpm</code> from <a href="https://popfocus.lauden.dev/download/">popfocus.lauden.dev/download</a>; the launcher below downloads a <code>.deb</code>.</p>
+		<p class="receipt-or">Or use the Lauden launcher: paste your key and it downloads the right installer for this computer.</p>
+		{{else}}
+		<p>Get the Lauden launcher, paste in your license key, and it downloads your software for this computer. No account, and no phone-home after the first run. Open the downloaded file to install.</p>
+		{{end}}
+		<a href="https://github.com/laudendev/launcher/releases/latest/download/lauden-dev-launcher-linux.tar.gz" download id="launcher-primary-download" class="launcher-button">Download Launcher</a>
+		<p class="download-note" id="windows-smartscreen-notice" hidden>Windows may show &ldquo;Windows protected your PC&rdquo; the first time. Choose <strong>More info</strong>, then <strong>Run anyway</strong>.</p>
+		<script>
+			(function () {
+				var base = 'https://github.com/laudendev/launcher/releases/latest/download/';
+				var ua = navigator.userAgent;
+				var os = ua.indexOf('Windows') !== -1 ? 'windows' : (ua.indexOf('Macintosh') !== -1 ? 'macos' : 'linux');
+				var files = {
+					windows: ['lauden-dev-launcher.exe', 'Windows'],
+					macos: ['Lauden.Launcher.dmg', 'macOS (Apple Silicon)'],
+					linux: ['lauden-dev-launcher-linux.tar.gz', 'Linux (x86-64)']
+				};
+				function apply() {
+					document.getElementById('launcher-primary-download').href = base + files[os][0];
+					document.getElementById('launcher-platform-note').textContent = files[os][1] + ' (detected automatically)';
+					var rpm = document.getElementById('rpm-note');
+					if (rpm && os === 'linux') { rpm.hidden = false; }
+					if (os === 'windows') { document.getElementById('windows-smartscreen-notice').hidden = false; }
+				}
+				if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', apply); } else { apply(); }
+			})();
+		</script>
+		<p class="launcher-platform-note" id="launcher-platform-note">Linux (x86-64)</p>
+		<details class="launcher-other-platforms">
+			<summary>Not your platform?</summary>
+			<a href="https://github.com/laudendev/launcher/releases/latest/download/lauden-dev-launcher-linux.tar.gz" download class="launcher-alt-link">Linux (x86-64)</a>
+			<a href="https://github.com/laudendev/launcher/releases/latest/download/Lauden.Launcher.dmg" download class="launcher-alt-link">macOS (Apple Silicon)</a>
+			<a href="https://github.com/laudendev/launcher/releases/latest/download/lauden-dev-launcher.exe" download class="launcher-alt-link">Windows</a>
+		</details>
 	</div>
-	<p class="receipt-note">A copy of this receipt, including these keys, has also been emailed to you from licenses@lauden.dev. If it does not show up within a few minutes, check your spam folder and mark it Not spam. You can also copy your key from this page.</p>
+	<p class="receipt-note">A copy of this receipt, including your key, has been emailed to you from licenses@lauden.dev. If it hasn&rsquo;t arrived within a few minutes, check your spam folder and mark it Not spam. You can also copy your key from this page.</p>
+	<p class="receipt-note">Questions or a refund? Email <a href="mailto:hello@lauden.dev">hello@lauden.dev</a> or read the <a href="/legal/refunds">refund policy</a>.</p>
 </div>
 {{else}}
 {{template "session-status-loading" .}}

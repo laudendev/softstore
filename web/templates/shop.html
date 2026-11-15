@@ -1,137 +1,118 @@
 {{define "content"}}
-<section class="hero">
-    <h1>Software, <span class="accent">frozen</span> forever by design.</h1>
-    <p>No spying, no lock-in, no subscriptions you forgot to cancel. You choose when it updates. Yours to keep or sell, unshackled. Apple-notarized and Windows code-signed. Purpose driven by one developer.</p>
+<section class="intro">
+	<div class="wrap">
+		<h1>Software you buy once and keep.</h1>
+		<p>Independent desktop software from Laudenslager Software, LLC in Pennsylvania. Pay once, get your license key by email, and it works offline after one activation.</p>
+	</div>
 </section>
 
-<div class="subscribe-inline">
-    <span class="subscribe-label">Sign up for product releases and updates.</span>
-    <form hx-post="/subscribe" hx-target="#subscribe-result" hx-swap="innerHTML" class="subscribe-form">
-        <input type="email" name="email" placeholder="name@example.com" required>
-        <button type="submit" class="subscribe-btn">Notify me</button>
-    </form>
-    <div id="subscribe-result"></div>
-</div>
+<section class="block" id="products" aria-labelledby="products-title">
+	<div class="wrap">
+		<h2 id="products-title">Available now</h2>
+		<div id="product-list">
+			{{if .Products}}
+				{{range .Products}}
+				<article class="product">
+					{{if .PreviewVideoURL}}
+					<div class="product-media"><video class="product-preview" src="{{.PreviewVideoURL}}" muted loop playsinline controls preload="metadata" data-autoplay aria-label="{{.Name}} preview"></video></div>
+					{{end}}
+					<div class="product-body">
+						<h3>{{.Name}}</h3>
+						{{if not .LongDescription}}<p class="description">{{.Description}}</p>{{end}}
+						{{if .LongDescription}}<p class="long-description">{{.LongDescription}}</p>{{end}}
+						{{if .InfoURL}}<a class="product-more" href="{{.InfoURL}}" aria-label="Learn more about {{.Name}} and try it free">Learn more and try it free</a>{{end}}
 
-
-<section class="launcher-cta">
-	<h2>Already made a purchase?</h2>
-	<p>Grab the launcher, enter your license key, and you're running — no account, no install wizard, no phone-home after the first run.</p>
-	<a href="https://github.com/laudendev/launcher/releases/latest/download/lauden-dev-launcher-linux.tar.gz" download id="launcher-primary-download" class="launcher-button">Download Launcher</a>
-    <div id="windows-smartscreen-notice" style="display: none; margin-top: 18px;">
-  <p class="download-note">
-    Windows may show a "Windows protected your PC" warning on first run — this is normal for new publishers and isn't a sign of a problem. Click <strong>More info</strong> → <strong>Run anyway</strong>. This fades as more people download it.
-  </p>
-</div>
-
-<script>
-  if (navigator.userAgent.indexOf('Windows') !== -1) {
-    document.getElementById('windows-smartscreen-notice').style.display = 'block';
-  }
-</script>
-	<p class="launcher-platform-note" id="launcher-platform-note">Linux (x86-64)</p>
-	<details class="launcher-other-platforms">
-		<summary>Not your platform?</summary>
-		<a href="https://github.com/laudendev/launcher/releases/latest/download/lauden-dev-launcher-linux.tar.gz" download class="launcher-alt-link">Linux (x86-64)</a>
-        <a href="https://github.com/laudendev/launcher/releases/latest/download/Lauden.Launcher.dmg" download class="launcher-alt-link">macOS (Apple Silicon)</a>
-		<a href="https://github.com/laudendev/launcher/releases/latest/download/lauden-dev-launcher.exe" download class="launcher-alt-link">Windows</a>
-	</details>
-</section>
-
-<section>
-	<h2>Available now</h2>
-        <div id="product-preview" class="product-preview-panel" aria-hidden="true"><iframe title="Product page preview" tabindex="-1" sandbox="allow-scripts" referrerpolicy="no-referrer"></iframe><div class="product-preview-hint">Shift + scroll to scroll the preview</div></div>
-        <script>
-        (function () {
-          var mq = window.matchMedia('(hover: hover) and (min-width: 1000px)');
-          var panel = document.getElementById('product-preview');
-          if (!panel) return;
-          var frame = panel.querySelector('iframe');
-          var timer = null;
-          var W = 480, H = 320, GAP = 18;
-          var ready = false;
-          function play() { if (frame.contentWindow) frame.contentWindow.postMessage({ type: 'popfocus-preview-play' }, '*'); }
-          frame.addEventListener('load', function () { ready = true; if (panel.classList.contains('open')) play(); });
-          function place(x, y) {
-            var left = x + GAP, top = y + GAP;
-            if (left + W > window.innerWidth - 8) left = x - GAP - W;
-            if (top + H > window.innerHeight - 8) top = y - GAP - H;
-            panel.style.left = Math.max(8, left) + 'px';
-            panel.style.top = Math.max(8, top) + 'px';
-          }
-          function tile(el) { return el && el.closest ? el.closest('article.product[data-preview-url] a.product-more') : null; }
-          function show(t) {
-            if (!mq.matches) return;
-            var url = t.getAttribute('href');
-            if (frame.getAttribute('data-loaded') !== url) { ready = false; frame.src = url; frame.setAttribute('data-loaded', url); }
-            var wasOpen = panel.classList.contains('open');
-            panel.classList.add('open');
-            if (ready && !wasOpen) play();
-          }
-          function hide() { clearTimeout(timer); panel.classList.remove('open'); }
-          document.addEventListener('mousemove', function (e) { if (tile(e.target)) place(e.clientX, e.clientY); });
-          document.addEventListener('mouseover', function (e) {
-            var t = tile(e.target);
-            if (!t || t.contains(e.relatedTarget)) return;
-            clearTimeout(timer);
-            place(e.clientX, e.clientY);
-            timer = setTimeout(function () { show(t); }, 250);
-          });
-          document.addEventListener('mouseout', function (e) {
-            var t = tile(e.target);
-            if (!t || t.contains(e.relatedTarget)) return;
-            hide();
-          });
-          document.addEventListener('focusin', function (e) { var t = tile(e.target); if (t) { var r = t.getBoundingClientRect(); place(r.right - 40, r.top + 40); show(t); } });
-          document.addEventListener('focusout', function (e) { var t = tile(e.target); if (t && !t.contains(e.relatedTarget)) hide(); });
-          document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hide(); });
-          document.addEventListener('wheel', function (e) {
-            if (!e.shiftKey || !panel.classList.contains('open') || !tile(e.target)) return;
-            e.preventDefault();
-            var dy = e.deltaY || e.deltaX;
-            if (e.deltaMode === 1) dy *= 16;
-            if (frame.contentWindow) frame.contentWindow.postMessage({ type: 'popfocus-preview-scroll', dy: dy }, '*');
-          }, { passive: false });
-        })();
-        </script>
-	<div id="product-list">
-		{{if .Products}}
-			{{range .Products}}
-			<article class="product"{{if .InfoURL}} data-preview-url="{{.InfoURL}}"{{end}}>
-				{{if .PreviewVideoURL}}
-				<video class="product-preview" src="{{.PreviewVideoURL}}" autoplay loop muted playsinline></video>
-				{{end}}
-				<div class="product-body">
-					<h3>{{.Name}}</h3>
-					{{if not .LongDescription}}<p class="description">{{.Description}}</p>{{end}}
-                                        {{if .LongDescription}}<p class="long-description">{{.LongDescription}}</p>{{end}}
-                                        {{if .InfoURL}}<a class="product-more" href="{{.InfoURL}}" aria-label="Learn more about {{.Name}}">Learn more</a>{{end}}
-                    <p class="price" id="price-{{.Slug}}" data-base-price-dollars="{{.PriceDollars}}">${{.PriceDollars}}</p>
-                    <div class="seat-picker" data-base-price="{{.PriceCents}}">
-						<button type="button" class="seat-step-btn" aria-label="Fewer devices" onclick="softstoreStepSeats('{{.Slug}}', -1)">&minus;</button>
-						<span class="seat-count-display" id="seats-{{.Slug}}" data-seats="1">1 device</span>
-						<button type="button" class="seat-step-btn" aria-label="More devices" onclick="softstoreStepSeats('{{.Slug}}', 1)">+</button>
+						<div class="buy-box">
+							<p class="price-line"><span class="price" id="price-{{.Slug}}" data-base-price-dollars="{{.PriceDollars}}">${{.PriceDollars}}</span> <span class="price-unit">USD</span></p>
+							<p class="price-note">Plus sales tax where applicable. <span class="saving" id="saving-{{.Slug}}" aria-live="polite"></span></p>
+							<div class="seat-picker" data-base-price="{{.PriceCents}}">
+								<button type="button" class="seat-step-btn" data-step="-1" aria-label="Fewer devices" onclick="softstoreStepSeats('{{.Slug}}', -1)" disabled>&minus;</button>
+								<span class="seat-count-display" id="seats-{{.Slug}}" data-seats="1" aria-live="polite">1 device</span>
+								<button type="button" class="seat-step-btn" data-step="1" aria-label="More devices" onclick="softstoreStepSeats('{{.Slug}}', 1)">+</button>
+							</div>
+							<p class="seat-help">One license key, activated on each device. Up to 20% off for more devices.</p>
+							<div class="product-actions">
+								<form method="POST" action="/checkout/{{.Slug}}">
+									<input type="hidden" name="seats" id="checkout-seats-{{.Slug}}" value="1">
+									<button type="submit" class="buy-button" aria-describedby="next-{{.Slug}}" onclick="document.getElementById('checkout-seats-{{.Slug}}').value = document.getElementById('seats-{{.Slug}}').dataset.seats">Buy Now</button>
+								</form>
+								<button
+									type="button"
+									class="add-to-cart-button"
+									aria-label="Add {{.Name}} to cart"
+									hx-post="/cart/add/{{.Slug}}"
+									hx-target="#cart-drawer-content"
+									hx-swap="innerHTML"
+									hx-vals="js:{seats: document.getElementById('seats-{{.Slug}}').dataset.seats}"
+									hx-on::after-request="document.getElementById('cart-drawer').classList.add('open')"
+								><span aria-hidden="true">+</span> Add to cart</button>
+							</div>
+							<p class="next" id="next-{{.Slug}}">You&rsquo;ll pay on Stripe&rsquo;s secure checkout. Your key is emailed from licenses@lauden.dev.</p>
+							<ul class="assurances">
+								<li><a href="/legal/refunds">30-day money-back guarantee</a></li>
+								<li>US billing addresses only</li>
+								<li>Payments by Stripe. We never see your card number.</li>
+								<li>Sold by Laudenslager Software, LLC, Pennsylvania, USA</li>
+							</ul>
+						</div>
 					</div>
-                    						<div class="product-actions">
-						<form method="POST" action="/checkout/{{.Slug}}">
-							<input type="hidden" name="seats" id="checkout-seats-{{.Slug}}" value="1">
-								<button type="submit" class="buy-button" onclick="document.getElementById('checkout-seats-{{.Slug}}').value = document.getElementById('seats-{{.Slug}}').dataset.seats">Buy Now</button>
-                        </form>
-						<button
-							type="button"
-							class="add-to-cart-button"
-							hx-post="/cart/add/{{.Slug}}"
-							hx-target="#cart-drawer-content"
-							hx-swap="innerHTML"
-                            hx-vals="js:{seats: document.getElementById('seats-{{.Slug}}').dataset.seats}"
-							hx-on::after-request="document.getElementById('cart-drawer').classList.add('open')"
-						>+</button>
-					</div>							
-             </article>
+				</article>
+				{{end}}
+			{{else}}
+				<p>No products yet.</p>
 			{{end}}
-		{{else}}
-			<p>No products yet.</p>
-		{{end}}
+		</div>
+	</div>
+</section>
+
+<section class="block block--tint" id="how" aria-labelledby="how-title">
+	<div class="wrap">
+		<h2 id="how-title">How buying works</h2>
+		<ol class="steps">
+			<li><h3>Pay once</h3><p>Choose how many devices, then pay on Stripe&rsquo;s checkout. No account to create.</p></li>
+			<li><h3>Get your key</h3><p>Your license key appears on the next page and arrives by email with your receipt.</p></li>
+			<li><h3>Activate</h3><p>Paste the key into the app. It activates once over the internet, then works offline.</p></li>
+			<li><h3>Keep it</h3><p>Moving to a new computer? Deactivate on the old one and activate on the new one.</p></li>
+		</ol>
+		<p class="note">Every purchase has a 30-day money-back guarantee. The full terms are in the <a href="/legal/refunds">refund policy</a>.</p>
+	</div>
+</section>
+
+<section class="block" aria-labelledby="news-title">
+	<div class="wrap narrow">
+		<div class="subscribe-inline">
+			<h2 id="news-title">New releases by email</h2>
+			<span class="subscribe-label">Release news only. Every email has an unsubscribe link.</span>
+			<form hx-post="/subscribe" hx-target="#subscribe-result" hx-swap="innerHTML" class="subscribe-form">
+				<input type="email" name="email" placeholder="name@example.com" required aria-label="Email address" autocomplete="email">
+				<button type="submit" class="subscribe-btn">Notify me</button>
+			</form>
+			<div id="subscribe-result"></div>
+		</div>
+	</div>
+</section>
+
+<section class="block block--tint" id="support" aria-labelledby="support-title">
+	<div class="wrap support">
+		<div class="launcher-cta">
+			<h2 id="support-title">Already bought a license?</h2>
+			<p>Paste your key into the app&rsquo;s settings. Or get the Lauden launcher: paste your key and it downloads the right installer for this computer.</p>
+			<a href="https://github.com/laudendev/launcher/releases/latest/download/lauden-dev-launcher-linux.tar.gz" download id="launcher-primary-download" class="launcher-button">Download Launcher</a>
+			<p class="launcher-platform-note" id="launcher-platform-note">Linux (x86-64)</p>
+			<p class="download-note" id="windows-smartscreen-notice" hidden>Windows may show &ldquo;Windows protected your PC&rdquo; the first time. This is normal for new publishers. Choose <strong>More info</strong>, then <strong>Run anyway</strong>.</p>
+			<details class="launcher-other-platforms">
+				<summary>Not your platform?</summary>
+				<a href="https://github.com/laudendev/launcher/releases/latest/download/lauden-dev-launcher-linux.tar.gz" download class="launcher-alt-link">Linux (x86-64)</a>
+				<a href="https://github.com/laudendev/launcher/releases/latest/download/Lauden.Launcher.dmg" download class="launcher-alt-link">macOS (Apple Silicon)</a>
+				<a href="https://github.com/laudendev/launcher/releases/latest/download/lauden-dev-launcher.exe" download class="launcher-alt-link">Windows</a>
+			</details>
+		</div>
+		<div class="help">
+			<h3>Lost your key?</h3>
+			<p>Email <a href="mailto:hello@lauden.dev">hello@lauden.dev</a> from the address you used to buy, and I&rsquo;ll resend it.</p>
+			<h3>Questions or a refund?</h3>
+			<p>Email <a href="mailto:hello@lauden.dev">hello@lauden.dev</a>. I reply within two business days.</p>
+		</div>
 	</div>
 </section>
 {{end}}

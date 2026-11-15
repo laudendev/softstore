@@ -1,11 +1,11 @@
 {{define "content"}}
 <section class="thank-you">
-
-    <h2>Thank you for your purchase!</h2>
-	<svg class="thank-you-check" xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+	<svg class="thank-you-check" xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 		<circle cx="12" cy="12" r="10"/>
 		<path d="m9 12 2 2 4-4"/>
 	</svg>
+	<h2>Thank you for your purchase!</h2>
+	<p class="thank-you-sub">Your payment went through. Your license key appears below, and a copy is on its way to your inbox.</p>
 	{{if .SessionID}}
 	<div
 		id="session-status"
@@ -22,9 +22,9 @@
 {{end}}
 
 {{define "session-status-loading"}}
-<div class="receipt-loading">
-	<img src="/static/img/logo-lava-icon.svg" alt="" class="receipt-loading-icon" width="90" height="90">
-    <p class="receipt-loading-text">Signing your license key…</p>
-	<p class="receipt-loading-subtext">This usually takes just a few seconds. Hang tight — your receipt and license key will appear here, and we're also emailing a copy.</p>
+<div class="receipt-loading" role="status">
+	<img src="/static/img/logo-lava-icon.svg" alt="" class="receipt-loading-icon" width="72" height="72">
+	<p class="receipt-loading-text">Signing your license key…</p>
+	<p class="receipt-loading-subtext">This usually takes a few seconds. Your receipt and license key will appear here, and we&rsquo;re emailing you a copy.</p>
 </div>
 {{end}}
