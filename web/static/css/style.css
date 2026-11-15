@@ -91,8 +91,15 @@ header.top {
 	border-bottom: 1px solid var(--line);
 }
 .top-in { display: flex; align-items: center; gap: 16px; height: 76px; }
-.brand { display: inline-flex; align-items: center; text-decoration: none; }
-.brand .logo { height: 48px; width: auto; display: block; }
+.brand { display: inline-flex; align-items: center; gap: 0.7rem; text-decoration: none; color: var(--ink); }
+/* The lamp tile is the left square of logo.svg; crop to it. */
+.brand-mark { width: 44px; height: 44px; object-fit: cover; object-position: left center; display: block; flex: none; }
+.brand-text { display: flex; flex-direction: column; font-family: var(--mono); line-height: 1.1; }
+.brand-name { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); }
+.brand-tld { color: #0E7490; }
+html[data-theme="dark"] .brand-tld { color: #22D3EE; }
+@media (prefers-color-scheme: dark) { html:not([data-theme]) .brand-tld { color: #22D3EE; } }
+.brand-tag { font-size: 0.74rem; color: var(--ink-soft); letter-spacing: 0.01em; margin-top: 0.15rem; }
 .logo-dark { display: none !important; }
 html[data-theme="dark"] .logo-dark { display: block !important; }
 html[data-theme="dark"] .logo-light { display: none !important; }
@@ -120,7 +127,9 @@ html[data-theme="dark"] .theme-toggle .i-moon { display: none; }
 @media (max-width: 760px) {
 	.top-nav { display: none; }
 	.theme-toggle { margin-left: auto; }
-	.brand .logo { height: 40px; }
+	.brand-mark { width: 38px; height: 38px; }
+	.brand-name { font-size: 1.15rem; }
+	.brand-tag { font-size: 0.68rem; }
 	.top-in { height: 64px; }
 }
 
@@ -130,7 +139,7 @@ main { max-width: none; margin: 0; padding: 0; }
 .intro {
 	padding: clamp(2.25rem, 6vw, 4rem) 0 clamp(1.5rem, 4vw, 2.5rem);
 	background:
-		radial-gradient(closest-side, rgba(96, 165, 250, 0.18), transparent) 92% -140px / 520px 520px no-repeat,
+		radial-gradient(closest-side, rgba(96, 165, 250, 0.18), transparent) 92% -170px / 440px 440px no-repeat,
 		linear-gradient(180deg, var(--band), var(--paper));
 }
 .intro h1 { font-size: clamp(2rem, 1.4rem + 2.4vw, 3rem); font-weight: 780; margin: 0 0 0.75rem; max-width: 18ch; }
@@ -153,7 +162,11 @@ main { max-width: none; margin: 0; padding: 0; }
 .product p.long-description { white-space: pre-line; }
 .product-more { font-weight: 650; }
 @container (min-width: 860px) {
-	.product { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); }
+	.product:has(.product-media) { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); }
+	/* No preview video: description left, buy box right. */
+	.product:not(:has(.product-media)) .product-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto auto 1fr; column-gap: 3rem; row-gap: 0.5rem; align-items: start; }
+	.product:not(:has(.product-media)) .product-body > :not(.buy-box) { grid-column: 1; }
+	.product:not(:has(.product-media)) .buy-box { grid-column: 2; grid-row: 1 / span 3; margin-top: 0; padding: 0 0 0 3rem; border-top: 0; border-left: 1px solid var(--line); }
 	.product-media { display: flex; flex-direction: column; justify-content: center; padding: 1.5rem; }
 	.product-preview { aspect-ratio: 16 / 10; border-radius: var(--radius-sm); box-shadow: var(--shadow); }
 	.product-body { padding: 2rem; }
