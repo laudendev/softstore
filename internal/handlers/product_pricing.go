@@ -51,6 +51,15 @@ func GetOrCreatePriceForSeats(conn *sql.DB, provider payments.Provider, product 
 	// multiple tiers of the same product needs each line item to show
 	// its own tier correctly at the same time, which a single mutable
 	// Product description can never do.
+	// License products (seats per license > 1): the tier price is a
+	// per-license unit price, bought with quantity = licenses (see
+	// LicenseUnits), so each license becomes its own key in Quartermaster.
+	if product.Seats > 1 {
+		totalCents = perDeviceCents
+		name = fmt.Sprintf("%s license (volume price for %d licenses)", product.Name, seats)
+		description = fmt.Sprintf("For one person, on up to %d devices. %.0f%% off when buying %d licenses.", product.Seats, discount*100, seats)
+	}
+
 	registered, err := provider.RegisterItem(payments.SellableItem{
 		Name:        name,
 		Description: description,
@@ -67,4 +76,15 @@ func GetOrCreatePriceForSeats(conn *sql.DB, provider payments.Provider, product 
 	}
 
 	return registered.ProviderItemID, nil
+}
+
+// LicenseUnits is the checkout quantity for buying `seats` of a product: one
+// unit per license for license products (seats per license > 1), so
+// Quartermaster issues one key per license; otherwise the tier price already
+// covers every device on one key.
+func LicenseUnits(product *models.Product, seats int64) int64 {
+	if product.Seats > 1 && seats > 1 {
+		return seats
+	}
+	return 1
 }

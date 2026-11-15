@@ -249,3 +249,29 @@ func TestGetProductByStripePriceIDStillMatchesDefaultPrice(t *testing.T) {
 		t.Errorf("expected default Seats 1, got %d", found.Seats)
 	}
 }
+
+func TestGetProductByStripePriceIDLicenseTierIsOneLicense(t *testing.T) {
+	conn := newTestDB(t)
+
+	p := &models.Product{
+		Name: "Per Person", Slug: "per-person-lookup", PriceCents: 1600,
+		StripePriceID: "price_pp_default", StripeProductID: "prod_pp",
+		ProductCode: "PERP", TaxCode: "txcd_10202000", Seats: 3,
+	}
+	if err := CreateProduct(conn, p); err != nil {
+		t.Fatalf("CreateProduct failed: %v", err)
+	}
+	if _, err := CreateProductPrice(conn, p.ID, 2, "price_pp_2"); err != nil {
+		t.Fatalf("CreateProductPrice failed: %v", err)
+	}
+
+	for _, id := range []string{"price_pp_default", "price_pp_2"} {
+		found, err := GetProductByStripePriceID(conn, id)
+		if err != nil {
+			t.Fatalf("GetProductByStripePriceID(%s) failed: %v", id, err)
+		}
+		if found.Seats != 3 {
+			t.Errorf("%s: expected one license = 3 seats per key, got %d", id, found.Seats)
+		}
+	}
+}

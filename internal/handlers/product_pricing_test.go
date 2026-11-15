@@ -61,8 +61,8 @@ func TestGetOrCreatePriceForSeatsCreatesNewTier(t *testing.T) {
 		t.Fatalf("expected 1 AddPrice call, got %d", len(mock.RegisterItemCalls))
 	}
 	call := mock.RegisterItemCalls[0]
-	if call.PriceCents != 2550 {
-		t.Errorf("expected 2550 cents (1000 * 3 seats * 0.85 discount), got %d", call.PriceCents)
+	if call.PriceCents != 2061 {
+		t.Errorf("expected 2061 cents (1000 * 0.6875 = 687 per seat, truncated, * 3 seats), got %d", call.PriceCents)
 	}
 	if call.Name != "Widget (3 devices)" {
 		t.Errorf("expected name 'Widget (3 devices)', got %q", call.Name)
@@ -140,11 +140,11 @@ func TestDeviceDiscountTiers(t *testing.T) {
 		want  float64
 	}{
 		{1, 0},
-		{2, 0.10},
-		{3, 0.15},
-		{4, 0.15},
-		{5, 0.20},
-		{6, 0.20},
+		{2, 0.1875},
+		{3, 0.3125},
+		{4, 0.375},
+		{5, 0.4375},
+		{6, 0.5},
 	}
 	for _, c := range cases {
 		got := models.DeviceDiscountTiers(c.seats)

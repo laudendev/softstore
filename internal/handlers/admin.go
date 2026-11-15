@@ -106,9 +106,15 @@ func AdminCreateProduct(conn *sql.DB, provider payments.Provider) http.HandlerFu
 		description := r.FormValue("description")
 		taxCode := r.FormValue("tax_code")
 
+		itemName := fmt.Sprintf("%s (1 device)", name)
+		itemDesc := fmt.Sprintf("1-device license for %s", description)
+		if seats > 1 {
+			itemName = fmt.Sprintf("%s (1 license, up to %d devices)", name, seats)
+			itemDesc = fmt.Sprintf("License for %s, for one person on up to %d devices", description, seats)
+		}
 		registered, err := provider.RegisterItem(payments.SellableItem{
-			Name:        fmt.Sprintf("%s (1 device)", name),
-			Description: fmt.Sprintf("1-device license for %s", description),
+			Name:        itemName,
+			Description: itemDesc,
 			PriceCents:  priceCents,
 			Currency:    "usd",
 			TaxCategory: taxCode,

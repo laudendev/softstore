@@ -26,11 +26,12 @@
 							<p class="price-line"><span class="price" id="price-{{.Slug}}" data-base-price-dollars="{{.PriceDollars}}">${{.PriceDollars}}</span> <span class="price-unit">USD</span></p>
 							<p class="price-note">Plus sales tax where applicable. <span class="saving" id="saving-{{.Slug}}" aria-live="polite"></span></p>
 							<div class="seat-picker" data-base-price="{{.PriceCents}}">
-								<button type="button" class="seat-step-btn" data-step="-1" aria-label="Fewer devices" onclick="softstoreStepSeats('{{.Slug}}', -1)" disabled>&minus;</button>
-								<span class="seat-count-display" id="seats-{{.Slug}}" data-seats="1" aria-live="polite">1 device</span>
-								<button type="button" class="seat-step-btn" data-step="1" aria-label="More devices" onclick="softstoreStepSeats('{{.Slug}}', 1)">+</button>
+								<button type="button" class="seat-step-btn" data-step="-1" aria-label="Fewer licenses" onclick="softstoreStepSeats('{{.Slug}}', -1)" disabled>&minus;</button>
+								<span class="seat-count-display" id="seats-{{.Slug}}" data-seats="1" aria-live="polite">1 license</span>
+								<button type="button" class="seat-step-btn" data-step="1" aria-label="More licenses" onclick="softstoreStepSeats('{{.Slug}}', 1)">+</button>
 							</div>
-							<p class="seat-help">One license key, activated on each device. Up to 20% off for more devices.</p>
+							<p class="seat-help">{{if gt .Seats 1}}One license per person, on up to {{.Seats}} of your computers.{{else}}One license per computer.{{end}} <span class="volume-note" data-base-price="{{.PriceCents}}">Each extra license costs less, down to half price for 6.</span></p>
+							<details class="ladder" data-base-price="{{.PriceCents}}" hidden><summary>See the price for each number of licenses</summary><ul class="ladder-list"></ul></details>
 							<div class="product-actions">
 								<form method="POST" action="/checkout/{{.Slug}}">
 									<input type="hidden" name="seats" id="checkout-seats-{{.Slug}}" value="1">
@@ -47,7 +48,7 @@
 									hx-on::after-request="document.getElementById('cart-drawer').classList.add('open')"
 								><span aria-hidden="true">+</span> Add to cart</button>
 							</div>
-							<p class="next" id="next-{{.Slug}}">You&rsquo;ll pay on Stripe&rsquo;s secure checkout. Your key is emailed from licenses@lauden.dev.</p>
+							<p class="next" id="next-{{.Slug}}">You&rsquo;ll pay on Stripe&rsquo;s secure checkout. Your license keys are emailed from licenses@lauden.dev.</p>
 							<ul class="assurances">
 								<li><a href="/legal/refunds">30-day money-back guarantee</a></li>
 								<li>US billing addresses only</li>
@@ -69,7 +70,7 @@
 	<div class="wrap">
 		<h2 id="how-title">How buying works</h2>
 		<ol class="steps">
-			<li><h3>Pay once</h3><p>Choose how many devices, then pay on Stripe&rsquo;s checkout. No account to create.</p></li>
+			<li><h3>Pay once</h3><p>Choose how many licenses, one per person, then pay on Stripe&rsquo;s checkout. No account to create.</p></li>
 			<li><h3>Get your key</h3><p>Your license key appears on the next page and arrives by email with your receipt.</p></li>
 			<li><h3>Activate</h3><p>Paste the key into the app. It activates once over the internet, then works offline.</p></li>
 			<li><h3>Keep it</h3><p>Moving to a new computer? Deactivate on the old one and activate on the new one.</p></li>

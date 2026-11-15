@@ -174,7 +174,7 @@ func TestAddToCartWithMultipleSeats(t *testing.T) {
 	if len(mock.RegisterItemCalls) != 1 {
 		t.Fatalf("expected 1 AddPrice call for the new 3-seat tier, got %d", len(mock.RegisterItemCalls))
 	}
-	if mock.RegisterItemCalls[0].PriceCents != 12747 {
-		t.Errorf("expected 12747 cents (4999 * 3 * 0.85 discount), got %d", mock.RegisterItemCalls[0].PriceCents)
+	if mock.RegisterItemCalls[0].PriceCents != 10308 {
+		t.Errorf("expected 10308 cents (3436 per seat after 31.25%% off, * 3), got %d", mock.RegisterItemCalls[0].PriceCents)
 	}
 }

@@ -356,3 +356,8 @@ input:focus, textarea:focus, select:focus { outline: 3px solid #60A5FA; outline-
 .footer-legal-links a { color: var(--ink-soft); }
 .footer-legal-links a:hover { color: var(--ink); }
 .footer-copy { font-size: 0.85rem; color: var(--ink-soft); margin: 0; }
+
+/* ---- Price ladder under the license picker ---- */
+.ladder { margin: 0 0 1rem; font-size: 0.9rem; }
+.ladder summary { cursor: pointer; color: var(--link); font-weight: 600; min-height: 32px; }
+.ladder-list { list-style: none; margin: 0.4rem 0 0; padding: 0; display: grid; gap: 0.2rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }

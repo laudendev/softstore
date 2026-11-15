@@ -218,8 +218,8 @@ func TestCartCheckoutUsesCorrectSeatTierPrice(t *testing.T) {
 	if len(mock.RegisterItemCalls) != 1 {
 		t.Fatalf("expected 1 AddPrice call for the 3-seat tier, got %d", len(mock.RegisterItemCalls))
 	}
-	if mock.RegisterItemCalls[0].PriceCents != 2550 {
-		t.Errorf("expected 2550 cents (1000 * 3 * 0.85 discount), got %d", mock.RegisterItemCalls[0].PriceCents)
+	if mock.RegisterItemCalls[0].PriceCents != 2061 {
+		t.Errorf("expected 2061 cents (687 per seat after 31.25%% off, * 3), got %d", mock.RegisterItemCalls[0].PriceCents)
 	}
 }
 
@@ -251,8 +251,8 @@ func TestCheckoutWithMultipleSeatsUsesCorrectPrice(t *testing.T) {
 	if len(mock.RegisterItemCalls) != 1 {
 		t.Fatalf("expected 1 AddPrice call, got %d", len(mock.RegisterItemCalls))
 	}
-	if mock.RegisterItemCalls[0].PriceCents != 5100 {
-		t.Errorf("expected 5100 cents (1500 * 4 * 0.85 discount), got %d", mock.RegisterItemCalls[0].PriceCents)
+	if mock.RegisterItemCalls[0].PriceCents != 3748 {
+		t.Errorf("expected 3748 cents (937 per seat after 37.5%% off, * 4), got %d", mock.RegisterItemCalls[0].PriceCents)
 	}
 
 	call := mock.StartPurchaseCalls[0]
@@ -293,8 +293,8 @@ func TestCheckoutCreatesDistinctlyNamedProductForMultiDevice(t *testing.T) {
 	if !strings.Contains(call.Name, "3 devices") {
 		t.Errorf("expected name to mention '3 devices', got %q", call.Name)
 	}
-	if !strings.Contains(call.Description, "15%") {
-		t.Errorf("expected description to mention the 15%% discount, got %q", call.Description)
+	if !strings.Contains(call.Description, "31%") {
+		t.Errorf("expected description to mention the 31%% discount, got %q", call.Description)
 	}
 }
 

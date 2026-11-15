@@ -37,7 +37,7 @@ func Checkout(conn *sql.DB, provider payments.Provider, baseURL string) http.Han
 		
 		purchase, err := provider.StartPurchase(payments.PurchaseRequest{
 			LineItems: []payments.LineItem{
-				{ProviderItemID: priceID, Quantity: 1},
+				{ProviderItemID: priceID, Quantity: LicenseUnits(product, seats)},
 			},		
 			Metadata: map[string]string{
 				"product": product.ProductCode,
@@ -86,7 +86,7 @@ func CartCheckout(conn *sql.DB, provider payments.Provider, baseURL string) http
 
 			lineItems = append(lineItems, payments.LineItem{
 				ProviderItemID: priceID,
-				Quantity:       item.Quantity,
+				Quantity:       item.Quantity * LicenseUnits(&item.Product, item.Seats),
 			})
 			productCodes = append(productCodes, item.Product.ProductCode)
 				}

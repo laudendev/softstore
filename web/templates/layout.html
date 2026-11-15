@@ -8,7 +8,7 @@
 	<title>{{.Title}} | Laudenslager Software shop</title>
 	<meta name="description" content="Buy license keys for Pop Focus and other desktop software from Laudenslager Software, LLC. Pay once, key by email, works offline.">
 	<link rel="icon" type="image/svg+xml" href="/static/img/favicon.svg">
-	<link rel="stylesheet" href="/static/css/style.css?v=4">
+	<link rel="stylesheet" href="/static/css/style.css?v=5">
 	<script src="/static/js/htmx.min.js?v=2.0.4"></script>
 </head>
 <body>
@@ -99,18 +99,43 @@
 // Volume discount tiers, mirroring internal/handlers/product_pricing.go's
 // deviceDiscountTiers. Kept in sync by hand: a small, stable table.
 function softstoreDiscountForSeats(seats) {
-	if (seats <= 1) return 0;
-	if (seats === 2) return 0.10;
-	if (seats <= 4) return 0.15;
-	return 0.20; // 5-6
+	// Mirrors DeviceDiscountTiers in internal/models/cart.go.
+	return [0, 0, 0.1875, 0.3125, 0.375, 0.4375, 0.5][Math.min(6, Math.max(1, seats))];
 }
+
+function softstoreDollars(cents) {
+	const d = (cents / 100).toFixed(2);
+	return '$' + (d.endsWith('.00') ? d.slice(0, -3) : d);
+}
+
+// Volume note under the picker, in this product's own prices.
+document.querySelectorAll('.volume-note[data-base-price]').forEach(function (el) {
+	const base = parseInt(el.dataset.basePrice, 10);
+	if (!base) return;
+	el.textContent = 'Each extra license costs less: ' + softstoreDollars(Math.trunc(base * (1 - softstoreDiscountForSeats(2)))) +
+		' each for 2, down to ' + softstoreDollars(Math.trunc(base * (1 - softstoreDiscountForSeats(6)))) + ' each for 6.';
+});
+
+// Price ladder under the picker: every license count, in this product's prices.
+document.querySelectorAll('.ladder[data-base-price]').forEach(function (el) {
+	const base = parseInt(el.dataset.basePrice, 10);
+	const list = el.querySelector('.ladder-list');
+	if (!base || !list) return;
+	for (let n = 1; n <= 6; n++) {
+		const each = Math.trunc(base * (1 - softstoreDiscountForSeats(n)));
+		const li = document.createElement('li');
+		li.textContent = n + (n === 1 ? ' license: ' : ' licenses: ') + softstoreDollars(each * n) + (n > 1 ? ' (' + softstoreDollars(each) + ' each, save ' + softstoreDollars(base * n - each * n) + ')' : '');
+		list.appendChild(li);
+	}
+	el.hidden = false;
+});
 
 function softstoreStepSeats(slug, delta) {
 	const display = document.getElementById('seats-' + slug);
 	let seats = parseInt(display.dataset.seats, 10) || 1;
 	seats = Math.min(6, Math.max(1, seats + delta));
 	display.dataset.seats = seats;
-	display.textContent = seats + (seats === 1 ? ' device' : ' devices');
+	display.textContent = seats + (seats === 1 ? ' license' : ' licenses');
 
 	const picker = display.closest('.seat-picker');
 	picker.querySelector('[data-step="-1"]').disabled = seats === 1;
@@ -131,7 +156,7 @@ function softstoreStepSeats(slug, delta) {
 	const total = (perDevice * seats) / 100;
 	const full = (basePriceCents * seats) / 100;
 	priceEl.textContent = '$' + total.toFixed(2);
-	if (savingEl) savingEl.textContent = Math.round(discount * 100) + '% off: you save $' + (full - total).toFixed(2);
+	if (savingEl) savingEl.textContent = softstoreDollars(Math.trunc(perDevice)) + ' each: you save $' + (full - total).toFixed(2);
 }
 
 // Copy a license key from the receipt (the receipt is swapped in by htmx).

@@ -27,15 +27,21 @@ type CartItem struct {
 // both layers apply the exact same discount — this is the single
 // source of truth for the tier table.
 func DeviceDiscountTiers(seats int64) float64 {
+	// Each extra license costs less; at $16 that is $16, $13, $11, $10,
+	// $9 and $8 each. All are exact binary fractions, so cents stay exact.
 	switch {
 	case seats <= 1:
 		return 0
 	case seats == 2:
-		return 0.10
-	case seats <= 4:
-		return 0.15
-	default: // 5-6
-		return 0.20
+		return 0.1875
+	case seats == 3:
+		return 0.3125
+	case seats == 4:
+		return 0.375
+	case seats == 5:
+		return 0.4375
+	default: // 6
+		return 0.5
 	}
 }
 

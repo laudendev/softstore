@@ -66,16 +66,22 @@ func GetProductByStripePriceID(conn *sql.DB, priceID string) (*models.Product, e
 	// seat-tier price instead.
 	var tierSeats int64
 	err = conn.QueryRow(
-		`SELECT p.id, p.name, p.slug, p.description, p.price_cents, p.stripe_price_id, p.stripe_product_id, p.product_code, p.stub_url, p.tax_code, pp.seats, p.created_at
+		`SELECT p.id, p.name, p.slug, p.description, p.price_cents, p.stripe_price_id, p.stripe_product_id, p.product_code, p.stub_url, p.tax_code, pp.seats, p.seats, p.created_at
 		 FROM product_prices pp
 		 JOIN products p ON p.id = pp.product_id
 		 WHERE pp.stripe_price_id = ?`,
 		priceID,
-	).Scan(&p.ID, &p.Name, &p.Slug, &p.Description, &p.PriceCents, &p.StripePriceID, &p.StripeProductID, &p.ProductCode, &p.StubURL, &p.TaxCode, &tierSeats, &p.CreatedAt)
+	).Scan(&p.ID, &p.Name, &p.Slug, &p.Description, &p.PriceCents, &p.StripePriceID, &p.StripeProductID, &p.ProductCode, &p.StubURL, &p.TaxCode, &tierSeats, &p.Seats, &p.CreatedAt)
 	if err != nil {
 		return nil, err
 	}
-	p.Seats = tierSeats
+	// License products (more than one seat per license): a tier price is a
+	// per-license unit price bought with quantity = licenses, and each unit
+	// is one key with the product's own seat count. Otherwise the tier's
+	// seat count is the number of devices on one key.
+	if p.Seats <= 1 {
+		p.Seats = tierSeats
+	}
 	return &p, nil
 }
 

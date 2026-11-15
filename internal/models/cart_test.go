@@ -9,7 +9,7 @@ func TestLineTotalCentsAccountsForSeats(t *testing.T) {
 		Product:  Product{PriceCents: 1000},
 	}
 	got := item.LineTotalCents()
-	want := int64(5100) // 1000 * 0.85 (15% off at 3 seats) * 3 seats * 2 quantity
+	want := int64(4122) // 687 (1000 * 0.6875, 31.25% off at 3 seats, truncated) * 3 seats * 2 quantity
 	if got != want {
 		t.Errorf("expected %d, got %d", want, got)
 	}
@@ -32,11 +32,11 @@ func TestCartTotalCentsSumsMultipleMultiSeatItems(t *testing.T) {
 	cart := Cart{
 		Items: []CartItem{
 			{Quantity: 1, Seats: 1, Product: Product{PriceCents: 500}},  // 500, no discount at 1 seat
-			{Quantity: 2, Seats: 3, Product: Product{PriceCents: 1000}}, // 5100, 15% off at 3 seats
+			{Quantity: 2, Seats: 3, Product: Product{PriceCents: 1000}}, // 4122, 31.25% off at 3 seats
 		},
 	}
 	got := cart.TotalCents()
-	want := int64(5600)
+	want := int64(4622)
 	if got != want {
 		t.Errorf("expected %d, got %d", want, got)
 	}
