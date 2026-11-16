@@ -1,35 +1,41 @@
 Hello,
 
-You asked to hear when Pop Focus was released. It is available today.
+Pop Focus 0.1.21 is out. If you use Pop Focus, please install this
+version once by hand.
 
-Pop Focus is a meeting reminder you will notice without being startled
-by an alarm. Before a meeting starts, bubbles appear over whatever you
-are working on. Pop them to dismiss the reminder.
+Starting with 0.1.21, the list of updates that Pop Focus checks is
+signed with a hardware security key instead of a key stored on a
+computer. This makes it much harder for anyone to pass off a fake
+update as ours.
 
-What you get
+Versions 0.1.20 and earlier cannot read the new signed list. In
+versions 0.1.14 to 0.1.20, Check for updates (Settings > Updates) now
+shows "release list rejected: the update information is not signed by
+us." Nothing is wrong with your copy of Pop Focus. It needs to be
+updated by hand this one time.
 
-- Reminders from Google Calendar, Microsoft calendars, and ICS feeds
-- Windows, macOS, and Linux (.deb package, x86-64)
-- A 14-day free trial, no purchase needed to start
+What to do
 
-Download the free trial:
-https://popfocus.lauden.dev/download/
+1. Go to https://popfocus.lauden.dev/download/
+2. Download the installer for your computer and install it over your
+   current version:
+   - Windows: run the setup .exe. You do not need to uninstall first.
+   - macOS: open the .dmg and drag Pop Focus to Applications,
+     choosing Replace.
+   - Linux: install the .deb or .rpm over the current package.
+3. Open Pop Focus. Your settings, calendars and license stay as they
+   are.
 
-Pricing
+After that, updates install from Settings > Updates again, with one
+click.
 
-A license is $16 per device, billed once, plus tax where applicable.
-There is no subscription. After a one-time online activation, each
-device works offline. Sales are currently limited to US billing
-addresses.
+Also new in 0.1.21: bubble text is larger and centred, sized to fit
+every bubble shape and size, and Settings now says "events" for what
+is on your calendar. Full list: https://popfocus.lauden.dev/changelog
 
-Buy a license: https://popfocus.lauden.dev/#buy
-Learn more: https://popfocus.lauden.dev/
-
-Questions or feedback? Reply to this email.
+If anything does not go as described, reply to this email.
 
 Laudenslager Software, LLC
 
 --
-You are receiving this because you subscribed to release updates at
-lauden.dev. Unsubscribe: {{UNSUBSCRIBE_URL}}
-Laudenslager Software, LLC, {{POSTAL_ADDRESS}}
+{{FOOTER}}
